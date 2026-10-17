@@ -2,6 +2,8 @@
 
 A 12-week AI learning sprint (Oct 2026 – Jan 2027): agentic AI, MCP, and AI for systems engineering. Every milestone ships code here, and every course produces public content.
 
+Follow along: [vibewithamit.com](https://vibewithamit.com) for videos, posts and write-ups from each week.
+
 ## Progress
 
 | Week | Course | Milestone | Status |
