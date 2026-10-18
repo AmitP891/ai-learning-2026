@@ -7,7 +7,7 @@ My first script from **Building with the Claude API**, section 1 (Accessing Clau
 - Calling the Messages API with the official Python SDK
 - **Multi-turn conversations**: the API is stateless, so the script keeps a `messages` list and sends the full history every turn
 - **System prompts**: setting Claude's role and style once, separate from the conversation
-- **Temperature**: controlling how varied the responses are
+- **Temperature (a lesson learned)**: the course covers it, but newer models such as Claude Sonnet 5.5 no longer accept custom `temperature`, `top_p` or `top_k` values, so this script leaves them out. See the [Sonnet 5.5 migration guide](https://platform.claude.com/docs/en/models/sonnet-5-5/migration-guide).
 
 ## Run it
 

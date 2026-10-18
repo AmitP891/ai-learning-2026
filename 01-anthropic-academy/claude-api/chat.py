@@ -21,7 +21,6 @@ while True:
         model=MODEL,
         max_tokens=500,
         system=SYSTEM,
-        temperature=0.7,
         messages=messages,
     )
     reply = response.content[0].text
