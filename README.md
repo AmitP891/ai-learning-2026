@@ -9,7 +9,7 @@ Follow along: [vibewithamit.com](https://vibewithamit.com) for videos, posts and
 | Week | Course | Milestone | Status |
 | --- | --- | --- | --- |
 | 1 | Anthropic Academy | Claude Code in Action certificate | ✅ Done |
-| 2 | Anthropic Academy | API tool-use script | ⬜ |
+| 2 | Anthropic Academy | API tool-use script | 🟡 In progress |
 | 3 | Anthropic Academy | Custom MCP server | ⬜ |
 | 4–8 | Agentic AI (Andrew Ng) | Reflection, tool use, evals, multi-agent | ⬜ |
 | 8 | PPI AI for Systems Engineering | Workshop attended | ⬜ |
