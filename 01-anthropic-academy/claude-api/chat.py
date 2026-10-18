@@ -19,10 +19,12 @@ while True:
     messages.append({"role": "user", "content": user_input})
     response = client.messages.create(
         model=MODEL,
-        max_tokens=500,
+        max_tokens=2000,  # thinking runs by default and uses tokens too
         system=SYSTEM,
         messages=messages,
     )
-    reply = response.content[0].text
-    messages.append({"role": "assistant", "content": reply})
+    # A response can start with "thinking" blocks, so pick out the text blocks by type
+    reply = "".join(block.text for block in response.content if block.type == "text")
+    # Keep the full content (thinking included) in the history for the next turn
+    messages.append({"role": "assistant", "content": response.content})
     print(f"\nClaude: {reply}\n")
