@@ -23,3 +23,31 @@ Type `quit` to exit.
 ## Next
 
 The tool-use section extends this same loop so Claude can call Python functions.
+
+---
+
+# Prompt evaluation: `eval.py`
+
+From section 2 (Prompt evaluation). Instead of eyeballing answers, `eval.py` tests the chat's system prompt against a fixed set of questions and scores every answer.
+
+## How it grades
+
+| Grader | What it checks | Why |
+| --- | --- | --- |
+| Code | Answer is under 120 words | The system prompt promises this, so test it |
+| Code | Answer mentions at least one expected keyword | A cheap check that it's on topic |
+| Model | A second Claude call (Haiku) scores accuracy and clarity 1–10 with a reason | Catches quality issues code can't |
+
+A case passes only if all three pass (score of 7 or more). The script prints a pass/fail line per question, an overall score, and saves every answer to `eval_results.json`.
+
+## Run it
+
+```bash
+python3 eval.py
+```
+
+It makes 12 API calls (6 answers + 6 grades), so it takes a minute or so.
+
+## Try this
+
+Change the `SYSTEM` prompt, run the eval again, and compare the scores. That's the point of evals: you can measure whether a prompt change made things better or worse.
