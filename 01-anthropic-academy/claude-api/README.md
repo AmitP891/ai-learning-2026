@@ -51,3 +51,24 @@ It makes 12 API calls (6 answers + 6 grades), so it takes a minute or so.
 ## Try this
 
 Change the `SYSTEM` prompt, run the eval again, and compare the scores. That's the point of evals: you can measure whether a prompt change made things better or worse.
+
+---
+
+# Prompt engineering: `prompt_compare.py`
+
+From section 3 (Prompt engineering techniques). The eval found one failure in the original prompt: a 9/10 answer that broke the 120-word limit. This script fixes the prompt and proves it, by running the **same 6 questions and the same graders** against two prompts:
+
+| | v1 (original) | v2 (engineered) |
+| --- | --- | --- |
+| Audience | "coding mentor" | "mentor for complete beginners" |
+| Length | "under 120 words" | "80 words or fewer, a hard limit: count before replying" (headroom below the check) |
+| Structure | One sentence | Rules in `<rules>` XML tags |
+| Shape | Not specified | Definition, then one example; plus a worked `<example>` |
+
+It prints a side-by-side table (PASS/FAIL, words and score per question) and totals for each prompt, and saves both sets of answers to `compare_results.json`.
+
+```bash
+python3 prompt_compare.py
+```
+
+24 API calls (6 questions × 2 prompts × answer + grade), so allow a couple of minutes.

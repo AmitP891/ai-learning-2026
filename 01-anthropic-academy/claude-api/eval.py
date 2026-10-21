@@ -34,11 +34,11 @@ def text_of(response):
     return "".join(b.text for b in response.content if b.type == "text").strip()
 
 
-def ask(question):
+def ask(question, system=SYSTEM):
     response = client.messages.create(
         model=MODEL,
         max_tokens=2000,
-        system=SYSTEM,
+        system=system,
         messages=[{"role": "user", "content": question}],
     )
     return text_of(response)
