@@ -21,6 +21,32 @@ designs=[Image.open(f"{MDIR}/{k}.png").convert("RGBA").resize((300,350),Image.LA
 def thumb(p):
     im=Image.open(p).convert("RGB").resize((330,587),Image.LANCZOS); return im
 thA,thB=thumb("thumbA.png"),thumb("thumbB.png")
+
+def yt_icon(size):
+    ic=Image.new("RGBA",(size,size),(0,0,0,0)); d=ImageDraw.Draw(ic)
+    h=int(size*0.72); y0=(size-h)//2
+    d.rounded_rectangle((0,y0,size-1,y0+h),radius=int(size*0.22),fill=(255,0,0,255))
+    cx,cy=size//2,size//2; r=int(size*0.2)
+    d.polygon([(cx-r*0.8,cy-r),(cx-r*0.8,cy+r),(cx+r*1.05,cy)],fill=(255,255,255,255))
+    return ic
+def ig_icon(size):
+    g=Image.new("RGBA",(size,size)); px=g.load()
+    stops=[(0,(254,218,117)),(0.35,(250,126,30)),(0.6,(214,41,118)),(0.8,(150,47,191)),(1,(79,91,213))]
+    for y in range(size):
+        for x in range(size):
+            u=min(1,max(0,((x)+(size-y))/(2*size)))
+            u=1-u
+            for i in range(len(stops)-1):
+                if stops[i][0]<=u<=stops[i+1][0]:
+                    k=(u-stops[i][0])/(stops[i+1][0]-stops[i][0]); a,b=stops[i][1],stops[i+1][1]
+                    px[x,y]=tuple(int(a[j]+(b[j]-a[j])*k) for j in range(3))+(255,); break
+    m=Image.new("L",(size,size),0); ImageDraw.Draw(m).rounded_rectangle((0,0,size-1,size-1),radius=int(size*0.28),fill=255)
+    g.putalpha(m); d=ImageDraw.Draw(g); w=max(3,size//14)
+    p=int(size*0.18); d.rounded_rectangle((p,p,size-p,size-p),radius=int(size*0.18),outline=(255,255,255,255),width=w)
+    c=size//2; r=int(size*0.17); d.ellipse((c-r,c-r,c+r,c+r),outline=(255,255,255,255),width=w)
+    rr=max(2,size//22); d.ellipse((size-p-int(size*0.16)-rr,p+int(size*0.10)-rr,size-p-int(size*0.16)+rr,p+int(size*0.10)+rr),fill=(255,255,255,255))
+    return g
+YT=yt_icon(84); IG=ig_icon(84)
 CY=(0,240,255); PK=(255,43,214); GR=(57,255,136); RD=(255,70,90); WH=(255,255,255); GY=(170,175,190); BG=(13,13,20)
 F=lambda n,s: ImageFont.truetype(f"/usr/share/fonts/truetype/dejavu/{n}.ttf",s)
 B96,B84,B70,B56,B44,B36=[F("DejaVuSans-Bold",s) for s in (96,84,70,56,44,36)]
@@ -68,7 +94,7 @@ for f in range(N):
     d.text((60,80),label(t),font=M34,fill=CY); d.text((1020,78),counter(t),font=MB38,fill=PK,anchor="ra")
     show_bit=t>=T_MEET
     if t<T_DES:
-        typed(d,(60,380),"> software engineer",M44,CY,t,0.1)
+        typed(d,(60,380),"> systems engineer",M44,CY,t,0.1)
         typed(d,(60,450),"> learning AI in public",M44,CY,t,1.2)
         txt(d,(60,600),"but I didn't want to",B70,WH,t,T_FACE)
         txt(d,(60,690),"show my face.",B84,PK,t,T_FACE+0.8)
@@ -113,8 +139,15 @@ for f in range(N):
             im.paste(th,(x,y))
             if t>=(T_WINS if i==0 else T_BUGS): txt(d,(x+165,y+610),lab,B44,c,t,(T_WINS if i==0 else T_BUGS),anchor="ma")
     else:
-        txt(d,(60,300),"Follow",B96,WH,t,T_FOLLOW); txt(d,(60,420),"@vibewithamitai",B70,PK,t,T_FOLLOW+0.2)
-        txt(d,(60,540),"so Bit doesn't get lonely",B44,GY,t,T_FOLLOW+0.6)
+        txt(d,(60,300),"Follow",B96,WH,t,T_FOLLOW)
+        if t>=T_FOLLOW+0.2:
+            k=ease((t-T_FOLLOW-0.2)/0.35); yy=430+int(24*(1-k))
+            for i,ic in enumerate((YT,IG)):
+                a=ic.copy(); a.putalpha(a.getchannel("A").point(lambda v:int(v*k)))
+                im.paste(a,(60+i*104,yy),a)
+            cc,_=col(PK,t,T_FOLLOW+0.2); d.text((280,yy+42),"@vibewithamitai",font=B56,fill=cc,anchor="lm")
+            cc,_=col(GY,t,T_FOLLOW+0.3); d.text((60,yy+110),"YouTube  ·  Instagram",font=R34,fill=cc)
+        txt(d,(60,640),"so Bit doesn't get lonely",B44,GY,t,T_FOLLOW+0.6)
     if show_bit:
         dt=t-T_MEET
         if dt<0.6: oy=int(-900*(1-ease(dt/0.6))); 
