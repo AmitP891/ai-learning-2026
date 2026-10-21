@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" width="600" height="700">
+<line x1="300" y1="98" x2="300" y2="48" stroke="#3A3F5C" stroke-width="10" stroke-linecap="round"/>
+<circle cx="300" cy="38" r="15" fill="#00F0FF" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<g id="arm-left"><line x1="190" y1="400" x2="125" y2="500" stroke="#0B0C14" stroke-width="62" stroke-linecap="round"/><line x1="190" y1="400" x2="125" y2="500" stroke="#F0359E" stroke-width="50" stroke-linecap="round"/><circle cx="118" cy="515" r="30" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/></g>
+<g id="arm-right"><line x1="410" y1="400" x2="478" y2="300" stroke="#0B0C14" stroke-width="62" stroke-linecap="round"/><line x1="410" y1="400" x2="478" y2="300" stroke="#F0359E" stroke-width="50" stroke-linecap="round"/><circle cx="488" cy="280" r="30" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/></g>
+<rect x="250" y="580" width="40" height="70" rx="12" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/><rect x="310" y="580" width="40" height="70" rx="12" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="225" y="640" width="80" height="34" rx="17" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/><rect x="295" y="640" width="80" height="34" rx="17" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="168" y="350" width="264" height="240" rx="60" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<path d="M190 520 Q300 585 410 520 L410 540 Q300 600 190 540Z" fill="#B81F75"/>
+<rect x="225" y="400" width="150" height="95" rx="22" fill="#171A2B" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<text x="300" y="463" font-family="DejaVu Sans Mono" font-weight="bold" font-size="46" fill="#00F0FF" text-anchor="middle">&lt;/&gt;</text>
+<rect x="272" y="320" width="56" height="40" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="140" y="95" width="320" height="240" rx="52" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="140" y="270" width="320" height="65" rx="30" fill="#B81F75" opacity="0.55"/>
+<rect x="172" y="125" width="256" height="170" rx="32" fill="#171A2B" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<g id="eyes"><rect x="222" y="170" width="44" height="58" rx="12" fill="#00F0FF"/><rect x="334" y="170" width="44" height="58" rx="12" fill="#00F0FF"/></g>
+<path id="mouth" d="M262 255 Q300 282 338 255" stroke="#00F0FF" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>
