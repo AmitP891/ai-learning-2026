@@ -2,7 +2,7 @@
 import anthropic
 from dotenv import load_dotenv
 
-load_dotenv()  # reads ANTHROPIC_API_KEY from a .env file if there is one
+load_dotenv(override=True)  # reads ANTHROPIC_API_KEY from a .env file if there is one
 
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
 
