@@ -16,7 +16,10 @@ print(f"  .env file used : {env_path or 'NOT FOUND'}")
 print(f"  key in .env    : {tail(file_key)}")
 print(f"  key in shell   : {tail(shell_key)}")
 load_dotenv(env_path, override=True) if env_path else None
-key = os.environ.get("ANTHROPIC_API_KEY", "")
+raw = os.environ.get("ANTHROPIC_API_KEY", "")
+key = raw.strip().strip("\"'\u201c\u201d\u2018\u2019")
+if key != raw:
+    print("  note           : removed stray quotes or spaces around the key")
 print(f"  key being used : {tail(key)}\n")
 
 if not key:

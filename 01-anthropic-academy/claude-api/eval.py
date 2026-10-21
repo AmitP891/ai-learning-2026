@@ -8,10 +8,13 @@ Runs a small test set through the prompt, then grades every answer two ways:
 import json
 import re
 
+import os
+
 import anthropic
 from dotenv import load_dotenv
 
 load_dotenv(override=True)  # reads ANTHROPIC_API_KEY from a .env file if there is one
+os.environ["ANTHROPIC_API_KEY"] = os.environ.get("ANTHROPIC_API_KEY", "").strip().strip("\"'\u201c\u201d\u2018\u2019")  # drop stray quotes
 
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
 

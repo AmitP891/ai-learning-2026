@@ -1,8 +1,11 @@
 """Multi-turn chat with Claude: Anthropic Academy, Building with the Claude API, section 1."""
+import os
+
 import anthropic
 from dotenv import load_dotenv
 
 load_dotenv(override=True)  # reads ANTHROPIC_API_KEY from a .env file if there is one
+os.environ["ANTHROPIC_API_KEY"] = os.environ.get("ANTHROPIC_API_KEY", "").strip().strip("\"'\u201c\u201d\u2018\u2019")  # drop stray quotes
 
 client = anthropic.Anthropic()  # reads ANTHROPIC_API_KEY from the environment
 
