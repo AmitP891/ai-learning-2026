@@ -14,8 +14,9 @@ My first script from **Building with the Claude API**, section 1 (Accessing Clau
 
 ```bash
 pip install -r requirements.txt
-export ANTHROPIC_API_KEY="your-key-here"   # from console.anthropic.com, never commit it
-python chat.py
+cp ../../.env.example ../../.env    # then open .env and paste your key (never committed)
+python3 check_key.py                # confirms the key works
+python3 chat.py
 ```
 
 Type `quit` to exit.
