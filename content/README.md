@@ -12,3 +12,4 @@ Every piece of content published during the sprint, linked to the week and code 
 | 22 Oct 2026 | 2 | [LinkedIn](https://lnkd.in/p/e9i3M4Sc) | Meet Bit: learning AI in public without showing my face ([video](videos/2026-10-22-meet-bit.mp4)) | [brand/](../brand/README.md) |
 | 22 Oct 2026 | 2 | [TikTok](https://vm.tiktok.com/ZN8A7fg8o/) | Meet Bit: learning AI in public without showing my face ([video](videos/2026-10-22-meet-bit.mp4)) | [brand/](../brand/README.md) |
 | 22 Oct 2026 | 2 | [TikTok](https://vm.tiktok.com/ZN8A7bcGC/) | 2 bugs the Claude API course didn't warn me about ([video](videos/2026-10-22-two-bugs.mp4)) | [claude-api/chat.py](../01-anthropic-academy/claude-api/chat.py) |
+| 22 Oct 2026 | 2 | [YouTube Shorts](https://youtube.com/shorts/IGn8s8sJmnc) | Meet Bit: learning AI in public without showing my face ([video](videos/2026-10-22-meet-bit.mp4)) | [brand/](../brand/README.md) |
