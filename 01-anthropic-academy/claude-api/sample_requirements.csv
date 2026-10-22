@@ -1,0 +1,9 @@
+id,text
+REQ-001,The logger shall record GPS position at 10 Hz.
+REQ-002,The system shall be fast.
+REQ-003,The display should be user-friendly.
+REQ-004,The logger shall store at least 72 hours of data and shall encrypt it and shall upload it daily.
+REQ-005,Battery life shall be adequate for typical missions.
+REQ-006,The system shall boot within 30 seconds of power-on.
+REQ-007,The data upload rate shall be TBD.
+REQ-008,The logger may support Bluetooth if appropriate.

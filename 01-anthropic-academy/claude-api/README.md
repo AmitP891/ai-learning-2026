@@ -73,3 +73,23 @@ python3 prompt_compare.py
 ```
 
 24 API calls (6 questions × 2 prompts × answer + grade), so allow a couple of minutes.
+
+---
+
+# Tool use: `requirements_checker.py`
+
+From section 4 (Tool use). Claude reviews a set of **synthetic** system requirements (`sample_requirements.csv`, a made-up flight data logger). It can't read the file or apply the rules on its own, so it calls two Python tools:
+
+| Tool | What it does |
+| --- | --- |
+| `list_requirements()` | Returns every requirement in the CSV |
+| `check_requirement(req_id)` | Rule checks: weak modal verb (should/may), vague wording ("fast", "user-friendly"), TBD/TBC, more than one "shall", nothing measurable |
+
+The script loops until Claude stops asking for tools, printing each call as it happens, then shows Claude's review with rewritten, testable requirements.
+
+```bash
+python3 requirements_checker.py                # uses sample_requirements.csv
+python3 requirements_checker.py my_reqs.csv    # your own file (id,text columns)
+```
+
+Use synthetic or public requirements only.
