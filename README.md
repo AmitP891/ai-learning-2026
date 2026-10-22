@@ -9,7 +9,7 @@ Follow along: [vibewithamit.com](https://vibewithamit.com) · TikTok [@gymvibeco
 | Week | Course | Milestone | Status |
 | --- | --- | --- | --- |
 | 1 | Anthropic Academy | Claude Code in Action certificate | ✅ Done |
-| 2 | Anthropic Academy | API tool-use script | 🟡 In progress |
+| 2 | Anthropic Academy | API tool-use script | ✅ Done |
 | 3 | Anthropic Academy | Custom MCP server | ⬜ |
 | 4–8 | Agentic AI (Andrew Ng) | Reflection, tool use, evals, multi-agent | ⬜ |
 | 8 | PPI AI for Systems Engineering | Workshop attended | ⬜ |
@@ -25,6 +25,12 @@ Follow along: [vibewithamit.com](https://vibewithamit.com) · TikTok [@gymvibeco
 04-capstone/              Requirements traceability agent (synthetic data only)
 content/                  Links to videos, posts and blog articles
 ```
+
+## Highlights
+
+- **Requirements checker (Week 2):** Claude used two Python tools to review 8 synthetic system requirements, flagged 6 (vague wording, weak modal verbs, a TBD, a compound requirement) and rewrote each as testable, marking invented values as [assumed]. [Code](01-anthropic-academy/claude-api/requirements_checker.py) · [sample output](01-anthropic-academy/claude-api/sample_output.md)
+- **Prompt v1 vs v2 (Week 2):** four prompt engineering techniques took the eval from 5/6 to 6/6 across two runs, with answers 39% shorter and quality up from 8.7 to 8.8. [Code](01-anthropic-academy/claude-api/prompt_compare.py)
+- **Eval caught the AI grader (Week 2):** a 9/10 answer broke the 120-word limit; a one-line code check caught it. [Code](01-anthropic-academy/claude-api/eval.py)
 
 ## Certificates
 
