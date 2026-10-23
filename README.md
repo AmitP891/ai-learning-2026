@@ -10,7 +10,7 @@ Follow along: [vibewithamit.com](https://vibewithamit.com) · TikTok [@vibewitha
 | --- | --- | --- | --- |
 | 1 | Anthropic Academy | Claude Code in Action certificate | ✅ Done |
 | 2 | Anthropic Academy | API tool-use script | ✅ Done |
-| 3 | Anthropic Academy | Custom MCP server | ⬜ |
+| 3 | Anthropic Academy | Custom MCP server | 🟡 In progress |
 | 4–8 | Agentic AI (Andrew Ng) | Reflection, tool use, evals, multi-agent | ⬜ |
 | 8 | PPI AI for Systems Engineering | Workshop attended | ⬜ |
 | 9–11 | Hugging Face AI Agents Course | Agent rebuilt in LangGraph, certificate | ⬜ |

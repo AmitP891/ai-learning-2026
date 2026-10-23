@@ -12,7 +12,6 @@ Then it writes a review with suggested rewrites.
 Run:  python3 requirements_checker.py                 (uses sample_requirements.csv)
       python3 requirements_checker.py my_reqs.csv
 """
-import csv
 import json
 import os
 import re
@@ -28,41 +27,18 @@ client = anthropic.Anthropic()
 MODEL = "claude-sonnet-5-5"
 CSV_PATH = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(__file__), "sample_requirements.csv")
 
-# ---------- the tools (plain Python) ----------
+# ---------- the tools (plain Python, shared with the MCP server) ----------
 
-VAGUE = ["fast", "quick", "user-friendly", "easy", "adequate", "sufficient", "appropriate",
-         "typical", "reasonable", "efficient", "flexible", "robust", "as needed", "etc"]
-
-
-def load_requirements():
-    with open(CSV_PATH, newline="") as f:
-        return {row["id"]: row["text"] for row in csv.DictReader(f)}
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "shared"))
+import requirements_rules as rules  # noqa: E402
 
 
 def list_requirements():
-    return [{"id": k, "text": v} for k, v in load_requirements().items()]
+    return rules.list_requirements(CSV_PATH)
 
 
 def check_requirement(req_id):
-    reqs = load_requirements()
-    if req_id not in reqs:
-        return {"error": f"No requirement with id {req_id}"}
-    text = reqs[req_id]
-    low = text.lower()
-    issues = []
-    if not re.search(r"\bshall\b", low):
-        weak = [m for m in ("should", "may", "will", "can") if re.search(rf"\b{m}\b", low)]
-        issues.append(f"Weak or missing modal verb ({', '.join(weak) or 'none'}); use 'shall'")
-    vague = [w for w in VAGUE if re.search(rf"\b{re.escape(w)}\b", low)]
-    if vague:
-        issues.append(f"Vague, untestable wording: {', '.join(vague)}")
-    if re.search(r"\b(tbd|tbc|tba)\b", low):
-        issues.append("Contains TBD/TBC: the requirement is incomplete")
-    if len(re.findall(r"\bshall\b", low)) > 1:
-        issues.append("More than one 'shall': split into separate requirements")
-    if not re.search(r"\d", text):
-        issues.append("No measurable value (number + unit), so it can't be verified")
-    return {"id": req_id, "text": text, "verdict": "PASS" if not issues else "REVIEW", "issues": issues}
+    return rules.check_requirement(req_id, CSV_PATH)
 
 
 TOOLS = [
