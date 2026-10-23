@@ -37,4 +37,11 @@ def check_requirement(req_id, csv_path=SAMPLE_CSV):
         issues.append("More than one 'shall': split into separate requirements")
     if not re.search(r"\d", text):
         issues.append("No measurable value (number + unit), so it can't be verified")
+    else:
+        # check each 'shall' clause on its own, so one number can't cover for another clause
+        clauses = [c.strip(" ,.") for c in re.split(r"\band\s+(?=shall\b)", text, flags=re.I)]
+        if len(clauses) > 1:
+            for c in clauses:
+                if not re.search(r"\d", c):
+                    issues.append(f"Clause has no measurable value: '{c}'")
     return {"id": req_id, "text": text, "verdict": "PASS" if not issues else "REVIEW", "issues": issues}
