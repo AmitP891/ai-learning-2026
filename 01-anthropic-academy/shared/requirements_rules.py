@@ -8,6 +8,13 @@ SAMPLE_CSV = os.path.join(os.path.dirname(__file__), "..", "claude-api", "sample
 VAGUE = ["fast", "quick", "user-friendly", "easy", "adequate", "sufficient", "appropriate",
          "typical", "reasonable", "efficient", "flexible", "robust", "as needed", "etc"]
 
+# frequency words are a measurable rate even without a digit ("upload it daily")
+FREQUENCY = ["hourly", "daily", "weekly", "monthly", "quarterly", "yearly", "annually"]
+
+
+def is_measurable(text):
+    return bool(re.search(r"\d", text)) or any(re.search(rf"\b{w}\b", text, re.I) for w in FREQUENCY)
+
 
 def load_requirements(csv_path=SAMPLE_CSV):
     with open(csv_path, newline="") as f:
@@ -35,13 +42,13 @@ def check_requirement(req_id, csv_path=SAMPLE_CSV):
         issues.append("Contains TBD/TBC: the requirement is incomplete")
     if len(re.findall(r"\bshall\b", low)) > 1:
         issues.append("More than one 'shall': split into separate requirements")
-    if not re.search(r"\d", text):
+    if not is_measurable(text):
         issues.append("No measurable value (number + unit), so it can't be verified")
     else:
         # check each 'shall' clause on its own, so one number can't cover for another clause
         clauses = [c.strip(" ,.") for c in re.split(r"\band\s+(?=shall\b)", text, flags=re.I)]
         if len(clauses) > 1:
             for c in clauses:
-                if not re.search(r"\d", c):
+                if not is_measurable(c):
                     issues.append(f"Clause has no measurable value: '{c}'")
     return {"id": req_id, "text": text, "verdict": "PASS" if not issues else "REVIEW", "issues": issues}
