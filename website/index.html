@@ -205,7 +205,15 @@
   }
   .hero-card-stack { position: relative; width: 100%; max-width: 400px; }
   .hero-bit { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; }
-  .hero-bit img { width: min(300px, 62vw); height: auto; filter: drop-shadow(0 0 36px rgba(240,53,158,0.35)); animation: float 4s ease-in-out infinite; }
+  .bit-button { background: none; border: 0; padding: 0; cursor: pointer; border-radius: 24px; animation: float 4s ease-in-out infinite; }
+  .bit-button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 6px; }
+  .bit-svg { width: min(300px, 62vw); height: auto; display: block; filter: drop-shadow(0 0 36px rgba(240,53,158,0.35)); transition: transform .2s; }
+  .bit-button:hover .bit-svg { transform: scale(1.03) rotate(-2deg); }
+  .bit-button.talking .bit-svg { filter: drop-shadow(0 0 46px rgba(0,240,255,0.45)); }
+  .bit-tap { display: block; margin-top: 8px; font-size: 0.8rem; color: var(--cyan); font-weight: 600; }
+  #bitArmR { transform-origin: 410px 400px; }
+  .bit-button.waving #arm-right { animation: wave .5s ease-in-out 3; transform-origin: 410px 400px; }
+  @keyframes wave { 0%,100% { transform: rotate(0deg); } 50% { transform: rotate(-14deg); } }
   .bit-bubble { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; max-width: 320px; text-align: center; font-size: 0.9rem; color: var(--text-muted); backdrop-filter: blur(12px); }
   .bit-bubble strong { color: #ff4fb8; }
   .latest-video { padding: 40px 0 80px; }
@@ -215,7 +223,7 @@
   .video-wrap { position: relative; aspect-ratio: 16 / 9; max-width: 900px; margin: 0 auto; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: #000; }
   .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
   .video-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
-  @media (prefers-reduced-motion: reduce) { .hero-bit img { animation: none; } }
+  @media (prefers-reduced-motion: reduce) { .bit-button, .bit-button.waving #arm-right { animation: none; } }
   .hero-ui-card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 20px 24px;
@@ -576,8 +584,8 @@
     .hero-grid, .about-inner, .why-inner { grid-template-columns: 1fr; gap: 40px; }
     .hero-visual { display: flex; order: -1; }
     .hero-blob { width: 260px; height: 260px; }
-    .hero-bit img { width: min(200px, 50vw); }
-    .bit-bubble { display: none; }
+    .bit-svg { width: min(190px, 48vw); }
+    .bit-bubble { padding: 10px 14px; font-size: 0.82rem; }
     .cat-grid, .posts-grid, .proof-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .highlight-card { grid-template-columns: 1fr; gap: 32px; }
@@ -653,8 +661,30 @@
       <div class="hero-visual">
         <div class="hero-blob"></div>
         <div class="hero-bit">
-          <img src="bit.svg" alt="Bit, the pink robot presenter from Vibe with Amit videos" width="300" height="350">
-          <div class="bit-bubble">Hi, I'm <strong>Bit</strong>. I present Amit's AI builds on YouTube, TikTok and Instagram.</div>
+          <button class="bit-button" id="bitButton" type="button" aria-label="Play Bit's welcome message">
+            <svg class="bit-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 700" aria-hidden="true">
+<line x1="300" y1="98" x2="300" y2="48" stroke="#3A3F5C" stroke-width="10" stroke-linecap="round"/>
+<circle cx="300" cy="38" r="15" fill="#00F0FF" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<g id="arm-left"><line x1="190" y1="400" x2="125" y2="500" stroke="#0B0C14" stroke-width="62" stroke-linecap="round"/><line x1="190" y1="400" x2="125" y2="500" stroke="#F0359E" stroke-width="50" stroke-linecap="round"/><circle cx="118" cy="515" r="30" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/></g>
+<g id="arm-right"><line x1="410" y1="400" x2="478" y2="300" stroke="#0B0C14" stroke-width="62" stroke-linecap="round"/><line x1="410" y1="400" x2="478" y2="300" stroke="#F0359E" stroke-width="50" stroke-linecap="round"/><circle cx="488" cy="280" r="30" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/></g>
+<rect x="250" y="580" width="40" height="70" rx="12" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/><rect x="310" y="580" width="40" height="70" rx="12" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="225" y="640" width="80" height="34" rx="17" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/><rect x="295" y="640" width="80" height="34" rx="17" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="168" y="350" width="264" height="240" rx="60" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<path d="M190 520 Q300 585 410 520 L410 540 Q300 600 190 540Z" fill="#B81F75"/>
+<rect x="225" y="400" width="150" height="95" rx="22" fill="#171A2B" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<text x="300" y="463" font-family="DejaVu Sans Mono" font-weight="bold" font-size="46" fill="#00F0FF" text-anchor="middle">&lt;/&gt;</text>
+<rect x="272" y="320" width="56" height="40" fill="#3A3F5C" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="140" y="95" width="320" height="240" rx="52" fill="#F0359E" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<rect x="140" y="270" width="320" height="65" rx="30" fill="#B81F75" opacity="0.55"/>
+<rect x="172" y="125" width="256" height="170" rx="32" fill="#171A2B" stroke="#0B0C14" stroke-width="6" stroke-linejoin="round"/>
+<g id="bitEyes"><rect x="222" y="170" width="44" height="58" rx="12" fill="#00F0FF"/><rect x="334" y="170" width="44" height="58" rx="12" fill="#00F0FF"/></g>
+<rect id="bitTalk" x="272" y="252" width="56" height="8" rx="4" fill="#00F0FF" opacity="0"/>
+<path id="bitSmile" d="M262 255 Q300 282 338 255" stroke="#00F0FF" stroke-width="9" fill="none" stroke-linecap="round"/>
+</svg>
+          </button>
+          <div class="bit-bubble" aria-live="polite"><span id="bitSays">Hi, I'm <strong>Bit</strong>! 👋 Welcome to Vibe with Amit.</span>
+            <span class="bit-tap" id="bitTap">🔊 Tap me to say hi</span></div>
+          <audio id="bitAudio" src="bit-hello.mp3" preload="none"></audio>
         </div>
       </div>
     </div>
@@ -1143,6 +1173,31 @@
       ? 'rgba(8,12,20,0.95)'
       : 'rgba(8,12,20,0.75)';
   });
+
+
+  // ── Bit says hi ──
+  (function() {
+    const btn = document.getElementById('bitButton'), audio = document.getElementById('bitAudio');
+    const talk = document.getElementById('bitTalk'), smile = document.getElementById('bitSmile'), tap = document.getElementById('bitTap');
+    if (!btn || !audio || !talk || !smile) return;
+    const env = [0,1,27,75,99,93,88,93,90,65,34,11,1,0,0,0,0,7,39,81,90,76,66,47,27,45,75,83,75,42,9,0,2,5,3,0,0,0,0,0,0,0,0,0,0,0,0,5,36,80,99,85,46,20,20,31,47,48,41,28,9,11,32,39,24,10,3,1,18,53,80,93,95,79,48,18,10,31,54,43,18,14,17,22,28,23,13,8,7,4,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,12,50,86,80,39,25,46,60,50,34,33,40,36,30,23,12,2,1,3,1,0,0,0,0,0,15,52,81,77,69,71,56,24,4,0,14,52,83,78,48,17,7,16,19,25,45,46,26,8,1,11,28,32,29,31,34,40,50,61,69,72,58,36,25,27,30,21,18,35,49,50,49,55,59,55,49,46,43,33,17,8,6,2,0,0,0,0,0,0,0,1,9,20,23,16,5,15,56,89,97,85,53,28,24,27,27,32,35,29,22,21,25,31,28,17,9,21,53,68,62,61,55,31,20,34,46,41,38,41,34,14,1,0,0,3,5,4,0,0,0,0,0,0,0,0,0,0,0,0,0,25,65,63,49,59,65,68,50,19,20,42,65,84,78,53,39,41,39,27,14,5,1,0,0,0,0,0,0,0,0,0];
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!reduce) { btn.classList.add('waving'); setTimeout(() => btn.classList.remove('waving'), 1600); }
+    let raf = null;
+    function frame() {
+      const i = Math.floor(audio.currentTime * 30), a = (env[i] || 0) / 99;
+      if (a > 0.08) { const h = 8 + 38 * a; talk.setAttribute('height', h); talk.setAttribute('y', 262 - h / 2); talk.setAttribute('opacity', 1); smile.setAttribute('opacity', 0); }
+      else { talk.setAttribute('opacity', 0); smile.setAttribute('opacity', 1); }
+      if (!audio.paused && !audio.ended) raf = requestAnimationFrame(frame);
+    }
+    function stop() { btn.classList.remove('talking'); talk.setAttribute('opacity', 0); smile.setAttribute('opacity', 1); if (raf) cancelAnimationFrame(raf); if (tap) tap.textContent = '🔊 Tap me to hear it again'; }
+    btn.addEventListener('click', () => {
+      if (!audio.paused) { audio.pause(); audio.currentTime = 0; stop(); return; }
+      audio.currentTime = 0;
+      audio.play().then(() => { btn.classList.add('talking'); if (!reduce) { btn.classList.add('waving'); setTimeout(() => btn.classList.remove('waving'), 1600); } if (tap) tap.textContent = '🔊 Bit is talking… tap to stop'; raf = requestAnimationFrame(frame); }).catch(() => {});
+    });
+    audio.addEventListener('ended', stop);
+  })();
 
   // ── Beehiiv subscribe ──
   function subscribeBeehiiv(inputId, btn) {
