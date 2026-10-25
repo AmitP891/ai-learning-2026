@@ -1,0 +1,5 @@
+# Netlify config for vibewithamit.com
+# The site is plain static HTML in website/, so there is no build step.
+[build]
+  publish = "website"
+  command = ""
