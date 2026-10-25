@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Primary SEO -->
+<title>Vibe with Amit — AI, Vibe Coding and Tools for Beginners</title>
+<meta name="description" content="Beginner-friendly guides on AI tools, vibe coding, and building real digital products. Learn AI the practical way — no tech background needed.">
+<meta name="keywords" content="AI for beginners, vibe coding, build with AI, AI tools, learn AI, beginner AI guide, ChatGPT for beginners, AI projects, digital products, vibe coding tutorial, AI tools 2026, build apps with AI, no code AI">
+<meta name="author" content="Amit Patel">
+<meta name="robots" content="index, follow">
+<meta name="google-site-verification" content="e77reSEd9IljuMsxoUZq4F4XGuB6XRwGCRftQckBm5o" />
+<link rel="canonical" href="https://vibewithamit.com/index.html">
+
+<!-- Open Graph (Facebook, LinkedIn, WhatsApp, TikTok) -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Vibe with Amit">
+<meta property="og:title" content="Vibe with Amit — AI, Vibe Coding and Tools for Beginners">
+<meta property="og:description" content="Beginner-friendly guides on AI tools, vibe coding, and building real digital products. Learn AI the practical way — no tech background needed.">
+<meta property="og:url" content="https://vibewithamit.com">
+<meta property="og:image" content="https://vibewithamit.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Vibe with Amit — AI, Vibe Coding and Tools for Beginners">
+<meta name="twitter:description" content="Beginner-friendly guides on AI tools, vibe coding, and building real digital products. Learn AI the practical way.">
+<meta name="twitter:image" content="https://vibewithamit.com/og-image.png">
+<meta name="twitter:creator" content="@gymvibecoder">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1420;
+    --surface2: #131a28;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(99,211,255,0.3);
+    --cyan: #3ee6f5;
+    --cyan-dim: rgba(62,230,245,0.12);
+    --violet: #8b6cf7;
+    --violet-dim: rgba(139,108,247,0.12);
+    --text: #eef2f8;
+    --text-muted: #7a8ba8;
+    --text-faint: #3d4e66;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.65;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  /* ── TYPOGRAPHY ── */
+  h1,h2,h3,h4 { font-family: var(--font-display); line-height: 1.15; }
+  h1 { font-size: clamp(2.4rem, 5vw, 4rem); font-weight: 800; }
+  h2 { font-size: clamp(1.7rem, 3vw, 2.4rem); font-weight: 700; }
+  h3 { font-size: 1.15rem; font-weight: 700; }
+  p { color: var(--text-muted); }
+  a { text-decoration: none; color: inherit; }
+
+  /* ── LAYOUT ── */
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  section { position: relative; z-index: 1; }
+
+  /* ── GRADIENTS ── */
+  .glow-cyan {
+    background: radial-gradient(ellipse 60% 40% at 50% 0%, rgba(62,230,245,0.15) 0%, transparent 70%);
+    position: absolute; inset: 0; pointer-events: none;
+  }
+  .glow-violet {
+    background: radial-gradient(ellipse 50% 40% at 80% 50%, rgba(139,108,247,0.12) 0%, transparent 70%);
+    position: absolute; inset: 0; pointer-events: none;
+  }
+
+  /* ── TAGS / LABELS ── */
+  .label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 100px;
+    background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(62,230,245,0.2);
+  }
+  .label.violet { background: var(--violet-dim); color: var(--violet); border-color: rgba(139,108,247,0.2); }
+
+  /* ── BUTTONS ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-size: 0.88rem; font-weight: 600;
+    padding: 12px 24px; border-radius: 100px; border: none; cursor: pointer;
+    transition: all 0.25s ease; white-space: nowrap; letter-spacing: 0.01em;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan) 0%, #2bb8e8 100%);
+    color: #080c14;
+    box-shadow: 0 0 24px rgba(62,230,245,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 36px rgba(62,230,245,0.5); }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border); backdrop-filter: blur(8px);
+  }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+  .btn-ghost { background: transparent; color: var(--cyan); padding: 8px 0; font-size: 0.85rem; }
+  .btn-ghost:hover { gap: 12px; }
+  .btn-ghost::after { content: '→'; transition: transform 0.2s; }
+  .btn-ghost:hover::after { transform: translateX(4px); }
+
+  /* ════════════════════════════════════════
+     NAV
+  ════════════════════════════════════════ */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,12,20,0.75); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 68px;
+  }
+  .nav-logo {
+    font-family: var(--font-display); font-size: 1.3rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .nav-logo span { color: var(--text); -webkit-text-fill-color: var(--text); }
+  .nav-links {
+    display: flex; align-items: center; gap: 32px; list-style: none;
+  }
+  .nav-links a {
+    font-size: 0.88rem; font-weight: 500; color: var(--text-muted);
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-right { display: flex; align-items: center; gap: 16px; }
+  .search-btn {
+    background: none; border: none; cursor: pointer; color: var(--text-muted);
+    display: flex; align-items: center; transition: color 0.2s;
+  }
+  .search-btn:hover { color: var(--cyan); }
+  .nav-subscribe { padding: 9px 20px; font-size: 0.82rem; }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+  .hamburger span { width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all 0.3s; }
+
+  /* ════════════════════════════════════════
+     HERO
+  ════════════════════════════════════════ */
+  .hero {
+    min-height: 100vh; display: flex; align-items: center;
+    padding: 120px 0 80px;
+    overflow: hidden;
+  }
+  .hero-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .hero-eyebrow { margin-bottom: 20px; }
+  .hero h1 {
+    margin-bottom: 20px;
+    background: linear-gradient(160deg, var(--text) 50%, var(--text-muted) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero h1 .accent {
+    background: linear-gradient(90deg, var(--cyan) 0%, var(--violet) 100%);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-sub { font-size: 1.1rem; margin-bottom: 36px; max-width: 480px; line-height: 1.7; }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+  .hero-visual {
+    position: relative; display: flex; align-items: center; justify-content: center;
+  }
+  .hero-blob {
+    width: 420px; height: 420px; border-radius: 50%;
+    background: conic-gradient(from 180deg, rgba(62,230,245,0.15), rgba(139,108,247,0.15), rgba(62,230,245,0.05));
+    filter: blur(50px);
+    animation: blobPulse 6s ease-in-out infinite;
+    position: absolute;
+  }
+  @keyframes blobPulse {
+    0%,100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  .hero-card-stack { position: relative; width: 100%; max-width: 400px; }
+  .hero-ui-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 20px 24px;
+    backdrop-filter: blur(12px); position: relative;
+    animation: float 4s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+  .hero-ui-card:nth-child(2) { animation-delay: 0.5s; margin-top: -20px; margin-left: 30px; }
+  .hero-ui-card:nth-child(3) { animation-delay: 1s; margin-top: -20px; margin-right: 20px; }
+  .card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+  .card-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); }
+  .card-title-sm { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; color: var(--text); }
+  .card-bar { height: 6px; border-radius: 100px; background: var(--border); margin-bottom: 8px; }
+  .card-bar.fill-80 { background: linear-gradient(90deg, var(--cyan), var(--violet)); width: 80%; }
+  .card-bar.fill-60 { background: var(--border); width: 60%; }
+  .card-bar.fill-45 { background: var(--border); width: 45%; }
+  .card-tag-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  .card-chip {
+    font-size: 0.68rem; font-weight: 600; padding: 3px 10px; border-radius: 100px;
+    background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(62,230,245,0.15);
+  }
+  .card-chip.v { background: var(--violet-dim); color: var(--violet); border-color: rgba(139,108,247,0.15); }
+  .hero-stat-row { display: flex; gap: 8px; margin-top: 8px; }
+  .stat-pill {
+    flex: 1; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 10px 12px; text-align: center;
+  }
+  .stat-num { font-family: var(--font-display); font-size: 1.1rem; font-weight: 800; color: var(--cyan); }
+  .stat-lbl { font-size: 0.65rem; color: var(--text-faint); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  /* ════════════════════════════════════════
+     ABOUT
+  ════════════════════════════════════════ */
+  .about { padding: 100px 0; }
+  .about-inner {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center;
+  }
+  .about-left { }
+  .about-left .section-label { margin-bottom: 16px; }
+  .about-left h2 { margin-bottom: 16px; }
+  .about-left p { margin-bottom: 20px; }
+  .about-pillars { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+  .pillar {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--surface);
+    transition: border-color 0.25s, transform 0.25s;
+  }
+  .pillar:hover { border-color: var(--border-hover); transform: translateX(4px); }
+  .pillar-icon { font-size: 1.3rem; flex-shrink: 0; }
+  .pillar-text { font-size: 0.88rem; color: var(--text-muted); }
+  .pillar-text strong { color: var(--text); font-weight: 600; display: block; font-size: 0.9rem; }
+  .about-right {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .about-stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px 20px;
+    text-align: center; transition: border-color 0.25s, transform 0.25s;
+  }
+  .about-stat-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .about-stat-card .big-num {
+    font-family: var(--font-display); font-size: 2.4rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    line-height: 1;
+  }
+  .about-stat-card .stat-desc { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; }
+  .about-stat-card.accent { background: linear-gradient(135deg, rgba(62,230,245,0.08), rgba(139,108,247,0.08)); grid-column: span 2; }
+  .quote {
+    font-family: var(--font-display); font-size: 1.05rem; font-weight: 600;
+    color: var(--text); line-height: 1.5; padding: 20px;
+  }
+  .quote::before { content: '"'; color: var(--cyan); font-size: 2rem; line-height: 0; vertical-align: -0.5rem; margin-right: 4px; }
+
+  /* ════════════════════════════════════════
+     CATEGORIES
+  ════════════════════════════════════════ */
+  .categories { padding: 100px 0; }
+  .section-header { text-align: center; margin-bottom: 60px; }
+  .section-header .section-label { margin-bottom: 12px; }
+  .section-header h2 { margin-bottom: 12px; }
+  .section-header p { max-width: 480px; margin: 0 auto; }
+  .cat-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  }
+  .cat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px 28px;
+    transition: all 0.3s ease; cursor: pointer; position: relative; overflow: hidden;
+  }
+  .cat-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--cyan-dim), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .cat-card:hover::before { opacity: 1; }
+  .cat-card:hover { border-color: var(--border-hover); transform: translateY(-6px); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+  .cat-card.v::before { background: linear-gradient(135deg, var(--violet-dim), transparent); }
+  .cat-card.v:hover { border-color: rgba(139,108,247,0.3); }
+  .cat-icon {
+    width: 52px; height: 52px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.5rem; margin-bottom: 20px;
+    background: var(--cyan-dim); border: 1px solid rgba(62,230,245,0.15);
+    position: relative;
+  }
+  .cat-card.v .cat-icon { background: var(--violet-dim); border-color: rgba(139,108,247,0.15); }
+  .cat-card h3 { margin-bottom: 10px; position: relative; }
+  .cat-card p { font-size: 0.88rem; line-height: 1.6; position: relative; }
+  .cat-arrow {
+    position: absolute; top: 28px; right: 28px; width: 32px; height: 32px;
+    border-radius: 50%; background: var(--border); display: flex; align-items: center;
+    justify-content: center; font-size: 0.9rem; color: var(--text-muted);
+    transition: all 0.25s; opacity: 0; transform: translateY(4px);
+  }
+  .cat-card:hover .cat-arrow { opacity: 1; transform: translateY(0); color: var(--cyan); }
+
+  /* ════════════════════════════════════════
+     FEATURED HIGHLIGHT
+  ════════════════════════════════════════ */
+  .featured-highlight { padding: 60px 0 20px; }
+  .highlight-card {
+    background: linear-gradient(135deg, rgba(62,230,245,0.06) 0%, rgba(139,108,247,0.06) 100%);
+    border: 1px solid rgba(62,230,245,0.15);
+    border-radius: 24px; padding: 60px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+    position: relative; overflow: hidden;
+  }
+  .highlight-card::before {
+    content: 'FEATURED'; position: absolute; top: 24px; left: 60px;
+    font-family: var(--font-display); font-size: 0.65rem; font-weight: 800;
+    letter-spacing: 0.15em; color: var(--cyan); opacity: 0.6;
+  }
+  .highlight-meta { display: flex; gap: 12px; align-items: center; margin-bottom: 20px; margin-top: 28px; }
+  .highlight-date { font-size: 0.8rem; color: var(--text-faint); }
+  .highlight-content h2 { font-size: clamp(1.6rem, 2.5vw, 2.2rem); margin-bottom: 16px; }
+  .highlight-content p { margin-bottom: 28px; }
+  .highlight-img {
+    border-radius: 16px; background: var(--surface2);
+    aspect-ratio: 4/3; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    border: 1px solid var(--border); position: relative; overflow: hidden;
+  }
+  .highlight-img-bg {
+    position: absolute; inset: 0;
+    background: conic-gradient(from 0deg at 50% 50%, rgba(62,230,245,0.1), rgba(139,108,247,0.1), rgba(62,230,245,0.05));
+    animation: rotateBg 12s linear infinite;
+  }
+  @keyframes rotateBg { to { transform: rotate(360deg); } }
+  .highlight-img-inner { position: relative; text-align: center; padding: 24px; }
+  .highlight-img-icon { font-size: 3rem; margin-bottom: 12px; }
+  .highlight-img-caption { font-size: 0.8rem; color: var(--text-muted); }
+
+  /* ════════════════════════════════════════
+     POSTS
+  ════════════════════════════════════════ */
+  .posts { padding: 60px 0 100px; }
+  .posts-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+  .post-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); overflow: hidden;
+    transition: all 0.3s ease; display: flex; flex-direction: column;
+  }
+  .post-card:hover { border-color: var(--border-hover); transform: translateY(-6px); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+  .post-thumb {
+    aspect-ratio: 16/9; background: var(--surface2);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2.5rem; position: relative; overflow: hidden;
+  }
+  .post-thumb-bg {
+    position: absolute; inset: 0; opacity: 0.3;
+  }
+  .post-thumb-bg.c1 { background: linear-gradient(135deg, #0d4f6b, #1a2a4a); }
+  .post-thumb-bg.c2 { background: linear-gradient(135deg, #2a1a4a, #1a0d3a); }
+  .post-thumb-bg.c3 { background: linear-gradient(135deg, #0d3a4a, #0a1a2a); }
+  .post-thumb-bg.c4 { background: linear-gradient(135deg, #3a1a4a, #1a0d2a); }
+  .post-thumb-bg.c5 { background: linear-gradient(135deg, #1a3a4a, #0d2a3a); }
+  .post-thumb-icon { position: relative; font-size: 2.2rem; }
+  .post-body { padding: 24px; flex: 1; display: flex; flex-direction: column; }
+  .post-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .post-read-time { font-size: 0.75rem; color: var(--text-faint); }
+  .post-card h3 { font-size: 1rem; margin-bottom: 10px; color: var(--text); line-height: 1.4; }
+  .post-card p { font-size: 0.85rem; line-height: 1.6; flex: 1; margin-bottom: 20px; }
+  .post-footer { display: flex; align-items: center; justify-content: space-between; }
+  .post-author { display: flex; align-items: center; gap: 8px; }
+  .author-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #080c14; }
+  .author-name { font-size: 0.75rem; color: var(--text-muted); }
+
+  /* ════════════════════════════════════════
+     WHY
+  ════════════════════════════════════════ */
+  .why { padding: 100px 0; }
+  .why-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; }
+  .why-left h2 { margin-bottom: 16px; }
+  .why-left p { margin-bottom: 28px; }
+  .why-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .why-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 24px;
+    transition: all 0.25s;
+  }
+  .why-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .why-card .why-icon { font-size: 1.5rem; margin-bottom: 12px; }
+  .why-card h4 { font-family: var(--font-display); font-weight: 700; font-size: 0.95rem; margin-bottom: 8px; }
+  .why-card p { font-size: 0.82rem; line-height: 1.6; }
+  .why-number {
+    font-family: var(--font-display); font-size: 7rem; font-weight: 800;
+    line-height: 1; color: transparent;
+    -webkit-text-stroke: 1px rgba(62,230,245,0.15);
+    user-select: none; margin-bottom: 16px;
+  }
+
+  /* ════════════════════════════════════════
+     NEWSLETTER
+  ════════════════════════════════════════ */
+  .newsletter { padding: 80px 0; }
+  .newsletter-box {
+    background: linear-gradient(135deg, rgba(62,230,245,0.08) 0%, rgba(139,108,247,0.08) 100%);
+    border: 1px solid rgba(62,230,245,0.2); border-radius: 28px;
+    padding: 72px 60px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .newsletter-box::before {
+    content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 200px;
+    background: radial-gradient(ellipse, rgba(62,230,245,0.15), transparent 70%);
+    pointer-events: none;
+  }
+  .newsletter-box h2 { margin-bottom: 12px; position: relative; }
+  .newsletter-box .sub { max-width: 420px; margin: 0 auto 36px; position: relative; }
+  .email-form {
+    display: flex; gap: 12px; max-width: 480px; margin: 0 auto;
+    position: relative;
+  }
+  .email-input {
+    flex: 1; padding: 14px 20px; border-radius: 100px;
+    background: rgba(255,255,255,0.05); border: 1px solid var(--border);
+    color: var(--text); font-family: var(--font-body); font-size: 0.9rem;
+    outline: none; transition: border-color 0.25s;
+  }
+  .email-input::placeholder { color: var(--text-faint); }
+  .email-input:focus { border-color: var(--border-hover); }
+  .email-note { font-size: 0.75rem; color: var(--text-faint); margin-top: 14px; position: relative; }
+  .newsletter-icons {
+    display: flex; gap: 20px; justify-content: center; margin-top: 36px;
+    position: relative;
+  }
+  .n-icon {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; color: var(--text-muted); transition: all 0.2s;
+  }
+  .n-icon:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+
+  /* ════════════════════════════════════════
+     SOCIAL PROOF
+  ════════════════════════════════════════ */
+  .social-proof { padding: 80px 0; }
+  .proof-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .testimonial-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px; transition: all 0.25s;
+  }
+  .testimonial-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+  .stars { color: #fbbf24; font-size: 0.9rem; margin-bottom: 16px; letter-spacing: 2px; }
+  .testimonial-card blockquote { font-size: 0.9rem; color: var(--text); line-height: 1.65; margin-bottom: 20px; font-style: italic; }
+  .tester-info { display: flex; align-items: center; gap: 12px; }
+  .tester-av {
+    width: 40px; height: 40px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 0.9rem; color: #080c14;
+    flex-shrink: 0;
+  }
+  .av1 { background: linear-gradient(135deg, var(--cyan), #2bb8e8); }
+  .av2 { background: linear-gradient(135deg, var(--violet), #c084fc); }
+  .av3 { background: linear-gradient(135deg, #34d399, #059669); }
+  .tester-name { font-family: var(--font-display); font-size: 0.88rem; font-weight: 700; color: var(--text); }
+  .tester-role { font-size: 0.75rem; color: var(--text-faint); }
+  .credibility-bar {
+    display: flex; align-items: center; justify-content: center; gap: 40px;
+    padding: 40px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);
+    margin-top: 60px; flex-wrap: wrap;
+  }
+  .cred-item { text-align: center; }
+  .cred-num {
+    font-family: var(--font-display); font-size: 1.8rem; font-weight: 800;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .cred-label { font-size: 0.78rem; color: var(--text-faint); }
+  .cred-sep { width: 1px; height: 40px; background: var(--border); }
+
+  /* ════════════════════════════════════════
+     FOOTER
+  ════════════════════════════════════════ */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 72px 0 32px;
+  }
+  .footer-grid {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px;
+    margin-bottom: 60px;
+  }
+  .footer-brand .nav-logo { font-size: 1.4rem; display: inline-block; margin-bottom: 16px; }
+  .footer-brand p { font-size: 0.88rem; max-width: 280px; margin-bottom: 24px; }
+  .social-row { display: flex; gap: 10px; }
+  .social-link {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.9rem; color: var(--text-muted); transition: all 0.2s;
+  }
+  .social-link:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+  .footer-col h4 { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; margin-bottom: 20px; color: var(--text); }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul li a { font-size: 0.85rem; color: var(--text-muted); transition: color 0.2s; }
+  .footer-col ul li a:hover { color: var(--cyan); }
+  .footer-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 32px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 12px;
+  }
+  .footer-bottom p { font-size: 0.8rem; color: var(--text-faint); }
+
+  /* ════════════════════════════════════════
+     SECTION LABEL (reusable)
+  ════════════════════════════════════════ */
+  .section-label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 5px 12px; border-radius: 100px;
+    background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(62,230,245,0.2);
+    margin-bottom: 12px;
+  }
+
+  /* ════════════════════════════════════════
+     SCROLL REVEAL ANIMATION
+  ════════════════════════════════════════ */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+  .reveal-delay-1 { transition-delay: 0.1s; }
+  .reveal-delay-2 { transition-delay: 0.2s; }
+  .reveal-delay-3 { transition-delay: 0.3s; }
+  .reveal-delay-4 { transition-delay: 0.4s; }
+  .reveal-delay-5 { transition-delay: 0.5s; }
+
+  /* ════════════════════════════════════════
+     RESPONSIVE
+  ════════════════════════════════════════ */
+  @media (max-width: 1024px) {
+    .hero-grid, .about-inner, .why-inner { grid-template-columns: 1fr; gap: 40px; }
+    .hero-visual { display: none; }
+    .cat-grid, .posts-grid, .proof-grid { grid-template-columns: repeat(2, 1fr); }
+    .footer-grid { grid-template-columns: 1fr 1fr; }
+    .highlight-card { grid-template-columns: 1fr; gap: 32px; }
+    .highlight-card::before { left: 40px; }
+    .newsletter-box { padding: 48px 32px; }
+  }
+
+  @media (max-width: 768px) {
+    .nav-links, .nav-right .btn-secondary { display: none; }
+    .hamburger { display: flex; }
+    .cat-grid, .posts-grid, .proof-grid { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .about-right { grid-template-columns: 1fr 1fr; }
+    .highlight-card { padding: 36px 24px; }
+    .email-form { flex-direction: column; border-radius: var(--radius); }
+    .email-input { text-align: center; }
+    .footer-grid { grid-template-columns: 1fr; gap: 32px; }
+    .credibility-bar { gap: 24px; }
+    .cred-sep { display: none; }
+  }
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0EBEKVH3T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F0EBEKVH3T');
+</script>
+</head>
+<body>
+
+<!-- ════════ NAV ════════ -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="#" class="nav-logo">Vibe with <span>Amit</span></a>
+    <ul class="nav-links">
+      <li><a href="#">Home</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="#categories">Categories</a></li>
+      <li><a href="about.html">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <div class="nav-right">
+      <button class="search-btn" aria-label="Search">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      </button>
+      <a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener" class="btn btn-primary nav-subscribe">Subscribe</a>
+      <button class="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════ HERO ════════ -->
+<section class="hero" id="home">
+  <div class="glow-cyan"></div>
+  <div class="glow-violet"></div>
+  <div class="container">
+    <div class="hero-grid">
+      <div class="hero-left">
+        <div class="hero-eyebrow">
+          <span class="label">✦ New posts every week</span>
+        </div>
+        <h1>Learn AI & Vibe Coding the <span class="accent">Practical Way</span></h1>
+        <p class="hero-sub">Beginner-friendly guides, tools, tutorials, and project ideas to help you build faster with AI — no tech overwhelm, just real results.</p>
+        <div class="hero-ctas">
+          <a href="#blog" class="btn btn-primary">Start Reading →</a>
+          <a href="#about" class="btn btn-secondary">What Is This Blog?</a>
+        </div>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-blob"></div>
+        <div class="hero-card-stack">
+          <div class="hero-ui-card">
+            <div class="card-top">
+              <div class="card-dot"></div>
+              <span class="card-title-sm">AI Skill Progress</span>
+            </div>
+            <div class="card-bar fill-80"></div>
+            <div class="card-bar fill-60"></div>
+            <div class="card-bar fill-45"></div>
+            <div class="hero-stat-row">
+              <div class="stat-pill">
+                <div class="stat-num">18</div>
+                <div class="stat-lbl">Guides</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-num">0</div>
+                <div class="stat-lbl">Tools</div>
+              </div>
+              <div class="stat-pill">
+                <div class="stat-num">6</div>
+                <div class="stat-lbl">Topics</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-ui-card">
+            <div class="card-top">
+              <div class="card-dot" style="background: var(--violet); box-shadow: 0 0 8px var(--violet);"></div>
+              <span class="card-title-sm">Today's Learning</span>
+            </div>
+            <div class="card-tag-row">
+              <span class="card-chip">Cursor AI</span>
+              <span class="card-chip v">Vibe Coding</span>
+              <span class="card-chip">ChatGPT</span>
+              <span class="card-chip v">Build Fast</span>
+            </div>
+          </div>
+          <div class="hero-ui-card">
+            <div class="card-top">
+              <div class="card-dot" style="background: #34d399; box-shadow: 0 0 8px #34d399;"></div>
+              <span class="card-title-sm">Beginner Friendly</span>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">No coding degree needed. Just curiosity and the right guides ✨</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ ABOUT ════════ -->
+<section class="about" id="about">
+  <div class="container">
+    <div class="about-inner">
+      <div class="about-left reveal">
+        <span class="section-label">About This Blog</span>
+        <h2>Your Beginner-Friendly Home for All Things AI</h2>
+        <p>Vibe with Amit is built for curious people who want to understand and use AI without getting lost in jargon. Whether you're brand new to this space or just getting started with building digital products — this is the right place.</p>
+        <p>Every guide here is written to be clear, practical, and actually useful. No hype, no over-complication. Just real explanations and steps you can follow.</p>
+        <div class="about-pillars">
+          <div class="pillar">
+            <span class="pillar-icon">🧠</span>
+            <div class="pillar-text"><strong>Understand AI Simply</strong>Plain-English explanations of how AI tools work and how to use them.</div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-icon">🎧</span>
+            <div class="pillar-text"><strong>Explore Vibe Coding</strong>Learn the new way of building with AI prompts instead of code.</div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-icon">🛠️</span>
+            <div class="pillar-text"><strong>Discover Useful Tools</strong>Curated tools that make creating faster, easier, and smarter.</div>
+          </div>
+          <div class="pillar">
+            <span class="pillar-icon">🚀</span>
+            <div class="pillar-text"><strong>Build Real Projects</strong>From idea to MVP — step by step guides for digital products.</div>
+          </div>
+        </div>
+      </div>
+      <div class="about-right reveal reveal-delay-2">
+        <div class="about-stat-card">
+          <div class="big-num">18</div>
+          <div class="stat-desc">Articles published</div>
+        </div>
+        <div class="about-stat-card">
+          <div class="big-num">6</div>
+          <div class="stat-desc">Core topic categories</div>
+        </div>
+        <div class="about-stat-card">
+          <div class="big-num">2</div>
+          <div class="stat-desc">Newsletter subscribers</div>
+        </div>
+        <div class="about-stat-card accent">
+          <div class="quote">Built for people who want to use AI, not just read about it.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ CATEGORIES ════════ -->
+<section class="categories" id="categories">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">Explore Topics</span>
+      <h2>Everything You Need to Start Building with AI</h2>
+      <p>Organised into six clear topic areas so you always know exactly where to go next.</p>
+    </div>
+    <div class="cat-grid">
+      <div class="cat-card reveal reveal-delay-1">
+        <div class="cat-icon">🤖</div>
+        <div class="cat-arrow">↗</div>
+        <h3>AI for Beginners</h3>
+        <p>Start here. Clear, jargon-free introductions to AI tools, concepts, and how they can work for you.</p>
+      </div>
+      <div class="cat-card v reveal reveal-delay-2">
+        <div class="cat-icon" style="font-size: 1.4rem;">🎧</div>
+        <div class="cat-arrow">↗</div>
+        <h3>Vibe Coding</h3>
+        <p>Build apps, tools and websites using AI prompts and no-code methods — the new way to create.</p>
+      </div>
+      <div class="cat-card reveal reveal-delay-3">
+        <div class="cat-icon">🔨</div>
+        <div class="cat-arrow">↗</div>
+        <h3>Build with AI</h3>
+        <p>Project-focused guides taking you from blank canvas to finished product with AI as your co-builder.</p>
+      </div>
+      <div class="cat-card v reveal reveal-delay-1">
+        <div class="cat-icon">⚡</div>
+        <div class="cat-arrow">↗</div>
+        <h3>Tools & Workflows</h3>
+        <p>The best AI tools reviewed and compared — with honest takes on what's actually worth your time.</p>
+      </div>
+      <div class="cat-card reveal reveal-delay-2">
+        <div class="cat-icon">📖</div>
+        <div class="cat-arrow">↗</div>
+        <h3>Tutorials & Guides</h3>
+        <p>Step-by-step walkthroughs for beginners. Follow along, apply, and see results straight away.</p>
+      </div>
+      <div class="cat-card v reveal reveal-delay-3">
+        <div class="cat-icon">💡</div>
+        <div class="cat-arrow">↗</div>
+        <h3>Project Ideas</h3>
+        <p>Out of ideas? Browse a library of AI project starters you can actually build this week.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FEATURED HIGHLIGHT ════════ -->
+<section class="featured-highlight">
+  <div class="container">
+    <div class="highlight-card reveal">
+      <div class="highlight-content">
+        <div class="highlight-meta">
+          <span class="label">🔥 Latest Post</span>
+          <span class="highlight-date">April 2026</span>
+        </div>
+        <h2>From Idea to MVP: Building Faster with AI</h2>
+        <p>Most people think building a digital product takes months and a team of developers. In 2026, that's simply not true. This guide walks you through the exact process of going from a rough idea to a working minimum viable product — using AI tools at every stage.</p>
+        <a href="blog.html" class="btn btn-primary">Read the Full Guide →</a>
+      </div>
+      <div class="highlight-img">
+        <div class="highlight-img-bg"></div>
+        <div class="highlight-img-inner">
+          <div class="highlight-img-icon">🚀</div>
+          <h3 style="color: var(--text); font-size: 1rem; margin-bottom: 8px;">Idea → MVP</h3>
+          <p class="highlight-img-caption">A practical, beginner-first blueprint for building real products with AI</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ POSTS ════════ -->
+<section class="posts" id="blog">
+  <div class="container">
+    <div class="section-header reveal" style="margin-top: 60px;">
+      <span class="section-label">Latest Articles</span>
+      <h2>Fresh from the Blog</h2>
+      <p>Practical, beginner-focused reads you can act on immediately.</p>
+    </div>
+    <div class="posts-grid">
+
+      <div class="post-card reveal reveal-delay-1">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c1"></div>
+          <span class="post-thumb-icon">🛠️</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label">Tools & Workflows</span>
+            <span class="post-read-time">8 min read</span>
+          </div>
+          <h3>7 Best AI Tools for Beginners in 2026</h3>
+          <p>You don't need to try every tool out there. These seven are genuinely worth your time — each one picked for ease of use and real results.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card reveal reveal-delay-2">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c2"></div>
+          <span class="post-thumb-icon">🎧</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label violet">Vibe Coding</span>
+            <span class="post-read-time">6 min read</span>
+          </div>
+          <h3>What Is Vibe Coding? A Simple Beginner's Guide</h3>
+          <p>Vibe coding is changing how people build. Here's everything you need to know about this AI-first approach — explained simply, no experience needed.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card reveal reveal-delay-3">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c3"></div>
+          <span class="post-thumb-icon">📱</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label">Build with AI</span>
+            <span class="post-read-time">10 min read</span>
+          </div>
+          <h3>How to Build Your First App Using AI Prompts</h3>
+          <p>No coding background? No problem. Follow this step-by-step guide and walk away with a working app built entirely through smart prompting.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card reveal reveal-delay-1">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c4"></div>
+          <span class="post-thumb-icon">⚔️</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label violet">Tools & Workflows</span>
+            <span class="post-read-time">9 min read</span>
+          </div>
+          <h3>AI Coding Tools Compared: Which One Should You Start With?</h3>
+          <p>Cursor, GitHub Copilot, Bolt, v0 — there's a lot to choose from. Here's a plain-English breakdown of the biggest players so you can pick one and get started.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card reveal reveal-delay-2">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c5"></div>
+          <span class="post-thumb-icon">⚠️</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label">AI for Beginners</span>
+            <span class="post-read-time">7 min read</span>
+          </div>
+          <h3>10 Beginner Mistakes to Avoid When Using AI for Projects</h3>
+          <p>These are the pitfalls that slow most people down. Avoid them early and you'll move twice as fast — guaranteed.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-card reveal reveal-delay-3">
+        <div class="post-thumb">
+          <div class="post-thumb-bg c1"></div>
+          <span class="post-thumb-icon">💡</span>
+        </div>
+        <div class="post-body">
+          <div class="post-meta">
+            <span class="label violet">Project Ideas</span>
+            <span class="post-read-time">5 min read</span>
+          </div>
+          <h3>From Idea to MVP: Building Faster with AI</h3>
+          <p>The complete beginner's blueprint for going from concept to working product — with AI doing the heavy lifting at every stage.</p>
+          <div class="post-footer">
+            <div class="post-author">
+              <img src="profile-photo.jpg" style="width:28px;height:28px;border-radius:50%;object-fit:cover;object-position:center top;" alt="Amit">
+              <span class="author-name">Amit</span>
+            </div>
+            <a href="blog.html" class="btn btn-ghost">Read more</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ════════ WHY ════════ -->
+<section class="why">
+  <div class="container">
+    <div class="why-inner">
+      <div class="why-left reveal">
+        <span class="section-label">Why Vibe with Amit</span>
+        <h2>The Blog That Actually Helps You Build</h2>
+        <p>Most AI content is either too technical for beginners or too shallow to be useful. Vibe with Amit sits in the sweet spot — practical, clear, and genuinely focused on helping you create things.</p>
+        <a href="blog.html" class="btn btn-primary" style="margin-top: 8px;">Explore All Posts →</a>
+      </div>
+      <div class="why-grid reveal reveal-delay-2">
+        <div class="why-card">
+          <div class="why-icon">💬</div>
+          <h4>Plain English Always</h4>
+          <p>Every concept is explained in simple language — no assumptions about your technical background.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🎯</div>
+          <h4>Practical by Design</h4>
+          <p>Every guide includes real steps you can follow and apply the same day, not just theory.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">🌱</div>
+          <h4>Beginner-First Teaching</h4>
+          <p>Structured for people starting from scratch, with progressive learning built in naturally.</p>
+        </div>
+        <div class="why-card">
+          <div class="why-icon">⚡</div>
+          <h4>Build-Focused Strategy</h4>
+          <p>Every post is shaped around one question: what can you actually create with this?</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ NEWSLETTER ════════ -->
+<section class="newsletter" id="newsletter">
+  <div class="container">
+    <div class="newsletter-box reveal">
+      <span class="label" style="margin-bottom: 20px;">Weekly Drops</span>
+      <h2>Get Practical AI Tips Delivered Weekly</h2>
+      <p class="sub">Stay updated with beginner-friendly tutorials, tool reviews, and project ideas — straight to your inbox every Tuesday.</p>
+      <div class="email-form">
+        <input type="email" class="email-input" id="homepageEmail" placeholder="Enter your email address">
+        <button class="btn btn-primary" onclick="subscribeBeehiiv('homepageEmail', this)">Subscribe Free</button>
+      </div>
+      <p class="email-note">No spam. Unsubscribe anytime. Join 2 subscribers and counting.</p>
+      <div class="newsletter-icons">
+        <div class="n-icon">📧</div>
+        <div class="n-icon">🔒</div>
+        <div class="n-icon">✨</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ SOCIAL PROOF ════════ -->
+<section class="social-proof" id="contact">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-label">From the Community</span>
+      <h2>What Readers Are Saying</h2>
+      <p>Real feedback from people learning and building with Vibe with Amit.</p>
+    </div>
+    <div class="proof-grid">
+      <div class="testimonial-card reveal reveal-delay-1">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Testimonial coming soon — be one of the first to share your experience."</blockquote>
+        <div class="tester-info">
+          <div class="tester-av av1">?</div>
+          <div>
+            <div class="tester-name">Your name here</div>
+            <div class="tester-role">Early reader</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-2">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Testimonial coming soon — be one of the first to share your experience."</blockquote>
+        <div class="tester-info">
+          <div class="tester-av av2">?</div>
+          <div>
+            <div class="tester-name">Your name here</div>
+            <div class="tester-role">Early reader</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal reveal-delay-3">
+        <div class="stars">★★★★★</div>
+        <blockquote>"Testimonial coming soon — be one of the first to share your experience."</blockquote>
+        <div class="tester-info">
+          <div class="tester-av av3">?</div>
+          <div>
+            <div class="tester-name">Your name here</div>
+            <div class="tester-role">Early reader</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="credibility-bar reveal">
+      <div class="cred-item">
+        <div class="cred-num">2</div>
+        <div class="cred-label">Newsletter subscribers</div>
+      </div>
+      <div class="cred-sep"></div>
+      <div class="cred-item">
+        <div class="cred-num">18</div>
+        <div class="cred-label">Articles published</div>
+      </div>
+      <div class="cred-sep"></div>
+      <div class="cred-item">
+        <div class="cred-num">6</div>
+        <div class="cred-label">Topic categories</div>
+      </div>
+      <div class="cred-sep"></div>
+      <div class="cred-item">
+        <div class="cred-num">0</div>
+        <div class="cred-label">Community members</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ FOOTER ════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div class="footer-brand">
+        <a href="#" class="nav-logo">Vibe with <span style="-webkit-text-fill-color: var(--text); color: var(--text);">Amit</span></a>
+        <p>Beginner-friendly AI guides, tutorials, tools, and project ideas — helping you build smarter in the AI era. Follow along at <strong style="color: var(--cyan);">@gymvibecoder</strong>.</p>
+        <div class="social-row">
+          <a href="https://www.tiktok.com/@gymvibecoder" target="_blank" rel="noopener" class="social-link" aria-label="TikTok @gymvibecoder" title="@gymvibecoder on TikTok">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+          </a>
+          <a href="https://www.youtube.com/@Vib.eWithAmit" target="_blank" rel="noopener" class="social-link" aria-label="YouTube">▶</a>
+          <a href="https://www.linkedin.com/in/amit-patel-459b" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="https://www.instagram.com/vib.ewithamit" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">◈</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="#categories">Categories</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <ul>
+          <li><a href="#">AI for Beginners</a></li>
+          <li><a href="#">Vibe Coding</a></li>
+          <li><a href="#">Build with AI</a></li>
+          <li><a href="#">Tools & Workflows</a></li>
+          <li><a href="#">Project Ideas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Get in Touch</h4>
+        <ul>
+          <li><a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener">Newsletter</a></li>
+          <li><a href="#">Suggest a Topic</a></li>
+          <li><a href="#">Work Together</a></li>
+          <li><a href="#">Privacy Policy</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Vibe with Amit. All rights reserved.</p>
+      <p>Built for beginners. Powered by curiosity.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Scroll reveal ──
+  const reveals = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  reveals.forEach(el => io.observe(el));
+
+  // ── Nav scroll effect ──
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.style.background = window.scrollY > 40
+      ? 'rgba(8,12,20,0.95)'
+      : 'rgba(8,12,20,0.75)';
+  });
+
+  // ── Beehiiv subscribe ──
+  function subscribeBeehiiv(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const email = input ? input.value.trim() : '';
+    if (email && email.includes('@')) {
+      window.open('https://vibewithamit.beehiiv.com/subscribe?email=' + encodeURIComponent(email), '_blank');
+      btn.textContent = '✓ Redirecting...';
+      btn.style.background = 'linear-gradient(135deg, #34d399, #059669)';
+      btn.style.boxShadow = '0 0 24px rgba(52,211,153,0.4)';
+      if (input) input.value = '';
+      setTimeout(() => {
+        btn.textContent = 'Subscribe Free';
+        btn.style.background = '';
+        btn.style.boxShadow = '';
+      }, 3000);
+    } else {
+      if (input) {
+        input.style.borderColor = 'rgba(239,68,68,0.5)';
+        input.placeholder = 'Please enter a valid email';
+        setTimeout(() => {
+          input.style.borderColor = '';
+          input.placeholder = 'Enter your email address';
+        }, 2000);
+      }
+    }
+  }
+</script>
+</body>
+</html>

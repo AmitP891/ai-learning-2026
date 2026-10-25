@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { width: 1200px; height: 630px; overflow: hidden; background: #080c14; font-family: 'Syne', sans-serif; }
+</style>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="#080c14"/>
+
+  <!-- Subtle grid -->
+  <line x1="0" y1="157" x2="1200" y2="157" stroke="#1a2a3a" stroke-width="0.8"/>
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#1a2a3a" stroke-width="0.8"/>
+  <line x1="0" y1="472" x2="1200" y2="472" stroke="#1a2a3a" stroke-width="0.8"/>
+  <line x1="300" y1="0" x2="300" y2="630" stroke="#1a2a3a" stroke-width="0.8"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#1a2a3a" stroke-width="0.8"/>
+  <line x1="900" y1="0" x2="900" y2="630" stroke="#1a2a3a" stroke-width="0.8"/>
+
+  <!-- Glow blobs -->
+  <radialGradient id="glowCyan" cx="30%" cy="50%" r="50%">
+    <stop offset="0%" stop-color="#3ee6f5" stop-opacity="0.12"/>
+    <stop offset="100%" stop-color="#3ee6f5" stop-opacity="0"/>
+  </radialGradient>
+  <radialGradient id="glowViolet" cx="80%" cy="55%" r="45%">
+    <stop offset="0%" stop-color="#8b6cf7" stop-opacity="0.1"/>
+    <stop offset="100%" stop-color="#8b6cf7" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#glowCyan)"/>
+  <rect width="1200" height="630" fill="url(#glowViolet)"/>
+
+  <!-- Neural network decoration — right side -->
+  <line x1="820" y1="180" x2="920" y2="240" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <line x1="820" y1="240" x2="920" y2="200" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <line x1="820" y1="300" x2="920" y2="240" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <line x1="920" y1="200" x2="1020" y2="170" stroke="#8b6cf7" stroke-width="1" opacity="0.3"/>
+  <line x1="920" y1="200" x2="1020" y2="240" stroke="#8b6cf7" stroke-width="1" opacity="0.3"/>
+  <line x1="920" y1="240" x2="1020" y2="300" stroke="#8b6cf7" stroke-width="1" opacity="0.3"/>
+  <line x1="1020" y1="170" x2="1120" y2="210" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <line x1="1020" y1="240" x2="1120" y2="210" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <line x1="1020" y1="300" x2="1120" y2="270" stroke="#3ee6f5" stroke-width="1" opacity="0.3"/>
+  <!-- More network lines lower -->
+  <line x1="820" y1="360" x2="920" y2="400" stroke="#8b6cf7" stroke-width="1" opacity="0.2"/>
+  <line x1="820" y1="420" x2="920" y2="400" stroke="#8b6cf7" stroke-width="1" opacity="0.2"/>
+  <line x1="920" y1="400" x2="1020" y2="360" stroke="#3ee6f5" stroke-width="1" opacity="0.2"/>
+  <line x1="920" y1="400" x2="1020" y2="440" stroke="#3ee6f5" stroke-width="1" opacity="0.2"/>
+  <line x1="1020" y1="360" x2="1120" y2="390" stroke="#8b6cf7" stroke-width="1" opacity="0.2"/>
+  <line x1="1020" y1="440" x2="1120" y2="390" stroke="#8b6cf7" stroke-width="1" opacity="0.2"/>
+
+  <!-- Network nodes -->
+  <circle cx="820" cy="180" r="5" fill="#3ee6f5" opacity="0.7"/>
+  <circle cx="820" cy="240" r="5" fill="#3ee6f5" opacity="0.7"/>
+  <circle cx="820" cy="300" r="5" fill="#3ee6f5" opacity="0.7"/>
+  <circle cx="820" cy="360" r="4" fill="#8b6cf7" opacity="0.5"/>
+  <circle cx="820" cy="420" r="4" fill="#8b6cf7" opacity="0.5"/>
+  <circle cx="920" cy="200" r="6" fill="#8b6cf7" opacity="0.8"/>
+  <circle cx="920" cy="240" r="5" fill="#8b6cf7" opacity="0.8"/>
+  <circle cx="920" cy="400" r="6" fill="#3ee6f5" opacity="0.6"/>
+  <circle cx="1020" cy="170" r="6" fill="#3ee6f5" opacity="0.8"/>
+  <circle cx="1020" cy="240" r="8" fill="#3ee6f5" opacity="0.9"/>
+  <circle cx="1020" cy="300" r="6" fill="#8b6cf7" opacity="0.8"/>
+  <circle cx="1020" cy="360" r="5" fill="#8b6cf7" opacity="0.6"/>
+  <circle cx="1020" cy="440" r="5" fill="#3ee6f5" opacity="0.6"/>
+  <circle cx="1120" cy="210" r="5" fill="#3ee6f5" opacity="0.6"/>
+  <circle cx="1120" cy="270" r="5" fill="#3ee6f5" opacity="0.6"/>
+  <circle cx="1120" cy="390" r="5" fill="#8b6cf7" opacity="0.5"/>
+
+  <!-- Glow on central node -->
+  <circle cx="1020" cy="240" r="28" fill="#3ee6f5" opacity="0.06"/>
+  <circle cx="1020" cy="240" r="16" fill="#3ee6f5" opacity="0.07"/>
+
+  <!-- Left accent line -->
+  <rect x="80" y="185" width="3" height="260" rx="2" fill="url(#accentLine)"/>
+  <linearGradient id="accentLine" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#3ee6f5" stop-opacity="0"/>
+    <stop offset="30%" stop-color="#3ee6f5" stop-opacity="0.8"/>
+    <stop offset="70%" stop-color="#8b6cf7" stop-opacity="0.8"/>
+    <stop offset="100%" stop-color="#8b6cf7" stop-opacity="0"/>
+  </linearGradient>
+
+  <!-- Top label pill -->
+  <rect x="112" y="185" width="220" height="32" rx="16" fill="#3ee6f5" fill-opacity="0.1" stroke="#3ee6f5" stroke-width="1" stroke-opacity="0.3"/>
+  <text x="222" y="206" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="13" font-weight="500" fill="#3ee6f5" letter-spacing="1.5">✦ LEARN AI THE PRACTICAL WAY</text>
+
+  <!-- Main headline -->
+  <text x="112" y="290" font-family="'Syne', sans-serif" font-size="72" font-weight="800" fill="#eef2f8" letter-spacing="-1">Vibe with</text>
+
+  <!-- "Amit" in gradient — simulated with cyan -->
+  <text x="112" y="370" font-family="'Syne', sans-serif" font-size="72" font-weight="800" fill="url(#nameGrad)" letter-spacing="-1">Amit</text>
+  <linearGradient id="nameGrad" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#3ee6f5"/>
+    <stop offset="100%" stop-color="#8b6cf7"/>
+  </linearGradient>
+
+  <!-- Subheadline -->
+  <text x="112" y="420" font-family="'DM Sans', sans-serif" font-size="22" font-weight="300" fill="#7a8ba8" letter-spacing="0.3">Beginner-friendly AI guides, vibe coding &amp; project ideas</text>
+
+  <!-- Bottom divider -->
+  <line x1="112" y1="460" x2="720" y2="460" stroke="#1a2a3a" stroke-width="1"/>
+
+  <!-- Bottom meta row -->
+  <text x="112" y="490" font-family="'DM Sans', sans-serif" font-size="16" font-weight="400" fill="#3d4e66" letter-spacing="0.5">vibewithamit.com</text>
+
+  <!-- Dot separator -->
+  <circle cx="268" cy="484" r="2.5" fill="#3d4e66"/>
+
+  <text x="280" y="490" font-family="'DM Sans', sans-serif" font-size="16" font-weight="400" fill="#3d4e66" letter-spacing="0.5">@gymvibecoder on TikTok</text>
+
+  <!-- Topic pills -->
+  <rect x="112" y="510" width="130" height="28" rx="14" fill="#3ee6f5" fill-opacity="0.1" stroke="#3ee6f5" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="177" y="529" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="12" font-weight="500" fill="#3ee6f5">AI for Beginners</text>
+
+  <rect x="252" y="510" width="110" height="28" rx="14" fill="#8b6cf7" fill-opacity="0.1" stroke="#8b6cf7" stroke-width="0.8" stroke-opacity="0.3"/>
+  <text x="307" y="529" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="12" font-weight="500" fill="#8b6cf7">Vibe Coding</text>
+
+  <rect x="372" y="510" width="120" height="28" rx="14" fill="#3ee6f5" fill-opacity="0.08" stroke="#3ee6f5" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="432" y="529" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="12" font-weight="500" fill="#3ee6f5">Build with AI</text>
+
+  <rect x="502" y="510" width="130" height="28" rx="14" fill="#8b6cf7" fill-opacity="0.08" stroke="#8b6cf7" stroke-width="0.8" stroke-opacity="0.25"/>
+  <text x="567" y="529" text-anchor="middle" font-family="'DM Sans', sans-serif" font-size="12" font-weight="500" fill="#8b6cf7">Project Ideas</text>
+
+</svg>
+</body>
+</html>
