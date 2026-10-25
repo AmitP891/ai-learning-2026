@@ -204,6 +204,18 @@
     50% { transform: scale(1.08); }
   }
   .hero-card-stack { position: relative; width: 100%; max-width: 400px; }
+  .hero-bit { position: relative; display: flex; flex-direction: column; align-items: center; gap: 18px; }
+  .hero-bit img { width: min(300px, 62vw); height: auto; filter: drop-shadow(0 0 36px rgba(240,53,158,0.35)); animation: float 4s ease-in-out infinite; }
+  .bit-bubble { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 18px; max-width: 320px; text-align: center; font-size: 0.9rem; color: var(--text-muted); backdrop-filter: blur(12px); }
+  .bit-bubble strong { color: #ff4fb8; }
+  .latest-video { padding: 40px 0 80px; }
+  .video-head { text-align: center; margin-bottom: 28px; }
+  .video-head h2 { margin: 14px 0 10px; }
+  .video-head p { color: var(--text-muted); max-width: 520px; margin: 0 auto; }
+  .video-wrap { position: relative; aspect-ratio: 16 / 9; max-width: 900px; margin: 0 auto; border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); background: #000; }
+  .video-wrap iframe { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .video-ctas { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 24px; }
+  @media (prefers-reduced-motion: reduce) { .hero-bit img { animation: none; } }
   .hero-ui-card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--radius); padding: 20px 24px;
@@ -562,7 +574,10 @@
   ════════════════════════════════════════ */
   @media (max-width: 1024px) {
     .hero-grid, .about-inner, .why-inner { grid-template-columns: 1fr; gap: 40px; }
-    .hero-visual { display: none; }
+    .hero-visual { display: flex; order: -1; }
+    .hero-blob { width: 260px; height: 260px; }
+    .hero-bit img { width: min(200px, 50vw); }
+    .bit-bubble { display: none; }
     .cat-grid, .posts-grid, .proof-grid { grid-template-columns: repeat(2, 1fr); }
     .footer-grid { grid-template-columns: 1fr 1fr; }
     .highlight-card { grid-template-columns: 1fr; gap: 32px; }
@@ -637,51 +652,29 @@
       </div>
       <div class="hero-visual">
         <div class="hero-blob"></div>
-        <div class="hero-card-stack">
-          <div class="hero-ui-card">
-            <div class="card-top">
-              <div class="card-dot"></div>
-              <span class="card-title-sm">AI Skill Progress</span>
-            </div>
-            <div class="card-bar fill-80"></div>
-            <div class="card-bar fill-60"></div>
-            <div class="card-bar fill-45"></div>
-            <div class="hero-stat-row">
-              <div class="stat-pill">
-                <div class="stat-num">18</div>
-                <div class="stat-lbl">Guides</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-num">0</div>
-                <div class="stat-lbl">Tools</div>
-              </div>
-              <div class="stat-pill">
-                <div class="stat-num">6</div>
-                <div class="stat-lbl">Topics</div>
-              </div>
-            </div>
-          </div>
-          <div class="hero-ui-card">
-            <div class="card-top">
-              <div class="card-dot" style="background: var(--violet); box-shadow: 0 0 8px var(--violet);"></div>
-              <span class="card-title-sm">Today's Learning</span>
-            </div>
-            <div class="card-tag-row">
-              <span class="card-chip">Cursor AI</span>
-              <span class="card-chip v">Vibe Coding</span>
-              <span class="card-chip">ChatGPT</span>
-              <span class="card-chip v">Build Fast</span>
-            </div>
-          </div>
-          <div class="hero-ui-card">
-            <div class="card-top">
-              <div class="card-dot" style="background: #34d399; box-shadow: 0 0 8px #34d399;"></div>
-              <span class="card-title-sm">Beginner Friendly</span>
-            </div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0;">No coding degree needed. Just curiosity and the right guides ✨</p>
-          </div>
+        <div class="hero-bit">
+          <img src="bit.svg" alt="Bit, the pink robot presenter from Vibe with Amit videos" width="300" height="350">
+          <div class="bit-bubble">Hi, I'm <strong>Bit</strong>. I present Amit's AI builds on YouTube, TikTok and Instagram.</div>
         </div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- ════════ LATEST VIDEO ════════ -->
+<section class="latest-video" id="videos">
+  <div class="container">
+    <div class="video-head reveal">
+      <span class="label">▶ Latest videos</span>
+      <h2>Watch the builds</h2>
+      <p>A systems engineer learning AI in public, one build at a time, presented by Bit.</p>
+    </div>
+    <div class="video-wrap reveal">
+      <iframe src="https://www.youtube-nocookie.com/embed/videoseries?list=UUo_7QHYs6laZvqYMROP9m1g" title="Latest videos from Vibe with Amit on YouTube" loading="lazy" allow="accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+    </div>
+    <div class="video-ctas">
+      <a href="https://www.youtube.com/@vibewithamitai?sub_confirmation=1" class="btn btn-primary" target="_blank" rel="noopener">Subscribe on YouTube →</a>
+      <a href="https://github.com/AmitP891/ai-learning-2026" class="btn btn-secondary" target="_blank" rel="noopener">See the code</a>
     </div>
   </div>
 </section>
@@ -1002,7 +995,7 @@
         <input type="email" class="email-input" id="homepageEmail" placeholder="Enter your email address">
         <button class="btn btn-primary" onclick="subscribeBeehiiv('homepageEmail', this)">Subscribe Free</button>
       </div>
-      <p class="email-note">No spam. Unsubscribe anytime. Join 2 subscribers and counting.</p>
+      <p class="email-note">Weekly build notes from my 12-week AI sprint. No spam, unsubscribe anytime.</p>
       <div class="newsletter-icons">
         <div class="n-icon">📧</div>
         <div class="n-icon">🔒</div>
