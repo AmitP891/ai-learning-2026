@@ -24,6 +24,7 @@ Follow along: [vibewithamit.com](https://vibewithamit.com) · TikTok [@vibewitha
 03-huggingface-agents/    smolagents and LangGraph work
 04-capstone/              Requirements traceability agent (synthetic data only)
 content/                  Links to videos, posts and blog articles
+website/                  Vibe with Amit site (vibewithamit.com), deployed to Netlify
 ```
 
 ## Highlights

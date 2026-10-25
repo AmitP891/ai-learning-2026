@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- Primary SEO -->
+<title>About Amit — Systems Engineer, AI Learner and Vibe Coder | Vibe with Amit</title>
+<meta name="description" content="Meet Amit — a systems engineer exploring AI and vibe coding in his spare time, documenting every step so beginners can follow along and build with confidence.">
+<meta name="keywords" content="about Vibe with Amit, Amit Patel AI, systems engineer learning AI, vibe coding beginner, AI learning journey, learn AI in spare time, beginner AI creator">
+<meta name="author" content="Amit Patel">
+<meta name="robots" content="index, follow">
+<meta name="google-site-verification" content="e77reSEd9IljuMsxoUZq4F4XGuB6XRwGCRftQckBm5o" />
+<link rel="canonical" href="https://vibewithamit.com/about.html">
+
+<!-- Open Graph -->
+<meta property="og:type" content="profile">
+<meta property="og:site_name" content="Vibe with Amit">
+<meta property="og:title" content="About Amit — Systems Engineer, AI Learner and Vibe Coder">
+<meta property="og:description" content="Meet Amit — a systems engineer exploring AI and vibe coding in his spare time, documenting every step so beginners can follow along and build with confidence.">
+<meta property="og:url" content="https://vibewithamit.com/about.html">
+<meta property="og:image" content="https://vibewithamit.com/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:locale" content="en_GB">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="About Amit — Systems Engineer, AI Learner and Vibe Coder">
+<meta name="twitter:description" content="A systems engineer documenting his AI and vibe coding journey in real time — so beginners can follow along and build with confidence.">
+<meta name="twitter:image" content="https://vibewithamit.com/og-image.png">
+<meta name="twitter:creator" content="@vibewithamitai">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080c14;
+    --surface: #0e1420;
+    --surface2: #131a28;
+    --border: rgba(255,255,255,0.07);
+    --border-hover: rgba(99,211,255,0.3);
+    --cyan: #3ee6f5;
+    --cyan-dim: rgba(62,230,245,0.12);
+    --violet: #8b6cf7;
+    --violet-dim: rgba(139,108,247,0.12);
+    --text: #eef2f8;
+    --text-muted: #7a8ba8;
+    --text-faint: #3d4e66;
+    --radius: 16px;
+    --radius-sm: 10px;
+    --font-display: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 0; opacity: 0.4;
+  }
+
+  h1,h2,h3,h4 { font-family: var(--font-display); line-height: 1.2; }
+  a { text-decoration: none; color: inherit; }
+  p { color: var(--text-muted); }
+
+  .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+  .prose { max-width: 680px; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    background: rgba(8,12,20,0.85); backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+    transition: background 0.3s;
+  }
+  .nav-inner {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1200px; margin: 0 auto; padding: 0 24px; height: 68px;
+  }
+  .nav-logo {
+    font-family: var(--font-display); font-size: 1.2rem; font-weight: 800;
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .nav-logo span { color: var(--text); -webkit-text-fill-color: var(--text); }
+  .nav-links { display: flex; gap: 28px; list-style: none; }
+  .nav-links a { font-size: 0.88rem; color: var(--text-muted); transition: color 0.2s; }
+  .nav-links a:hover, .nav-links a.active { color: var(--text); }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-family: var(--font-display); font-size: 0.85rem; font-weight: 600;
+    padding: 10px 22px; border-radius: 100px; border: none; cursor: pointer;
+    transition: all 0.25s ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--cyan), #2bb8e8);
+    color: #080c14; box-shadow: 0 0 20px rgba(62,230,245,0.25);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 0 32px rgba(62,230,245,0.45); }
+  .btn-secondary {
+    background: transparent; color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+
+  /* ── LABEL ── */
+  .label {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.68rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+    padding: 4px 12px; border-radius: 100px;
+    background: var(--cyan-dim); color: var(--cyan); border: 1px solid rgba(62,230,245,0.2);
+  }
+  .label.violet { background: var(--violet-dim); color: var(--violet); border-color: rgba(139,108,247,0.2); }
+
+  /* ── REVEAL ── */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  .reveal.visible { opacity: 1; transform: none; }
+  .rd1 { transition-delay: 0.1s; } .rd2 { transition-delay: 0.2s; } .rd3 { transition-delay: 0.3s; }
+
+  /* ══════════════════════════════════
+     HERO
+  ══════════════════════════════════ */
+  .about-hero {
+    padding: 130px 0 80px; position: relative; z-index: 1; overflow: hidden;
+  }
+  .hero-glow {
+    position: absolute; top: 0; left: 0; right: 0; height: 500px;
+    background: radial-gradient(ellipse 60% 50% at 30% 0%, rgba(62,230,245,0.1), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-glow-right {
+    position: absolute; top: 100px; right: 0; width: 400px; height: 400px;
+    background: radial-gradient(ellipse 60% 60% at 100% 50%, rgba(139,108,247,0.1), transparent 70%);
+    pointer-events: none;
+  }
+  .hero-grid {
+    display: grid; grid-template-columns: 1fr 420px; gap: 80px; align-items: center;
+  }
+  .hero-left .label { margin-bottom: 20px; }
+  .hero-left h1 {
+    font-size: clamp(2.2rem, 4vw, 3.4rem); margin-bottom: 20px;
+    background: linear-gradient(160deg, var(--text) 60%, var(--text-muted));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
+  .hero-left h1 em {
+    background: linear-gradient(90deg, var(--cyan), var(--violet));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    font-style: normal;
+  }
+  .hero-left .intro {
+    font-size: 1.1rem; line-height: 1.75; margin-bottom: 32px; max-width: 540px;
+  }
+  .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; }
+
+  /* Profile card */
+  .profile-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 36px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .profile-card::before {
+    content: ''; position: absolute; top: -60px; left: 50%; transform: translateX(-50%);
+    width: 300px; height: 200px;
+    background: radial-gradient(ellipse, rgba(62,230,245,0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .profile-avatar {
+    width: 110px; height: 110px; border-radius: 50%; margin: 0 auto 20px;
+    background: linear-gradient(135deg, var(--cyan), var(--violet));
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-display); font-size: 2.8rem; font-weight: 800;
+    color: #080c14; position: relative;
+    box-shadow: 0 0 40px rgba(62,230,245,0.3);
+  }
+  .profile-avatar::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    border: 2px solid transparent;
+    background: linear-gradient(135deg, var(--cyan), var(--violet)) border-box;
+    -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: destination-out; mask-composite: exclude;
+  }
+  .profile-name {
+    font-family: var(--font-display); font-size: 1.4rem; font-weight: 800;
+    color: var(--text); margin-bottom: 4px;
+  }
+  .profile-title { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 20px; }
+  .profile-badges { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .badge {
+    font-size: 0.72rem; font-weight: 600; padding: 5px 12px; border-radius: 100px;
+    background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted);
+  }
+  .badge.cyan { background: var(--cyan-dim); color: var(--cyan); border-color: rgba(62,230,245,0.2); }
+  .badge.violet { background: var(--violet-dim); color: var(--violet); border-color: rgba(139,108,247,0.2); }
+  .profile-divider { height: 1px; background: var(--border); margin-bottom: 20px; }
+  .profile-social { display: flex; gap: 10px; justify-content: center; }
+  .profile-social-link {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: var(--text-muted); transition: all 0.2s;
+  }
+  .profile-social-link:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+  .profile-location {
+    font-size: 0.78rem; color: var(--text-faint); margin-top: 16px;
+    display: flex; align-items: center; justify-content: center; gap: 6px;
+  }
+
+  /* ══════════════════════════════════
+     STORY SECTION
+  ══════════════════════════════════ */
+  .story { padding: 100px 0; position: relative; z-index: 1; }
+  .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; }
+
+  .story-left h2 { font-size: clamp(1.6rem, 2.5vw, 2.2rem); margin-bottom: 24px; color: var(--text); }
+  .story-left p { margin-bottom: 20px; line-height: 1.8; font-size: 1rem; }
+  .story-left strong { color: var(--text); font-weight: 600; }
+
+  .pull-quote {
+    border-left: 3px solid var(--cyan); padding: 8px 0 8px 24px; margin: 32px 0;
+  }
+  .pull-quote p {
+    font-family: var(--font-display); font-size: 1.1rem; font-weight: 600;
+    color: var(--text); font-style: italic; margin: 0; line-height: 1.5;
+  }
+
+  /* Timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; }
+  .tl-item { display: flex; gap: 20px; position: relative; }
+  .tl-left { display: flex; flex-direction: column; align-items: center; width: 40px; flex-shrink: 0; }
+  .tl-dot {
+    width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+    background: var(--surface); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; z-index: 1; transition: border-color 0.25s;
+  }
+  .tl-item:hover .tl-dot { border-color: var(--border-hover); }
+  .tl-line { flex: 1; width: 1px; background: var(--border); margin: 4px 0; }
+  .tl-item:last-child .tl-line { display: none; }
+  .tl-content { padding: 0 0 32px; flex: 1; }
+  .tl-label { font-size: 0.7rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-faint); margin-bottom: 6px; }
+  .tl-title { font-family: var(--font-display); font-size: 0.95rem; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .tl-desc { font-size: 0.88rem; color: var(--text-muted); line-height: 1.6; }
+
+  /* ══════════════════════════════════
+     WHO THIS IS FOR
+  ══════════════════════════════════ */
+  .for-section { padding: 0 0 100px; position: relative; z-index: 1; }
+  .for-header { text-align: center; margin-bottom: 56px; }
+  .for-header .label { margin-bottom: 14px; }
+  .for-header h2 { font-size: clamp(1.6rem, 2.5vw, 2.2rem); margin-bottom: 12px; }
+  .for-header p { max-width: 460px; margin: 0 auto; }
+  .for-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .for-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 32px 28px;
+    transition: all 0.3s; position: relative; overflow: hidden;
+  }
+  .for-card::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, var(--cyan-dim), transparent);
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .for-card:hover::before { opacity: 1; }
+  .for-card:hover { border-color: var(--border-hover); transform: translateY(-5px); box-shadow: 0 20px 50px rgba(0,0,0,0.4); }
+  .for-card.v::before { background: linear-gradient(135deg, var(--violet-dim), transparent); }
+  .for-card.v:hover { border-color: rgba(139,108,247,0.3); }
+  .for-icon { font-size: 2rem; margin-bottom: 16px; position: relative; }
+  .for-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; position: relative; }
+  .for-card p { font-size: 0.88rem; line-height: 1.65; position: relative; }
+
+  /* ══════════════════════════════════
+     VALUES / WHAT TO EXPECT
+  ══════════════════════════════════ */
+  .values { padding: 0 0 100px; position: relative; z-index: 1; }
+  .values-box {
+    background: linear-gradient(135deg, rgba(62,230,245,0.06), rgba(139,108,247,0.06));
+    border: 1px solid rgba(62,230,245,0.15); border-radius: 24px; padding: 64px;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
+  }
+  .values-left h2 { font-size: clamp(1.5rem, 2.2vw, 2rem); margin-bottom: 16px; }
+  .values-left p { font-size: 1rem; line-height: 1.8; margin-bottom: 0; }
+  .values-list { display: flex; flex-direction: column; gap: 16px; }
+  .value-item {
+    display: flex; gap: 16px; align-items: flex-start;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 18px 20px;
+    transition: border-color 0.2s;
+  }
+  .value-item:hover { border-color: var(--border-hover); }
+  .value-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+  .value-text h4 { font-family: var(--font-display); font-size: 0.9rem; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .value-text p { font-size: 0.85rem; margin: 0; line-height: 1.55; }
+
+  /* ══════════════════════════════════
+     CTA SECTION
+  ══════════════════════════════════ */
+  .about-cta { padding: 0 0 100px; position: relative; z-index: 1; }
+  .cta-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 24px; padding: 64px; text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .cta-box::before {
+    content: ''; position: absolute; bottom: -80px; left: 50%; transform: translateX(-50%);
+    width: 400px; height: 200px;
+    background: radial-gradient(ellipse, rgba(139,108,247,0.12), transparent 70%);
+    pointer-events: none;
+  }
+  .cta-box h2 { font-size: clamp(1.5rem, 2.5vw, 2rem); margin-bottom: 14px; position: relative; }
+  .cta-box p { max-width: 440px; margin: 0 auto 32px; position: relative; }
+  .cta-buttons { display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; position: relative; }
+
+  /* ══════════════════════════════════
+     FOOTER
+  ══════════════════════════════════ */
+  footer {
+    background: var(--surface); border-top: 1px solid var(--border);
+    padding: 48px 0 32px;
+  }
+  .footer-inner {
+    display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 48px;
+  }
+  .footer-brand .nav-logo { font-size: 1.3rem; display: inline-block; margin-bottom: 14px; }
+  .footer-brand p { font-size: 0.85rem; max-width: 260px; margin-bottom: 20px; }
+  .social-row { display: flex; gap: 10px; }
+  .social-link {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: var(--surface2); border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem; color: var(--text-muted); transition: all 0.2s;
+  }
+  .social-link:hover { border-color: var(--border-hover); color: var(--cyan); transform: translateY(-2px); }
+  .footer-col h4 { font-family: var(--font-display); font-size: 0.85rem; font-weight: 700; margin-bottom: 18px; }
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+  .footer-col ul li a { font-size: 0.85rem; color: var(--text-muted); transition: color 0.2s; }
+  .footer-col ul li a:hover { color: var(--cyan); }
+  .footer-bottom {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 28px; border-top: 1px solid var(--border); flex-wrap: wrap; gap: 10px;
+  }
+  .footer-bottom p { font-size: 0.8rem; color: var(--text-faint); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 1024px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 48px; }
+    .profile-card { max-width: 400px; }
+    .story-grid { grid-template-columns: 1fr; gap: 48px; }
+    .values-box { grid-template-columns: 1fr; gap: 36px; padding: 40px; }
+    .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
+  }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .for-grid { grid-template-columns: 1fr; }
+    .cta-box { padding: 40px 24px; }
+    .footer-inner { grid-template-columns: 1fr; }
+  }
+</style>
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-F0EBEKVH3T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-F0EBEKVH3T');
+</script>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Vibe with <span>Amit</span></a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="blog.html">Blog</a></li>
+      <li><a href="#">Categories</a></li>
+      <li><a href="#" class="active">About</a></li>
+      <li><a href="contact.html">Contact</a></li>
+    </ul>
+    <a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener" class="btn btn-primary">Subscribe</a>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     HERO
+══════════════════════════════════ -->
+<section class="about-hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow-right"></div>
+  <div class="container">
+    <div class="hero-grid">
+
+      <div class="hero-left reveal">
+        <span class="label">👋 About Me</span>
+        <h1>Systems Engineer by Day.<br><em>Vibe Coder by Night.</em></h1>
+        <p class="intro">Hey, I'm Amit. I spend my working hours deep in systems engineering — but the moment the day ends, a completely different kind of building begins. I'm learning AI, experimenting with vibe coding, and documenting every step of the journey right here.</p>
+        <p class="intro" style="margin-top: -8px;">This blog isn't written by an expert looking back from the top. It's written in real time — by someone who's figuring it out alongside you.</p>
+        <div class="hero-ctas">
+          <a href="blog.html" class="btn btn-primary">Read the Blog →</a>
+          <a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener" class="btn btn-secondary">Subscribe</a>
+        </div>
+      </div>
+
+      <div class="reveal rd2">
+        <div class="profile-card">
+          <div class="profile-avatar" style="background:none;padding:0;overflow:hidden;"><img src="profile-photo.jpg" style="width:100%;height:100%;object-fit:cover;object-position:center top;" alt="Amit Patel"></div>
+          <div class="profile-name">Amit Patel</div>
+          <div class="profile-title">Systems Engineer · AI Learner · Vibe Coder</div>
+          <div class="profile-badges">
+            <span class="badge cyan">🤖 AI Explorer</span>
+            <span class="badge violet">🎧 Vibe Coder</span>
+            <span class="badge">⚙️ Systems Engineer</span>
+            <span class="badge cyan">🚀 Builder</span>
+            <span class="badge violet">📝 Documenting it all</span>
+          </div>
+          <div class="profile-divider"></div>
+          <div class="profile-social">
+            <a href="https://www.tiktok.com/@vibewithamitai" target="_blank" rel="noopener" class="profile-social-link" title="TikTok @vibewithamitai">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+            </a>
+            <a href="https://www.linkedin.com/in/amit-patel-459b" target="_blank" rel="noopener" class="profile-social-link" title="LinkedIn">in</a>
+            <a href="https://www.youtube.com/@vibewithamitai" target="_blank" rel="noopener" class="profile-social-link" title="YouTube">▶</a>
+            <a href="https://www.instagram.com/vibewithamitai" target="_blank" rel="noopener" class="profile-social-link" title="Instagram">◈</a>
+            <a href="https://github.com/AmitP891/ai-learning-2026" target="_blank" rel="noopener" class="profile-social-link" title="GitHub"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg></a>
+          </div>
+          <div class="profile-location">📍 United Kingdom</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     STORY
+══════════════════════════════════ -->
+<section class="story">
+  <div class="container">
+    <div class="story-grid">
+
+      <div class="reveal">
+        <h2>The Honest Story Behind This Blog</h2>
+
+        <p>I didn't start Vibe with Amit because I had it all figured out. I started it because I <strong>didn't</strong> — and I wanted somewhere to put it all down.</p>
+
+        <p>By profession, I'm a systems engineer. I understand complex technical environments, how to solve problems methodically, how to think in systems. But when I started exploring AI and vibe coding in my spare time, I quickly realised something: even with a technical background, this space moves so fast it can feel overwhelming. There's always a new tool, a new model, a new way of building things.</p>
+
+        <div class="pull-quote">
+          <p>"I thought — if I'm finding this hard to navigate, what's it like for someone with no technical background at all?"</p>
+        </div>
+
+        <p>That question is what turned a personal habit into a public blog. Because the truth is, you don't need to be an engineer to use AI. You don't need to understand how any of it works under the hood. You just need someone to break it down clearly, show you what's actually worth your time, and walk you through it step by step.</p>
+
+        <p>That's what I'm trying to be. Not a guru. Not an influencer. Just someone a few steps ahead on the same path — turning around to share what I've learned.</p>
+
+        <p>Every article on this blog comes from something I've genuinely explored, tested, or built myself. If I write about a tool, I've used it. If I walk you through building something, I've built it. <strong>Nothing here is theoretical.</strong> It's all real, documented, and written for humans — not algorithms.</p>
+      </div>
+
+      <div class="reveal rd2">
+        <div style="margin-bottom: 12px;">
+          <span class="label violet">The Journey So Far</span>
+        </div>
+        <div class="timeline">
+
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot">⚙️</div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-label">Day job</div>
+              <div class="tl-title">Systems Engineer</div>
+              <div class="tl-desc">Building and managing complex technical systems professionally — where analytical thinking and problem-solving become second nature.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot">🤖</div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-label">Spare time discovery</div>
+              <div class="tl-title">Fell Down the AI Rabbit Hole</div>
+              <div class="tl-desc">Started exploring AI tools out of curiosity. ChatGPT, Claude, image generation, automation — and quickly realised this was going to change everything.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot">🎧</div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-label">Game changer</div>
+              <div class="tl-title">Discovered Vibe Coding</div>
+              <div class="tl-desc">Found that you could describe an app in plain English and watch AI build it in real time. Started experimenting with Bolt, Cursor, and v0 — and got completely hooked.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot">🚀</div>
+              <div class="tl-line"></div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-label">Projects</div>
+              <div class="tl-title">Started Building Real Things</div>
+              <div class="tl-desc">Moved from experimenting to actually shipping projects using AI prompts — apps, tools, and digital products built without writing a line of traditional code.</div>
+            </div>
+          </div>
+
+          <div class="tl-item">
+            <div class="tl-left">
+              <div class="tl-dot">📝</div>
+            </div>
+            <div class="tl-content">
+              <div class="tl-label">Right now</div>
+              <div class="tl-title">Documenting Every Step</div>
+              <div class="tl-desc">Vibe with Amit is where the whole journey lives — shared openly, written honestly, and designed to help anyone do the same.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     WHO THIS IS FOR
+══════════════════════════════════ -->
+<section class="for-section">
+  <div class="container">
+    <div class="for-header reveal">
+      <span class="label">✦ This Blog Is For You If...</span>
+      <h2>Sound Like Anyone You Know?</h2>
+      <p>This isn't a blog for people who already have it figured out. It's for people who are curious, motivated, and ready to start.</p>
+    </div>
+    <div class="for-grid">
+
+      <div class="for-card reveal rd1">
+        <div class="for-icon">🧑‍💼</div>
+        <h3>You're in a traditional job and curious about AI</h3>
+        <p>You hear about AI constantly but aren't sure how it actually applies to you. You want plain-English answers — not developer tutorials aimed at people who already know how to code.</p>
+      </div>
+
+      <div class="for-card v reveal rd2">
+        <div class="for-icon">💡</div>
+        <h3>You're a complete beginner with zero tech background</h3>
+        <p>You've never built an app. You don't know what "vibe coding" means yet. You just know something exciting is happening with AI and you want in — without having to get a computer science degree first.</p>
+      </div>
+
+      <div class="for-card reveal rd3">
+        <div class="for-icon">🔨</div>
+        <h3>You want to build something real with AI</h3>
+        <p>You've got an idea — a tool, a product, a side project — and you suspect AI might be the shortcut you've been waiting for. You want practical guides that actually help you ship something, not just understand it theoretically.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     VALUES
+══════════════════════════════════ -->
+<section class="values">
+  <div class="container">
+    <div class="values-box reveal">
+      <div class="values-left">
+        <span class="label" style="margin-bottom: 16px;">What to Expect</span>
+        <h2>What You'll Get From This Blog</h2>
+        <p>Every piece of content here is guided by the same four things. They're not values written on a wall — they're the standard I hold every article to before it goes live.</p>
+      </div>
+      <div class="values-list">
+        <div class="value-item">
+          <span class="value-icon">💬</span>
+          <div class="value-text">
+            <h4>Honest, human writing</h4>
+            <p>No hype. No "AI will change everything" clickbait. Just real talk about what works, what doesn't, and what's actually worth your time.</p>
+          </div>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🎯</span>
+          <div class="value-text">
+            <h4>Practical over theoretical</h4>
+            <p>Everything here is actionable. If you can't do something with it after reading, it hasn't earned its place on this blog.</p>
+          </div>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">🌱</span>
+          <div class="value-text">
+            <h4>Beginner first, always</h4>
+            <p>Every concept gets explained as if you're hearing it for the first time — because for a lot of readers, you are. No assumed knowledge, ever.</p>
+          </div>
+        </div>
+        <div class="value-item">
+          <span class="value-icon">📖</span>
+          <div class="value-text">
+            <h4>Documented in real time</h4>
+            <p>I'm not looking back from the finish line. I'm writing as I learn — which means what you read here is current, relevant, and genuinely tested.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════
+     CTA
+══════════════════════════════════ -->
+<section class="about-cta">
+  <div class="container">
+    <div class="cta-box reveal">
+      <span class="label" style="margin-bottom: 20px;">Let's Do This Together</span>
+      <h2>If I Can Do This, So Can You.</h2>
+      <p>I'm a systems engineer learning to build with AI in my spare time. I'm not a full-time creator. I don't have unlimited hours. If I can figure this out around a full-time job — so can you. Start with the blog, subscribe for weekly updates, and let's build something together.</p>
+      <div class="cta-buttons">
+        <a href="blog.html" class="btn btn-primary">Start Reading →</a>
+        <a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener" class="btn btn-secondary">Get Weekly Tips</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">Vibe with <span style="-webkit-text-fill-color: var(--text); color: var(--text);">Amit</span></a>
+        <p>Beginner-friendly AI guides, tutorials, tools, and project ideas. Follow along at <strong style="color: var(--cyan);">@vibewithamitai</strong> on TikTok.</p>
+        <div class="social-row">
+          <a href="https://www.tiktok.com/@vibewithamitai" target="_blank" rel="noopener" class="social-link" aria-label="TikTok">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.69a8.18 8.18 0 0 0 4.78 1.52V6.75a4.85 4.85 0 0 1-1.01-.06z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/amit-patel-459b" target="_blank" rel="noopener" class="social-link" aria-label="LinkedIn">in</a>
+          <a href="https://www.youtube.com/@vibewithamitai" target="_blank" rel="noopener" class="social-link" aria-label="YouTube">▶</a>
+          <a href="https://www.instagram.com/vibewithamitai" target="_blank" rel="noopener" class="social-link" aria-label="Instagram">◈</a>
+          <a href="https://github.com/AmitP891/ai-learning-2026" target="_blank" rel="noopener" class="social-link" aria-label="GitHub"><svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5C5.65.5.5 5.65.5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.87-1.37-3.87-1.37-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.16.08 1.77 1.19 1.77 1.19 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.17 1.18a11 11 0 0 1 5.77 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.83 1.19 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12C23.5 5.65 18.35.5 12 .5z"/></svg></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="#">Categories</a></li>
+          <li><a href="about.html">About</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Categories</h4>
+        <ul>
+          <li><a href="blog.html">AI for Beginners</a></li>
+          <li><a href="blog.html">Vibe Coding</a></li>
+          <li><a href="blog.html">Build with AI</a></li>
+          <li><a href="blog.html">Tools & Workflows</a></li>
+          <li><a href="blog.html">Project Ideas</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="https://vibewithamit.beehiiv.com/subscribe" target="_blank" rel="noopener">Newsletter</a></li>
+          <li><a href="https://www.tiktok.com/@vibewithamitai" target="_blank" rel="noopener">TikTok</a></li>
+          <li><a href="https://www.linkedin.com/in/amit-patel-459b" target="_blank" rel="noopener">LinkedIn</a></li>
+          <li><a href="contact.html">Contact</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 Vibe with Amit. All rights reserved.</p>
+      <p>Built for beginners. Documented in real time.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  window.addEventListener('scroll', () => {
+    document.getElementById('nav').style.background = window.scrollY > 40
+      ? 'rgba(8,12,20,0.97)' : 'rgba(8,12,20,0.85)';
+  });
+</script>
+</body>
+</html>
