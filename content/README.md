@@ -21,3 +21,4 @@ Every piece of content published during the sprint, linked to the week and code 
 | 25 Oct 2026 | 2 | [Instagram Reels](https://www.instagram.com/reel/De7TREsz3eV/) | I fixed my AI prompt with 4 techniques (and proved it) ([video](videos/2026-10-25-prompt-fix.mp4)) | [claude-api/prompt_compare.py](../01-anthropic-academy/claude-api/prompt_compare.py) |
 | 26 Oct 2026 | 3 | [YouTube Shorts](https://youtube.com/shorts/2_RIY0jS89c) | My website linked my old TikTok, so Claude fixed it ([video](videos/2026-10-26-website-glow-up.mp4)) | [website/](../website/) |
 | 26 Oct 2026 | 3 | [TikTok](https://vm.tiktok.com/ZN8DqPrVR/) | My website linked my old TikTok, so Claude fixed it ([video](videos/2026-10-26-website-glow-up.mp4)) | [website/](../website/) |
+| 26 Oct 2026 | 3 | [Instagram Reels](https://www.instagram.com/reel/De96dVcCiPl/) | My website linked my old TikTok, so Claude fixed it ([video](videos/2026-10-26-website-glow-up.mp4)) | [website/](../website/) |
