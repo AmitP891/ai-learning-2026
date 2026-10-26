@@ -37,7 +37,7 @@ website/                  Vibe with Amit site (vibewithamit.com), deployed to Ne
 ## Certificates
 
 - [Claude Code in Action](01-anthropic-academy/certificates/claude-code-in-action.pdf) — Anthropic, Oct 2026
-- [Introduction to Model Context Protocol](01-anthropic-academy/certificates/introduction-to-mcp.png) — Anthropic, Oct 2026
+- [Introduction to Model Context Protocol](01-anthropic-academy/certificates/introduction-to-mcp.pdf) — Anthropic, Oct 2026
 
 ## Note
 
