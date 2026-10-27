@@ -51,7 +51,7 @@ Synthetic or public requirements only.
 | Feature | MCP concept | What it does |
 | --- | --- | --- |
 | `check_all(csv_path?)` | Progress notifications | Checks the whole CSV and reports "4/8 checked" as it goes |
-| `fix_requirement(req_id, csv_path?)` | Elicitation | Pauses and asks **you** for the missing number and unit, so the rewrite uses a real value, not an invented one |
+| `fix_requirement(req_id, csv_path?)` | Elicitation | Pauses and asks **you** for the missing number and unit, so the rewrite uses a real value, not an invented one. Clients without form support (e.g. the Claude desktop app) get told to ask in chat instead |
 | `requirements://sample/{req_id}` | Resource template | Read one requirement by id |
 | Folder guard | (replaces roots) | Only reads `.csv` files inside `REQ_ALLOWED_DIR` (default: this course folder) |
 | `--http` | Streamable HTTP, stateless | Serves at `http://127.0.0.1:8000/mcp` as well as stdio |

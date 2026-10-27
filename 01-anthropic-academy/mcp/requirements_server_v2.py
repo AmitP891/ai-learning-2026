@@ -22,6 +22,7 @@ import sys
 
 from pydantic import BaseModel, Field
 
+from mcp import types
 from mcp.server.mcpserver import Context, MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
@@ -108,10 +109,24 @@ async def fix_requirement(req_id: str, ctx: Context, csv_path: str = "") -> dict
         return {**result, "user_value": None,
                 "instruction": "No number needed. Rewrite using 'shall' and fix the listed issues."}
 
-    answer = await ctx.elicit(
-        message=f"{req_id}: \"{result['text']}\"\nThis has no measurable value. What should it be?",
-        schema=MissingValue,
-    )
+    # Not every client can show a form (elicitation). If it can't, or the form fails,
+    # fall back to asking in chat instead of crashing or letting the AI guess.
+    ask_in_chat = {**result, "user_value": None,
+                   "instruction": "This client can't show a form. Ask the user in chat for the value, unit and "
+                                  "condition, then rewrite with exactly their answer. Never invent a number."}
+    can_elicit = ctx.request_context.session.check_client_capability(
+        types.ClientCapabilities(elicitation=types.ElicitationCapability()))
+    if not can_elicit:
+        log.info("fix_requirement: client has no elicitation support, asking in chat for %s", req_id)
+        return ask_in_chat
+    try:
+        answer = await ctx.elicit(
+            message=f"{req_id}: \"{result['text']}\"\nThis has no measurable value. What should it be?",
+            schema=MissingValue,
+        )
+    except Exception as exc:  # client advertised forms but the request still failed
+        log.warning("fix_requirement: elicitation failed for %s: %s", req_id, exc)
+        return ask_in_chat
     if answer.action != "accept":
         log.info("fix_requirement: user %sd the value for %s", answer.action, req_id)
         return {**result, "user_value": None,
