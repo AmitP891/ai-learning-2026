@@ -43,3 +43,22 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, t
 ```
 
 Synthetic or public requirements only.
+
+## v2 (MCP Advanced Topics)
+
+[`requirements_server_v2.py`](requirements_server_v2.py) adds:
+
+| Feature | MCP concept | What it does |
+| --- | --- | --- |
+| `check_all(csv_path?)` | Progress notifications | Checks the whole CSV and reports "4/8 checked" as it goes |
+| `fix_requirement(req_id, csv_path?)` | Elicitation | Pauses and asks **you** for the missing number and unit, so the rewrite uses a real value, not an invented one |
+| `requirements://sample/{req_id}` | Resource template | Read one requirement by id |
+| Folder guard | (replaces roots) | Only reads `.csv` files inside `REQ_ALLOWED_DIR` (default: this course folder) |
+| `--http` | Streamable HTTP, stateless | Serves at `http://127.0.0.1:8000/mcp` as well as stdio |
+
+The MCP spec of 2026-07-28 deprecated sampling, roots and protocol logging ([SEP-2577](https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging)), so v2 uses elicitation, a configured folder and stderr logging instead.
+
+```bash
+claude mcp add requirements-checker-v2 -- python3 ~/ai-learning-2026/01-anthropic-academy/mcp/requirements_server_v2.py
+python3 test_server_v2.py      # scripted test, no Claude needed
+```
