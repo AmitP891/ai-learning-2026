@@ -83,9 +83,15 @@ Nothing else. All text must be readable on a phone at arm's length: minimum 48 p
 - Measure the track and write `beats.json`. **Every animation event is timed from `beats.json`, never from hand-typed numbers.**
 
 ## 10. Workflow gates (stop and show Amit at each one)
+Amit is screen-recording this run for a YouTube video, one clip per gate. Every time you reach a gate, finish your message with this line on its own, exactly as written:
+
+> ⏹ **STOP RECORDING** — Gate N done. Start a new recording before you reply.
+
 1. **Style frames:** render 3 stills (title card, mid-fight with HUD, BOSS DEFEATED). Wait for approval.
 2. **Beat grid:** print the shot table with exact frame numbers for every event. Wait for approval.
 3. **First render:** render the 9:16 teaser, then start the critique loop.
+4. **After each critique round:** show the scores and the fixes you'll make, then stop with the same line (Gate 4a, 4b, …) before re-rendering.
+5. **Finished:** when every score is 8 or more, or after round 4, show the final scores and end with: ⏹ **STOP RECORDING** — Film finished.
 
 ## 11. Critique loop
 After each render, extract one frame per beat and score 1–10 on:
