@@ -1,0 +1,4 @@
+.venv/
+.DS_Store
+# rendered stills (the brief's out/*.png; ** so out/style_frames/ is covered too)
+out/**/*.png
