@@ -37,8 +37,8 @@ FD = lambda s, w="DejaVuSans-Bold": ImageFont.truetype(f"/usr/share/fonts/truety
 FI = lambda s: ImageFont.truetype("/usr/share/fonts/opentype/inter/InterDisplay-Black.otf", s)
 FB = lambda s: ImageFont.truetype("/usr/share/fonts/opentype/inter/Inter-Bold.otf", s)
 MB = lambda s: FD(s, "DejaVuSansMono-Bold"); MR = lambda s: FD(s, "DejaVuSansMono")
-PAPER = (240, 233, 218); INK = (28, 28, 34); RED = (214, 48, 64); CY = (0, 240, 255); GR = (57, 255, 136); WH = (255, 255, 255); PK = (240, 53, 158)
-BP = (16, 40, 92); BPL = (120, 170, 255); BPG = (26, 58, 120)
+PAPER = (22, 24, 38); INK = (255, 255, 255); RED = (240, 53, 158); CY = (0, 240, 255); GR = (57, 255, 136); WH = (255, 255, 255); PK = (240, 53, 158)
+BP = (8, 24, 34); BPL = (0, 240, 255); BPG = (12, 52, 64)
 def ease(x): x = max(0, min(1, x)); return 1 - (1 - x) ** 3
 rng = np.random.default_rng(1)
 CX0, CY0, CX1, CY1 = 70, 330, 1010, 1500; CW, CH = CX1 - CX0, CY1 - CY0
@@ -49,23 +49,23 @@ def icon(d, cx, cy, kind, col, blueprint):
         for k in range(12):
             a = k * math.pi / 6; d.line((cx + 110 * math.cos(a), cy + 110 * math.sin(a), cx + 150 * math.cos(a), cy + 150 * math.sin(a)), fill=col, width=10 if not blueprint else 5)
         if blueprint:
-            for rr in (40, 120): d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=(70, 110, 190), width=2)
-            d.line((cx - 170, cy, cx + 170, cy), fill=(70, 110, 190), width=2); d.line((cx, cy - 170, cx, cy + 170), fill=(70, 110, 190), width=2)
+            for rr in (40, 120): d.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=(0, 120, 140), width=2)
+            d.line((cx - 170, cy, cx + 170, cy), fill=(0, 120, 140), width=2); d.line((cx, cy - 170, cx, cy + 170), fill=(0, 120, 140), width=2)
 
 def paper_card():
-    a = np.zeros((CH, CW, 3), np.float32) + np.array(PAPER); a += rng.normal(0, 5, (CH, CW, 1))
+    a = np.zeros((CH, CW, 3), np.float32) + np.array(PAPER); a += rng.normal(0, 2, (CH, CW, 1))
     c = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)).convert("RGBA"); d = ImageDraw.Draw(c)
-    d.rectangle((30, 30, 200, 72), fill=RED); d.text((115, 51), CASE["id"], font=MB(28), fill=WH, anchor="mm")
-    d.text((CW - 40, 40), "CASE · " + CASE["system"], font=MR(22), fill=(120, 115, 105), anchor="ra")
+    d.rectangle((0, 0, CW - 1, CH - 1), outline=(58, 63, 92), width=4); d.rectangle((30, 30, 200, 72), fill=RED); d.text((115, 51), CASE["id"], font=MB(28), fill=WH, anchor="mm")
+    d.text((CW - 40, 40), "CASE · " + CASE["system"], font=MR(22), fill=(150, 155, 178), anchor="ra")
     d.text((40, 100), CASE["title"], font=FI(72), fill=INK)
-    d.rounded_rectangle((40, 220, 460, 980), radius=46, outline=INK, width=10); d.rounded_rectangle((60, 240, 440, 960), radius=34, fill=(226, 220, 206))
+    d.rounded_rectangle((40, 220, 460, 980), radius=46, outline=INK, width=10); d.rounded_rectangle((60, 240, 440, 960), radius=34, fill=(32, 34, 52))
     icon(d, 250, 540, CASE["icon"], INK, False)
     d.text((250, 760), CASE["unknown"], font=FI(84), fill=RED, anchor="mm")
-    d.rounded_rectangle((90, 880, 410, 935), radius=10, fill=INK); d.text((250, 907), CASE["unknown_tag"], font=MR(24), fill=PAPER, anchor="mm")
+    d.rounded_rectangle((90, 880, 410, 935), radius=10, fill=(58, 63, 92)); d.text((250, 907), CASE["unknown_tag"], font=MR(24), fill=WH, anchor="mm")
     d.text((500, 230), "“", font=FI(150), fill=RED)
     for i, l in enumerate(CASE["quote"]): d.text((500, 370 + i * 74), l, font=FI(64), fill=INK)
-    d.rectangle((500, 720, CW - 40, 980), outline=(150, 145, 135), width=3)
-    d.text((520, 745), "WHY IT FAILS", font=MB(24), fill=(120, 115, 105)); d.text((520, 790), "• X-RAY PENDING", font=MB(24), fill=RED)
+    d.rectangle((500, 720, CW - 40, 980), outline=(70, 74, 100), width=3)
+    d.text((520, 745), "WHY IT FAILS", font=MB(24), fill=(150, 155, 178)); d.text((520, 790), "• X-RAY PENDING", font=MB(24), fill=RED)
     d.text((40, 1050), CASE["foot_bad"][0], font=FB(44), fill=INK); d.text((40, 1105), CASE["foot_bad"][1], font=FB(44), fill=RED)
     return c
 
@@ -92,7 +92,7 @@ def blue_card(reveal):
         y += 46 + txt.count("\n") * 48 + 100
     k = reveal.get("rewrite", 0)
     if k > 0:
-        d.rectangle((500, y, CW - 40, 980), fill=a((20, 120, 70), k)); d.text((520, y + 20), "TESTABLE REWRITE", font=MB(24), fill=a((200, 255, 220), k))
+        d.rectangle((500, y, CW - 40, 980), fill=a((10, 70, 44), k)); d.text((520, y + 20), "TESTABLE REWRITE", font=MB(24), fill=a((200, 255, 220), k))
         d.multiline_text((520, y + 62), CASE["rewrite"], font=FB(32), fill=a(WH, k), spacing=6)
         d.text((520, 948), "[example values]", font=MR(20), fill=a((200, 255, 220), k))
     k = reveal.get("foot", 0)
@@ -100,8 +100,8 @@ def blue_card(reveal):
         d.text((40, 1050), CASE["foot_good"][0], font=FB(44), fill=a(WH, k)); d.text((40, 1105), CASE["foot_good"][1], font=FB(44), fill=a(GR, k))
     return c
 
-a = np.zeros((H, W, 3), np.float32) + np.array([18, 18, 24]); a += rng.normal(0, 4, (H, W, 1))
-BOARD = Image.fromarray(np.clip(a, 0, 255).astype(np.uint8)).convert("RGBA")
+BOARD = Image.new("RGBA", (W, H), (13, 13, 20, 255)); _g = ImageDraw.Draw(BOARD)
+for _y in range(0, H, 60): _g.line((0, _y, W, _y), fill=(20, 21, 32))
 bd = ImageDraw.Draw(BOARD); bd.text((60, 90), "REQ X-RAY", font=MB(30), fill=(200, 200, 210)); bd.text((1020, 90), "// CASE " + CASE["num"], font=MB(30), fill=RED, anchor="ra")
 SH = Image.new("RGBA", (W, H)); ImageDraw.Draw(SH).rectangle((CX0 + 12, CY0 + 18, CX1 + 12, CY1 + 18), fill=(0, 0, 0, 150)); SH = SH.filter(ImageFilter.GaussianBlur(14))
 PAPERC = paper_card()
@@ -159,14 +159,14 @@ for f in ([int(p * FPS) for p in PREVIEW] if PREVIEW else range(N)):
     for x in (300, 780): d.rectangle((x, CY0 - 18 + dy, x + 60, CY0 + 14 + dy), fill=(70, 72, 82))
     if li == 1 and t < SCAN0:  # highlight the quote
         kk = ease((t - T[1]) / .4); hl = Image.new("RGBA", (W, H)); hd = ImageDraw.Draw(hl)
-        hd.rounded_rectangle((CX0 + 488, CY0 + 360, CX1 - 30, CY0 + 370 + 74 * len(CASE["quote"])), radius=12, outline=(214, 48, 64, int(255 * kk)), width=6); im.alpha_composite(hl)
+        hd.rounded_rectangle((CX0 + 488, CY0 + 360, CX1 - 30, CY0 + 370 + 74 * len(CASE["quote"])), radius=12, outline=(240, 53, 158, int(255 * kk)), width=6); im.alpha_composite(hl)
     if SCAN0 <= t < SCAN1:
         sx = CX0 + int(CW * (t - SCAN0) / (SCAN1 - SCAN0)); g = Image.new("RGBA", (W, H)); gd = ImageDraw.Draw(g)
         gd.rectangle((sx - 6, CY0 - 40, sx + 6, CY1 + 40), fill=CY + (255,)); im.alpha_composite(g.filter(ImageFilter.GaussianBlur(18))); im.alpha_composite(g)
         ImageDraw.Draw(im).text((min(sx + 20, 820), CY0 - 60), "SCANNING…", font=MB(28), fill=CY)
     if li == 0 and t > T[0] + .6:  # hook banner
         kk = ease((t - T[0] - .6) / .3); bn = Image.new("RGBA", (W, H)); bnd = ImageDraw.Draw(bn)
-        bnd.rectangle((0, 170, W, 290), fill=(214, 48, 64, int(235 * kk))); bnd.text((W / 2, 230), "FAILS EVERY TEST", font=FI(72), fill=(255, 255, 255, int(255 * kk)), anchor="mm"); im.alpha_composite(bn)
+        bnd.rectangle((0, 170, W, 290), fill=(240, 53, 158, int(235 * kk))); bnd.text((W / 2, 230), "FAILS EVERY TEST", font=FI(72), fill=(255, 255, 255, int(255 * kk)), anchor="mm"); im.alpha_composite(bn)
     d = ImageDraw.Draw(im)
     if t < T[6] + 3.5:
         im.alpha_composite(bitimg(f, "happy" if li == 6 else "norm"), (60, 1580 + int(8 * math.sin(t * 3.8)))); d = ImageDraw.Draw(im)
