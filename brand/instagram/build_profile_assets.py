@@ -5,7 +5,7 @@ import io, os, re, cairosvg
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 HERE=os.path.dirname(os.path.abspath(__file__))
 W,H=1080,1920
-CY=(0,240,255); PK=(255,43,214); GR=(57,255,136); RD=(240,53,158)  # brand pink for "problem" words (was red); WH=(255,255,255); BG=(13,13,20); YL=(255,214,0)
+CY=(0,240,255); PK=(255,43,214); GR=(57,255,136); RD=(240,53,158); WH=(255,255,255); BG=(13,13,20); YL=(255,214,0)  # RD is brand pink for "problem" words (was red)
 FONTS=os.path.expanduser("~/Library/Fonts")
 FI=lambda s: ImageFont.truetype(f"{FONTS}/InterDisplay-Black.otf",s)
 FM=lambda s: ImageFont.truetype(f"{FONTS}/DejaVuSansMono.ttf",s)
