@@ -3,7 +3,7 @@
 | Module | Topic | Status |
 | --- | --- | --- |
 | 1 | Introduction to agentic workflows | Done 29 Oct 2026 (quiz is paid-only, skipped) |
-| 2 | Reflection design pattern | Next |
+| 2 | Reflection design pattern | In progress (started 4 Nov 2026) |
 | 3 | Tool use | |
 | 4 | Practical tips for building agentic AI | |
 | 5 | Planning and multi-agent workflows | |
@@ -27,3 +27,31 @@ The four design patterns from lesson 8 are **reflection**, **tool use**, **plann
 2. **Gates are how you allow autonomy safely.** The Bit run planned and fixed things on its own, but couldn't move past a gate without my approval. That's the same idea as design reviews.
 3. **Reflection needs a measurable target.** "Make it better" doesn't converge; "score 6 criteria, stop at 8/10" did, in 2 rounds.
 4. **Gap:** none of my builds use multi-agent collaboration yet. That's Module 5, and it's the planned "writer agent vs reviewer agent" build.
+
+## Module 2 exercise: reflection on my requirements rewriter
+
+**Reflection** = the model produces a draft, then critiques its own output and revises it. It works best with **external feedback**: something outside the model that checks the draft objectively (code, a test, a tool), instead of the model only marking its own homework.
+
+My version, [`reflection_rewriter.py`](reflection_rewriter.py):
+
+1. **Draft:** Claude rewrites each failing requirement into testable `shall` statements.
+2. **Feedback:** my Python rule checker (`requirements_rules.check_text`) checks the draft: weak modals, vague words, TBDs, compound shalls, no number + unit.
+3. **Reflect:** Claude gets the rule results plus a reviewer checklist (intent kept, `[assumed]` on invented values, verification method fits) and revises.
+4. **Stop** when the rules pass and the critique says "No changes needed", or after 3 rounds.
+
+It compares the **first draft** (no reflection) with the **final** version using the same rules, so the benefit is measured, not assumed. Results are written to `reflection_output.md`.
+
+```bash
+cd 02-agentic-ai
+python3 reflection_rewriter.py              # sample requirements, max 3 rounds
+python3 reflection_rewriter.py --rounds 1   # one reflection round only
+```
+
+### Questions to answer from the run
+- How many requirements passed **without** reflection vs **with** it?
+- How many rounds did it need? Did any loop without converging?
+- Did reflection ever make a rewrite *worse* (lost intent, added scope)? The rules can't catch that; I have to.
+- Did the critique find anything my rules miss? (In a dry run, "quickly" slipped past the vague-word list, which only has "quick".)
+
+### Notes from the lessons
+- (add as I go)

@@ -29,7 +29,11 @@ def check_requirement(req_id, csv_path=SAMPLE_CSV):
     reqs = load_requirements(csv_path)
     if req_id not in reqs:
         return {"error": f"No requirement with id {req_id}"}
-    text = reqs[req_id]
+    return {"id": req_id, **check_text(reqs[req_id])}
+
+
+def check_text(text):
+    """Run the rule checks on any requirement text (used by the reflection loop for drafts)."""
     low = text.lower()
     issues = []
     if not re.search(r"\bshall\b", low):
@@ -51,4 +55,4 @@ def check_requirement(req_id, csv_path=SAMPLE_CSV):
             for c in clauses:
                 if not is_measurable(c):
                     issues.append(f"Clause has no measurable value: '{c}'")
-    return {"id": req_id, "text": text, "verdict": "PASS" if not issues else "REVIEW", "issues": issues}
+    return {"text": text, "verdict": "PASS" if not issues else "REVIEW", "issues": issues}
