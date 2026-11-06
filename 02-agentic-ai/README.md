@@ -3,7 +3,7 @@
 | Module | Topic | Status |
 | --- | --- | --- |
 | 1 | Introduction to agentic workflows | Done 29 Oct 2026 (quiz is paid-only, skipped) |
-| 2 | Reflection design pattern | In progress (started 4 Nov 2026) |
+| 2 | Reflection design pattern | Done (6 Nov 2026) |
 | 3 | Tool use | |
 | 4 | Practical tips for building agentic AI | |
 | 5 | Planning and multi-agent workflows | |
@@ -47,11 +47,26 @@ python3 reflection_rewriter.py              # sample requirements, max 3 rounds
 python3 reflection_rewriter.py --rounds 1   # one reflection round only
 ```
 
-### Questions to answer from the run
-- How many requirements passed **without** reflection vs **with** it?
-- How many rounds did it need? Did any loop without converging?
-- Did reflection ever make a rewrite *worse* (lost intent, added scope)? The rules can't catch that; I have to.
-- Did the critique find anything my rules miss? (In a dry run, "quickly" slipped past the vague-word list, which only has "quick".)
+### Results from the first real run (6 Nov 2026)
+
+Full log: [`reflection_output.md`](reflection_output.md). Six vague requirements, up to 3 reflection rounds each.
+
+| Question | Answer |
+| --- | --- |
+| Passed the rules without vs with reflection? | **6/6 vs 6/6.** Every first draft already passed my rule checker, so by that metric reflection added nothing. |
+| Rounds needed? | **3 for all six.** The critic never said "No changes needed", so the stopping rule never fired. |
+| Did reflection make anything worse? | **Once.** REQ-005 round 2 shortened the battery requirement and reintroduced the vague word "typical". The rule checker flagged it and round 3 fixed it. |
+| Did the critique find things my rules miss? | **Yes, lots.** Invented scope (non-volatile memory, a data server, extra Bluetooth features, legibility and contrast nobody asked for), untagged assumptions (AES, Bluetooth Low Energy), and fuzzy measurement points ("respond" became "send the last byte", "95 percent" became "at least 95 percent"). |
+
+### What I learned
+1. **Measure with the right metric.** My rules check *form* (shall, numbers, vague words). Reflection improved *intent* (no invented scope, honest assumptions). A form-only eval scored both versions 6/6, so it couldn't see the improvement. That's lesson 17: an eval has to measure what you're trying to improve.
+2. **External feedback and self-critique catch different things.** The code caught a regression the model introduced ("typical"); the model caught over-reach the code can't see. Use both.
+3. **Reflection needs a stopping rule that can actually stop.** An LLM critic always finds something. Next version: stop when the rules pass and the critique raises nothing new since the last round, or cap at 2 rounds (most of the value arrived in round 1).
+4. **Cost:** 4 API calls per requirement instead of 1, so reflection is worth it for important outputs, not everything.
+
+### Next version (ideas)
+- Add an intent check to the eval: count `[assumed]` tags and flag any new noun phrase not in the original (invented scope).
+- Stop after 2 rounds or when the critique repeats itself.
 
 ### Notes from the lessons
 - (add as I go)
