@@ -53,13 +53,25 @@ Reply with JSON only:
   "rewrites": ["..."], "verification": ["...", ...]}}"""
 
 
-def ask(client, prompt):
-    """One Claude call that must return JSON. Reads text blocks only (skips thinking blocks)."""
-    resp = client.messages.create(model=MODEL, max_tokens=1500,
-                                  messages=[{"role": "user", "content": prompt}])
-    raw = "".join(b.text for b in resp.content if b.type == "text").strip()
-    raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw)  # tolerate ```json fences
-    return json.loads(raw)
+def ask(client, prompt, retries=1):
+    """One Claude call that must return JSON. Reads text blocks only (skips thinking blocks).
+    If the reply is cut off or isn't valid JSON, asks once more for a shorter, JSON-only reply."""
+    messages = [{"role": "user", "content": prompt}]
+    for attempt in range(retries + 1):
+        resp = client.messages.create(model=MODEL, max_tokens=4000, messages=messages)
+        raw = "".join(b.text for b in resp.content if b.type == "text").strip()
+        raw = re.sub(r"^```(?:json)?\s*|\s*```$", "", raw)  # tolerate ```json fences
+        try:
+            if getattr(resp, "stop_reason", None) == "max_tokens":
+                raise ValueError("reply was cut off at max_tokens")
+            return json.loads(raw)
+        except ValueError as e:  # JSONDecodeError is a ValueError
+            if attempt == retries:
+                raise
+            messages = [{"role": "user", "content": prompt},
+                        {"role": "assistant", "content": raw or "(empty)"},
+                        {"role": "user", "content": f"That reply wasn't usable ({e}). Reply again with valid "
+                                                    "JSON only, nothing else, and keep the critique to two sentences."}]
 
 
 def check_all(rewrites):
@@ -128,7 +140,11 @@ def main():
     print(f"{len(to_fix)} requirements need work. Reflecting (max {args.rounds} rounds each)...\n")
     results = []
     for req in to_fix:
-        res = improve(client, req, args.rounds)
+        try:
+            res = improve(client, req, args.rounds)
+        except Exception as e:  # one bad reply shouldn't lose the whole run
+            print(f"{req['id']}: skipped ({type(e).__name__}: {e})")
+            continue
         print(f"{req['id']}: {res['rounds']} round(s) -> "
               f"{'PASS' if all_pass(res['final']['checks']) else 'still REVIEW'}")
         results.append(res)
