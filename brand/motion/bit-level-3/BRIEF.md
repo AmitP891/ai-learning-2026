@@ -34,9 +34,9 @@ No requirements, no systems engineering. The joke is one every coder and gamer k
 Exactly as the Level 2 bible (`brand/bit/bit.svg`, eyes-only visor; idle / blink / determined / hit / happy; shield). New this level: a **TEST** zap, a short cyan beam from his chest screen that turns a bug into a green ✓ and pops it.
 
 ### GLITCH (rival)
-- **Build:** draw him in code at game resolution, the same height as Bit so they read as equals. A boxy robot with a gunmetal body (#3A3F55, darker #23263A outline), a **lime visor** (#39FF88) and one bent antenna with a flickering tip. Every few frames a horizontal slice of his sprite **shifts sideways by 1–3 game pixels** (a digital glitch). That shift is his signature.
+- **Build:** his master design is `brand/glitch/glitch.svg` (character sheet: `brand/glitch/glitch_sheet.png`). Load it the same way Level 1 loads `bit.svg`: strip the `eyes` group and `mouth` path, render to the same height as Bit so they read as equals, snap to his palette, then draw the expression on the visor in code. He's a **hacker-hood robot**: dark hood (#2B2F45) with a lime rim, gunmetal face plate (#3A3F55), dark visor with **lime** (#39FF88) eyes, hoodie strings, `{ }` chest screen, lime soles. Every few frames a horizontal slice of his sprite **shifts sideways by 1–3 game pixels** (a digital glitch). That shift is his signature.
 - **Personality:** cocky, fast, impatient. Not evil, just "move fast and ship". He smirks a lot.
-- **Expressions (visor only):** smirk (default, one eye narrowed), typing-fast (eyes as scrolling dashes), shocked (eyes as big squares), crashed (visor full of static noise).
+- **Expressions (visor only, match `brand/glitch/build_glitch.py` EXPR):** smirk (default, left eye narrowed), typing (eyes become scrolling code dashes), shocked (hollow square eyes), crashed (visor full of static).
 - **Move:** **SHIP IT!**, a stamp he slams on his game before it's finished.
 
 ### The bugs
