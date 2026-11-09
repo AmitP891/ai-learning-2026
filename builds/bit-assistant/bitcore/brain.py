@@ -19,7 +19,12 @@ SYSTEM = (
     "Only say you did something if the tool succeeded; if it failed, say so briefly. "
     "Anything your tools can't do (shell commands, deleting, sending messages or emails, buying things, "
     "other apps or websites): say you can't in one short sentence and do nothing. "
-    "When reading calendar events, give times and titles only."
+    "When reading calendar events, give times and titles only. "
+    "Answer only the current request; don't bring up earlier topics unless asked. "
+    "Before you use a tool, first say a very short acknowledgement of 2 to 4 words "
+    "(like 'On it!', 'Let me check.', 'One sec.'), vary it, then call the tool; this is spoken "
+    "while the tool runs and doesn't count toward your 2 sentences. Don't do this when refusing. "
+    "When confirming a reminder, say the day exactly as the tool reports it (today or tomorrow)."
 )
 MAX_TOOL_ROUNDS = 5
 
@@ -37,21 +42,24 @@ class Brain:
         self.history: list[dict] = []
 
     def warm(self):
-        """Open the connection to the API before the first question (free call, no tokens)."""
+        """One tiny real request at startup: opens the connection and writes the prompt cache,
+        so the first real question isn't slow (~1.5k input tokens, a fraction of a cent)."""
         try:
-            self.client.models.retrieve(MODEL)
+            self._call(messages=[{"role": "user", "content": "hi"}], max_tokens=1)
         except anthropic.APIError as e:
             log.warning("brain: warm-up failed: %s", e)
 
-    def ask(self, text: str) -> dict:
-        """Return {reply, think_s, sentences}. Never raises: Bit must keep talking."""
+    def ask(self, text: str, on_text=None) -> dict:
+        """Return {reply, think_s, sentences, tools}. Never raises: Bit must keep talking.
+        on_text(chunk) gets reply text as it streams in, so speech can start early;
+        on_text(None) marks the end of a text block (speak what's buffered now)."""
         self.history.append({"role": "user", "content": text})
         t0 = time.perf_counter()
         turn_start = len(self.history) - 1
         tools_used = []
         try:
             for _ in range(MAX_TOOL_ROUNDS + 1):
-                r = self._call()
+                r = self._call(on_text=on_text)
                 self.history.append({"role": "assistant", "content": r.content})
                 if r.stop_reason != "tool_use":
                     break
@@ -84,13 +92,15 @@ class Brain:
         log.info("brain: %.2fs, %d sentence(s), tools %s: %r -> %r", think_s, n, tools_used or "-", text, reply)
         return {"reply": reply, "think_s": think_s, "sentences": n, "tools": tools_used}
 
-    def _call(self):
-        return self.client.beta.messages.create(
+    def _call(self, on_text=None, messages=None, max_tokens=1024):
+        kwargs = dict(
             model=MODEL,
-            max_tokens=1024,
-            system=SYSTEM,
+            max_tokens=max_tokens,
+            # cache the instructions + tool list (same every call) ...
+            system=[{"type": "text", "text": SYSTEM, "cache_control": {"type": "ephemeral"}}],
             tools=SCHEMAS,
-            messages=self._window(),
+            messages=messages or self._window(),
+            cache_control={"type": "ephemeral"},  # ... and the conversation so far
             # spoken chat: no thinking, low effort = fastest replies
             thinking={"type": "between_tools"},
             output_config={"effort": "low"},
@@ -98,6 +108,20 @@ class Brain:
             betas=["server-side-fallback-2026-07-01"],
             fallbacks="default",
         )
+        if on_text is None:
+            r = self.client.beta.messages.create(**kwargs)
+        else:
+            with self.client.beta.messages.stream(**kwargs) as s:
+                for ev in s:
+                    if ev.type == "content_block_delta" and ev.delta.type == "text_delta":
+                        on_text(ev.delta.text)
+                    elif ev.type == "content_block_stop":
+                        on_text(None)  # e.g. "On it!" before a tool call: say it now
+                r = s.get_final_message()
+        u = r.usage
+        log.info("brain: call in %d (cache read %d, write %d) out %d", u.input_tokens,
+                 u.cache_read_input_tokens or 0, u.cache_creation_input_tokens or 0, u.output_tokens)
+        return r
 
     def _window(self):
         """Recent history, cut only at a plain-text user turn so tool_use/tool_result pairs stay intact."""

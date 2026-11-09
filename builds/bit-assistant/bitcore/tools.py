@@ -154,7 +154,12 @@ def add_reminder(text: str, time: str, day: str = "auto") -> str:
         when += dt.timedelta(days=1)
     _osascript(_REMINDER_SCRIPT, text, str(when.year), str(when.month), str(when.day),
                str(when.hour), str(when.minute))
-    return f"Reminder added: '{text}' at {when:%H:%M on %A %-d %B}."
+    return reminder_confirmation(text, when, now)
+
+
+def reminder_confirmation(text, when, now):
+    rel = "today" if when.date() == now.date() else "tomorrow"
+    return f"Reminder added: '{text}' for {rel} ({when:%A}) at {when:%-I:%M %p}."
 
 
 def open_app(name: str) -> str:

@@ -8,8 +8,11 @@
     python3 bit.py --wake-test   # Gate 1 test: 5 wake words, then 30 s false-trigger count
 """
 import argparse
+import queue
+import re
 import subprocess
 import sys
+import threading
 import time
 
 from bitcore import face, speaker, voice
@@ -35,23 +38,80 @@ def open_face():
     print(f"Face: {face.url()}  (click the page or press F for full screen)")
 
 
+class SentenceSpeaker:
+    """Speaks Claude's reply sentence by sentence while it is still streaming in,
+    so Bit starts talking after the first sentence instead of the whole reply."""
+
+    def __init__(self):
+        self.buf = ""
+        self.q: "queue.Queue[str | None]" = queue.Queue()
+        self.first_sound_at = None
+        self.engine = None
+        self.spoken = 0
+        self.said = []  # (sound_at, sentence)
+        self.done = False
+        self.thread = threading.Thread(target=self._run, daemon=True)
+        self.thread.start()
+
+    def feed(self, chunk):
+        if chunk is None:  # end of a text block: speak whatever is buffered
+            if self.buf.strip():
+                self.q.put(self.buf.strip())
+            self.buf = ""
+            return
+        self.buf += chunk
+        # a sentence ends at . ! or ? followed by whitespace (so "9:55" or "5.5" don't split)
+        while (m := re.search(r"[.!?](?=\s)", self.buf)):
+            sentence, self.buf = self.buf[:m.end()].strip(), self.buf[m.end():]
+            if sentence:
+                self.q.put(sentence)
+
+    def finish(self, fallback: str):
+        """Flush the rest, wait until Bit has finished talking. Speaks `fallback` if nothing streamed."""
+        if self.buf.strip():
+            self.q.put(self.buf.strip())
+        self.buf = ""
+        self.done = True
+        self.q.put(None)
+        self.thread.join()
+        if not self.spoken:
+            self._say(fallback)
+
+    def _run(self):
+        while (sentence := self.q.get()) is not None:
+            self._say(sentence)
+            if self.q.empty() and not self.done:
+                face.set_state("thinking")  # said "On it!", tool + answer still coming
+
+    def _say(self, sentence):
+        t0 = time.perf_counter()
+        r = voice.speak(sentence)
+        self.said.append((t0 + r["first_sound_s"], sentence))
+        if self.first_sound_at is None:
+            self.first_sound_at = t0 + r["first_sound_s"]
+            self.engine = r["engine"]
+        self.spoken += 1
+
+
 def answer(brain, text, released_at):
     """Claude -> Bit's voice, with timings (release = end of the user's speech)."""
-    a = brain.ask(text)
-    print(f"   Bit: {a['reply']}")
+    sp = SentenceSpeaker()
+    a = brain.ask(text, on_text=sp.feed)
+    sp.finish(fallback=a["reply"])  # blocks until Bit has finished talking
+    face.set_state("idle")
+    total = sp.first_sound_at - released_at  # when the first audio came out
+    # when the actual answer (not the "On it!") started
+    answer_at = next((t for t, s in sp.said if s in a["reply"]), sp.said[-1][0] if sp.said else sp.first_sound_at)
+    ack = [s for _, s in sp.said if s not in a["reply"]]
+    print(f"   Bit: {(ack[0] + ' ... ') if ack else ''}{a['reply']}")
     if a["tools"]:
         print(f"   tools: {', '.join(a['tools'])}")
-    speak_start = time.perf_counter()
-    t = voice.speak(a["reply"])  # blocks until Bit has finished talking
-    face.set_state("idle")
-    # latency = when the first audio came out, not when speak() returned
-    total = (speak_start + t["first_sound_s"]) - released_at
-    print(f"   ({a['sentences']} sentence(s); claude {a['think_s']:.2f}s, "
-          f"voice {t['first_sound_s']:.2f}s via {t['engine']}; release -> first sound {total:.2f}s)")
-    log.info("latency: release -> first sound %.2fs (claude %.2fs, voice %.2fs, %s)",
-             total, a["think_s"], t["first_sound_s"], t["engine"])
-    return {"total": total, "claude": a["think_s"], "voice": t["first_sound_s"],
-            "engine": t["engine"], "tools": a["tools"], "sentences": a["sentences"], "reply": a["reply"]}
+    print(f"   ({a['sentences']} sentence(s); first sound {total:.2f}s, answer starts "
+          f"{answer_at - released_at:.2f}s via {sp.engine})")
+    log.info("latency: release -> first sound %.2fs, answer %.2fs (%s)",
+             total, answer_at - released_at, sp.engine)
+    return {"total": total, "answer": answer_at - released_at, "engine": sp.engine,
+            "tools": a["tools"], "sentences": a["sentences"], "reply": a["reply"], "ack": ack}
 
 
 def run(show_face=True):
@@ -99,6 +159,22 @@ def face_demo():
         time.sleep(0.5)
 
 
+def _stub(name, real_fn):
+    """Fake a tool for repeat demo runs, returning exactly what the real one would say."""
+    from bitcore import tools
+    if name == "add_reminder":
+        def fake(**a):
+            saved, tools._osascript = tools._osascript, (lambda *x, **k: "ok")
+            try:
+                return real_fn(**a)  # same date logic and wording, nothing sent to Reminders
+            finally:
+                tools._osascript = saved
+        return fake
+    if name == "add_note":
+        return lambda **a: "Note saved."
+    return real_fn
+
+
 def demo_run(runs=3, dry=()):
     """Gate 5: the section 1 script, typed, through the real brain + tools + voice + face.
     `dry` = tool names to fake (e.g. so repeat runs don't create duplicate reminders)."""
@@ -109,7 +185,7 @@ def demo_run(runs=3, dry=()):
     for run_i in range(1, runs + 1):
         for name in tools.FUNCS:
             if run_i > 1 and name in dry:
-                tools.FUNCS[name] = (lambda n: lambda **a: f"(dry run) {n} done: {a}")(name)
+                tools.FUNCS[name] = _stub(name, real[name])
             else:
                 tools.FUNCS[name] = real[name]
         print(f"\n=== run {run_i}/{runs} ===")
@@ -124,15 +200,18 @@ def demo_run(runs=3, dry=()):
             results.append((run_i, line, r))
             time.sleep(0.8)
     tools.FUNCS.update(real)
-    print("\n=== timings: typed question -> Bit's first sound (add ~0.5 s Whisper for spoken) ===")
-    print(f"{'line':42s} " + " ".join(f"run{i}" for i in range(1, runs + 1)) + "   tools")
+    print("\n=== timings (s), typed question -> first sound / answer starts (add ~0.5 s Whisper for spoken) ===")
+    print(f"{'line':40s} " + "  ".join(f"  run{i}   " for i in range(1, runs + 1)) + " tools")
     for line in DEMO_SCRIPT:
         rs = [r for _, l, r in results if l == line]
-        print(f"{line[:42]:42s} " + " ".join(f"{r['total']:4.2f}" for r in rs) + f"   {','.join(rs[0]['tools']) or '-'}")
-    all_t = sorted(r["total"] for _, _, r in results)
-    print(f"median {all_t[len(all_t)//2]:.2f}s, worst {all_t[-1]:.2f}s; "
-          f"over 3.5 s (4 s with Whisper): {sum(t > 3.5 for t in all_t)}/{len(all_t)}; "
-          f"engines: {sorted({r['engine'] for _, _, r in results})}")
+        print(f"{line[:40]:40s} " + "  ".join(f"{r['total']:4.2f}/{r['answer']:4.2f}" for r in rs)
+              + f"  {','.join(rs[0]['tools']) or '-'}")
+    for key, label in (("total", "first sound"), ("answer", "answer starts")):
+        v = sorted(r[key] for _, _, r in results)
+        print(f"{label:14s} median {v[len(v)//2]:.2f}, worst {v[-1]:.2f}; over 3.5 s (4 s with Whisper): "
+              f"{sum(t > 3.5 for t in v)}/{len(v)}")
+    print(f"engines: {sorted({r['engine'] for _, _, r in results})}; "
+          f"replies over 2 sentences: {sum(r['sentences'] > 2 for _, _, r in results)}")
     face.set_state("idle")
     return results
 
