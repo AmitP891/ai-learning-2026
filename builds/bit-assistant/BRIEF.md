@@ -7,7 +7,7 @@ Build it in gates. At each gate, stop, show Amit, and end your message with this
 > ⏹ **STOP RECORDING** — Gate N done. Start a new recording before you reply.
 
 ## 1. What "done" looks like (the demo for the video)
-Amit says **"Hey Bit"** (no keyboard) and then *"what's on my calendar today?"*. Bit's voice comes out of **the real 3D-printed Bit on the desk** (a small Bluetooth speaker hidden behind him), while his face reacts on screen. Bit's face switches to listening, then thinking, then he answers in his own voice with his mouth moving in sync, and reads out today's events. Then:
+Amit says **"Hey Bit"** (no keyboard) and then *"what's on my calendar today?"*. Bit's voice comes out of **the real 3D-printed Bit on the desk** (a small Bluetooth speaker hidden behind him), Bit's face on screen switches to listening, then thinking, then he answers in his own voice with his mouth moving in sync, and reads out today's events. Then:
 - *"Open Spotify and play something chill."* → Spotify opens and starts playing.
 - *"Remind me to rehearse my talk at 7."* → a real reminder appears in Reminders.
 - *"Make a note: Level 4 idea, Bit vs a speedrunner."* → the note lands in `notes/bit-notes.md`.
