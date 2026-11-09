@@ -1,0 +1,18 @@
+# Bit runtime (Python 3.13, macOS on Apple silicon; versions tested Nov 2026)
+anthropic==2.7.0
+python-dotenv==1.2.4
+requests==2.34.2
+numpy==2.5.4
+scipy==1.18.1
+sounddevice==0.5.6
+webrtcvad-wheels==2.0.14.post1
+openwakeword==0.6.0
+onnxruntime==1.31.1
+faster-whisper==1.2.1
+pynput==1.8.2
+websockets==17.4
+pyobjc-framework-EventKit==13.0
+
+# Only for retraining the "hey bit" wake word (wakeword/train_hey_bit.py)
+# torch==2.15.0
+# onnx==1.23.2

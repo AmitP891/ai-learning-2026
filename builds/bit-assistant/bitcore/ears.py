@@ -11,7 +11,7 @@ import numpy as np
 import sounddevice as sd
 import webrtcvad
 
-from . import face, speaker
+from . import face, recorder, speaker
 from .config import BIT_MIC_DEVICE, WAKE_MODEL, WAKE_THRESHOLD, WHISPER_MODEL, log
 
 RATE = 16000
@@ -68,6 +68,7 @@ class Ears:
         block = indata[:, 0].copy()
         self.q.put(block)
         face.mic(block)
+        recorder.mic(block)
 
     def _start_space_listener(self):
         try:

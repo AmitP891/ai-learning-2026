@@ -227,7 +227,7 @@ def _next_content_item() -> str:
         return "No content plan is set."
     path = Path(CONTENT_PLAN_FILE).expanduser()
     if not path.is_absolute():
-        path = REPO_ROOT / path
+        path = ROOT / path  # relative to builds/bit-assistant
     if not path.exists():
         return f"Content plan file not found: {path.name}."
     for line in path.read_text().splitlines():

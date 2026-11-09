@@ -6,6 +6,8 @@
     python3 bit.py --ask "hi"    # typed question -> Claude -> voice (no mic)
     python3 bit.py --face-demo   # Gate 4: cycle idle -> listening -> thinking -> talking
     python3 bit.py --wake-test   # Gate 1 test: 5 wake words, then 30 s false-trigger count
+    python3 bit.py --demo-run    # Gate 5: section 1 script x3, typed, with timings
+    add --record to any of these: saves recordings/bit-<date>.wav (L = your mic, R = Bit)
 """
 import argparse
 import queue
@@ -15,7 +17,7 @@ import sys
 import threading
 import time
 
-from bitcore import face, speaker, voice
+from bitcore import face, recorder, speaker, voice
 from bitcore.brain import Brain
 from bitcore.config import LOG_DIR, WAKE_MODEL, WAKE_NAME, log
 
@@ -266,8 +268,14 @@ def main():
     p.add_argument("--wake-test", action="store_true")
     p.add_argument("--face-demo", action="store_true")
     p.add_argument("--no-face", action="store_true")
+    p.add_argument("--record", action="store_true",
+                   help="save one WAV for the session in recordings/ (left = mic, right = Bit)")
     p.add_argument("--demo-run", type=int, nargs="?", const=3, metavar="RUNS")
     a = p.parse_args()
+    if a.record:
+        rec = recorder.start()
+        print(f"● REC  {rec.path.relative_to(LOG_DIR.parent)}  started at "
+              f"{rec.started:%H:%M:%S.%f}"[:-3] + "  (clap on camera now to sync)")
     try:
         if a.say:
             print(f"Speaker: {speaker.device_name()}")
@@ -286,6 +294,10 @@ def main():
             run(show_face=not a.no_face)
     except KeyboardInterrupt:
         print("\nBye from Bit.")
+    finally:
+        saved = recorder.stop()
+        if saved:
+            print(f"● saved {saved[0]} ({saved[1]:.1f} s)")
 
 
 if __name__ == "__main__":
