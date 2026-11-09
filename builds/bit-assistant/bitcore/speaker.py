@@ -2,6 +2,7 @@
 import numpy as np
 import sounddevice as sd
 
+from . import face
 from .config import BIT_AUDIO_DEVICE, log
 
 _device_cache = None
@@ -31,8 +32,12 @@ def device_name():
     return sd.query_devices(i if i is not None else sd.default.device[1])["name"]
 
 
-def play(samples: np.ndarray, rate: int):
-    """Play float32 or int16 mono audio and block until done."""
+def play(samples: np.ndarray, rate: int, mouth: bool = False):
+    """Play float32 or int16 mono audio and block until done. mouth=True drives the face."""
+    if mouth and samples.dtype == np.int16:
+        track = face.MouthTrack(rate, output_latency=0.05)
+        track.feed(samples)
+        track.end()
     sd.play(samples, rate, device=output_device())
     sd.wait()
 
@@ -57,14 +62,17 @@ class PCMStream:
         )
         self.stream.start()
         self._carry = b""
+        self.mouth = face.MouthTrack(rate, output_latency=self.stream.latency)
 
     def write(self, chunk: bytes):
         data = self._carry + chunk
         cut = len(data) - (len(data) % 2)
         self._carry = data[cut:]
         if cut:
+            self.mouth.feed(np.frombuffer(data[:cut], dtype=np.int16))
             self.stream.write(data[:cut])
 
     def close(self):
+        self.mouth.end()
         self.stream.stop()
         self.stream.close()

@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bit</title>
+<style>
+  :root {
+    --bg: #0D0D14; --pink: #F0359E; --cyan: #00F0FF; --screen: #171A2B;
+    --grey: #8A8FA8; --dim: #3A3F5C;
+  }
+  html, body { margin: 0; height: 100%; background: var(--bg); overflow: hidden; }
+  body { display: flex; align-items: center; justify-content: center; cursor: default; }
+  body.hide-cursor { cursor: none; }
+  #bit {
+    /* the frame hugs Bit (hands, antenna, feet + bob room), so Bit himself is ~75% of the
+       screen height in 9:16 and 16:9 alike; on very narrow windows the width limits it */
+    aspect-ratio: 455 / 710;
+    height: min(81vh, calc(96vw * 710 / 455));
+  }
+  #bit svg { width: 100%; height: 100%; display: block; overflow: visible; }
+  #bit text { font-family: "DejaVu Sans Mono", Menlo, monospace; }
+  #label {
+    position: fixed; top: 3.5vmin; left: 4vmin; margin: 0;
+    font: 600 clamp(15px, 2.6vmin, 30px)/1 "DejaVu Sans Mono", Menlo, monospace;
+    color: var(--grey); letter-spacing: .02em; transition: opacity .3s;
+  }
+  #label b { color: var(--pink); font-weight: 600; }
+  .off { opacity: 0 !important; }
+  #help {
+    position: fixed; bottom: 3vmin; left: 50%; transform: translateX(-50%);
+    font: 13px/1.4 Menlo, monospace; color: var(--dim); white-space: nowrap; transition: opacity .6s;
+  }
+</style>
+</head>
+<body>
+<p id="label"><b>//</b> <span id="state">connecting</span></p>
+<div id="bit" aria-label="Bit the robot"></div>
+<div id="help">F full screen · L label · 1-4 preview states</div>
+
+<script>
+const SVG_NS = "http://www.w3.org/2000/svg";
+const EYES = [244, 356], EYE_Y = 199, MOUTH = [300, 262];
+// eye shape per state, in Bit's SVG coordinates (base eye = 44x58, as in bit.svg)
+const EYE = {
+  idle:      { dx: 0, dy: 0,   w: 44, h: 58, rx: 12 },
+  talking:   { dx: 0, dy: 0,   w: 44, h: 58, rx: 12 },
+  listening: { dx: 0, dy: -2,  w: 54, h: 74, rx: 16 },   // eyes wide
+  thinking:  { dx: 10, dy: -20, w: 42, h: 48, rx: 12 },  // eyes look up
+};
+
+let state = "idle", preview = false;
+var pinned;
+let micTarget = 0, mic = 0, mouthTarget = 0, mouth = 0, lastMouthMsg = 0;
+let eye = { ...EYE.idle }, tilt = 0, nextBlink = 1.5, blinkUntil = 0;
+const el = {};
+
+function make(tag, attrs, parent) {
+  const n = document.createElementNS(SVG_NS, tag);
+  for (const k in attrs) n.setAttribute(k, attrs[k]);
+  parent.appendChild(n);
+  return n;
+}
+
+async function buildBit() {
+  const text = await (await fetch("/bit.svg")).text();
+  const svg = new DOMParser().parseFromString(text, "image/svg+xml").documentElement;
+  // same as the video build scripts: keep the body, redraw the eyes and mouth live
+  svg.querySelector("#eyes")?.remove();
+  svg.querySelector("#mouth")?.remove();
+  svg.setAttribute("viewBox", "75 5 455 710");  // Bit spans x 85-521, y 20-677 (+ bob and shadow)
+  svg.removeAttribute("width"); svg.removeAttribute("height");
+
+  const body = document.createElementNS(SVG_NS, "g");
+  while (svg.firstChild) body.appendChild(svg.firstChild);
+  make("ellipse", { cx: 300, cy: 690, rx: 150, ry: 14, fill: "#000", opacity: .35 }, svg);
+  svg.appendChild(body);
+  el.body = body;
+  el.antenna = body.querySelector("circle");  // the cyan ball on the antenna
+
+  const f = make("g", {}, body);
+  el.eyes = EYES.map(() => make("rect", { fill: "#00F0FF" }, f));
+  el.smile = make("path", { d: "M262 255 Q300 282 338 255", stroke: "#00F0FF", "stroke-width": 9,
+                            fill: "none", "stroke-linecap": "round" }, f);
+  el.pill = make("rect", { fill: "#00F0FF", x: MOUTH[0] - 28, width: 56 }, f);
+  el.bars = [0, 1, 2, 3, 4].map(i => make("rect", { fill: "#00F0FF", width: 9, rx: 4.5,
+                                                    x: MOUTH[0] + (i - 2) * 16 - 4.5 }, f));
+  el.dots = [0, 1, 2].map(i => make("circle", { fill: "#00F0FF", r: 6.5, cx: MOUTH[0] + (i - 1) * 22 }, f));
+
+  document.getElementById("bit").appendChild(svg);
+  requestAnimationFrame(frame);
+}
+
+function setState(s) {
+  state = s;
+  document.getElementById("state").textContent = s;
+}
+
+const lerp = (a, b, k) => a + (b - a) * k;
+const show = (n, on) => n.setAttribute("visibility", on ? "visible" : "hidden");
+
+function frame(ms) {
+  const t = ms / 1000;
+
+  // ---- levels (smoothed: fast attack, slower release) ----
+  if (preview && state === "talking") mouthTarget = Math.max(0, Math.sin(t * 9) * Math.sin(t * 2.3) * 1.2);
+  if (preview && state === "listening") micTarget = .3 + .3 * Math.sin(t * 5) * Math.sin(t * 1.7);
+  if (!preview && ms - lastMouthMsg > 250) mouthTarget = 0;
+  mouth = lerp(mouth, mouthTarget, mouthTarget > mouth ? .6 : .35);
+  mic = lerp(mic, micTarget, micTarget > mic ? .5 : .15);
+
+  // ---- body: the videos' bob (10 px at 0.6 Hz), calmer while listening, head tilt while thinking ----
+  const amp = state === "listening" ? 4 : 10;
+  const bob = amp * Math.sin(t * 2 * Math.PI * .6) - (state === "talking" ? 5 * mouth : 0);
+  tilt = lerp(tilt, state === "thinking" ? -3 : 0, .08);  // lean from the feet
+  el.body.setAttribute("transform", `translate(0 ${bob.toFixed(2)}) rotate(${tilt.toFixed(2)} 300 670)`);
+
+  // ---- eyes ----
+  const target = EYE[state];
+  for (const k in eye) eye[k] = lerp(eye[k], target[k], .2);
+  if (t > nextBlink) {
+    if ((state === "idle" || state === "talking") && !pinned) blinkUntil = t + .11;
+    nextBlink = t + 2.5 + Math.random() * 2.5;
+    if (Math.random() < .2) nextBlink = t + .3;  // sometimes a double blink
+  }
+  const blinking = t < blinkUntil;
+  const h = blinking ? 8 : eye.h;
+  el.eyes.forEach((r, i) => {
+    r.setAttribute("x", (EYES[i] + eye.dx - eye.w / 2).toFixed(1));
+    r.setAttribute("y", (EYE_Y + eye.dy - h / 2).toFixed(1));
+    r.setAttribute("width", eye.w.toFixed(1));
+    r.setAttribute("height", h.toFixed(1));
+    r.setAttribute("rx", Math.min(blinking ? 4 : eye.rx, h / 2).toFixed(1));
+  });
+
+  // ---- mouth: smile / talking pill / listening bars / thinking dots ----
+  const open = state === "talking" && mouth > .08;
+  show(el.smile, (state === "idle" || state === "talking") && !open);
+  show(el.pill, open);
+  if (open) {  // same shape as the video template: 56 wide, 8 + 38 x loudness tall
+    const ph = 8 + 38 * Math.min(1, mouth);
+    el.pill.setAttribute("y", (MOUTH[1] - ph / 2).toFixed(1));
+    el.pill.setAttribute("height", ph.toFixed(1));
+    el.pill.setAttribute("rx", (ph / 2).toFixed(1));
+  }
+  const shape = [.55, .8, 1, .8, .55];
+  el.bars.forEach((b, i) => {
+    show(b, state === "listening");
+    const lv = Math.max(.12, mic) * (.75 + .25 * Math.sin(t * 13 + i * 1.7));
+    const bh = 9 + 46 * shape[i] * Math.min(1, lv);
+    b.setAttribute("y", (MOUTH[1] - bh / 2).toFixed(1));
+    b.setAttribute("height", bh.toFixed(1));
+  });
+  el.dots.forEach((d, i) => {
+    show(d, state === "thinking");
+    const w = Math.max(0, Math.sin(t * 2 * Math.PI * 1.3 - i * .7));
+    d.setAttribute("cy", (MOUTH[1] - 9 * w).toFixed(1));
+    d.setAttribute("opacity", (.45 + .55 * w).toFixed(2));
+  });
+
+  // ---- antenna ----
+  let r = 15, fill = "#00F0FF";
+  if (state === "listening") r = 15 + 2.5 * (.5 + .5 * Math.sin(t * 6));
+  if (state === "thinking" && Math.sin(t * 2 * Math.PI * 1.6) < 0) fill = "#3A3F5C";
+  if (state === "talking") r = 15 + 3 * mouth;
+  el.antenna.setAttribute("r", r.toFixed(1));
+  el.antenna.setAttribute("fill", fill);
+
+  requestAnimationFrame(frame);
+}
+
+// ---- live connection to bit.py ----
+function connect() {
+  const ws = new WebSocket(`ws://${location.host}/ws`);
+  ws.onmessage = ev => {
+    const m = JSON.parse(ev.data);
+    if (m.type === "state") { preview = false; setState(m.state); }
+    else if (m.type === "mic") micTarget = m.v;
+    else if (m.type === "mouth") { mouthTarget = m.v; lastMouthMsg = performance.now(); }
+  };
+  ws.onclose = () => { setState("offline"); setTimeout(connect, 1000); };
+}
+
+// ---- filming controls ----
+function fullscreen() {
+  if (document.fullscreenElement) document.exitFullscreen();
+  else document.documentElement.requestFullscreen().catch(() => {});
+}
+document.addEventListener("click", fullscreen);
+document.addEventListener("keydown", e => {
+  if (e.key === "f" || e.key === "F") fullscreen();
+  else if (e.key === "l" || e.key === "L") {  // label and help hide/show together
+    const hide = !document.getElementById("label").classList.contains("off");
+    for (const id of ["label", "help"]) document.getElementById(id).classList.toggle("off", hide);
+  }
+  else if ("1234".includes(e.key)) { preview = true; setState(["idle", "listening", "thinking", "talking"][+e.key - 1]); }
+});
+let cursorTimer;
+document.addEventListener("mousemove", () => {
+  document.body.classList.remove("hide-cursor");
+  clearTimeout(cursorTimer);
+  cursorTimer = setTimeout(() => document.body.classList.add("hide-cursor"), 2000);
+});
+cursorTimer = setTimeout(() => document.body.classList.add("hide-cursor"), 2000);
+setTimeout(() => document.getElementById("help").classList.add("off"), 3000);  // help fades after 3 s
+
+buildBit();
+// ?state=thinking pins a state (stills, thumbnails); otherwise follow bit.py live
+pinned = new URLSearchParams(location.search).get("state");
+if (pinned in EYE) { preview = true; setState(pinned); } else connect();
+</script>
+</body>
+</html>

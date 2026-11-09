@@ -11,7 +11,7 @@ import numpy as np
 import sounddevice as sd
 import webrtcvad
 
-from . import speaker
+from . import face, speaker
 from .config import BIT_MIC_DEVICE, WAKE_MODEL, WAKE_THRESHOLD, WHISPER_MODEL, log
 
 RATE = 16000
@@ -65,7 +65,9 @@ class Ears:
             self._start_space_listener()
 
     def _on_audio(self, indata, frames, t, status):
-        self.q.put(indata[:, 0].copy())
+        block = indata[:, 0].copy()
+        self.q.put(block)
+        face.mic(block)
 
     def _start_space_listener(self):
         try:
@@ -155,16 +157,19 @@ class Ears:
             f = self.q.get()
             if self.space_down.is_set():
                 trigger = "space"
+                face.set_state("listening")
                 speaker.chime()
                 audio = self.record_while_space()
             elif self.heard_wake(f):
                 trigger = "wake"
+                face.set_state("listening")
                 speaker.chime()
                 self.drain()  # don't record the chime itself
                 audio = self.record_until_silence()
             else:
                 continue
             released = time.perf_counter()
+            face.set_state("thinking")
             text = self.transcribe(audio)
             stt_s = time.perf_counter() - released
             self.wake.reset()

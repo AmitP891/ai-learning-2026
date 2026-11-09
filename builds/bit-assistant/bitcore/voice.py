@@ -7,7 +7,7 @@ import wave
 import numpy as np
 import requests
 
-from . import speaker
+from . import face, speaker
 from .config import ELEVENLABS_API_KEY, ELEVENLABS_MODEL, ELEVENLABS_VOICE_ID, log
 
 RATE = 22050
@@ -49,6 +49,7 @@ def _speak_elevenlabs(text, t0):
             if out is None:
                 out = speaker.PCMStream(RATE)
                 first = time.perf_counter() - t0
+                face.set_state("talking")
             out.write(chunk)
     finally:
         if out:
@@ -69,6 +70,7 @@ def _speak_say(text, t0):
             pcm = np.frombuffer(w.readframes(w.getnframes()), dtype=np.int16)
             rate = w.getframerate()
     first = time.perf_counter() - t0
-    speaker.play(pcm, rate)
+    face.set_state("talking")
+    speaker.play(pcm, rate, mouth=True)
     log.info("voice: say first sound %.2fs: %r", first, text)
     return first
