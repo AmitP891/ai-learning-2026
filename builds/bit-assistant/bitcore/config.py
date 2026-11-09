@@ -18,10 +18,14 @@ BIT_AUDIO_DEVICE = os.getenv("BIT_AUDIO_DEVICE", "")
 # Mic, matched by name. Empty = system default input.
 BIT_MIC_DEVICE = os.getenv("BIT_MIC_DEVICE", "")
 
-# Wake word: a built-in openWakeWord name (hey_jarvis, alexa, hey_mycroft...)
-# or a path to a custom model such as models/hey_bit.onnx.
-WAKE_MODEL = os.getenv("WAKE_MODEL", "hey_jarvis")
-WAKE_THRESHOLD = float(os.getenv("WAKE_THRESHOLD", "0.5"))
+# Wake word. Default: Bit's own "hey bit" model (trained by wakeword/train_hey_bit.py).
+# To switch back, set WAKE_MODEL=hey_jarvis in .env (or another built-in openWakeWord name).
+HEY_BIT_MODEL = "models/hey_bit.onnx"
+_default_wake = HEY_BIT_MODEL if (ROOT / HEY_BIT_MODEL).exists() else "hey_jarvis"
+WAKE_MODEL = os.getenv("WAKE_MODEL", _default_wake)
+WAKE_NAME = Path(WAKE_MODEL).stem.replace("_", " ")  # "hey bit", "hey jarvis"
+# 0.85 for hey_bit (tested: 100% caught, fewest sound-alikes); 0.5 suits the built-in models
+WAKE_THRESHOLD = float(os.getenv("WAKE_THRESHOLD", "0.85" if WAKE_MODEL == HEY_BIT_MODEL else "0.5"))
 
 WHISPER_MODEL = os.getenv("WHISPER_MODEL", "base.en")
 

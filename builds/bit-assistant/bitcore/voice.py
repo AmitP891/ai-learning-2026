@@ -11,6 +11,15 @@ from . import face, speaker
 from .config import ELEVENLABS_API_KEY, ELEVENLABS_MODEL, ELEVENLABS_VOICE_ID, log
 
 RATE = 22050
+_http = requests.Session()  # keep-alive: saves a TLS handshake (~0.1-0.3 s) on every reply
+
+
+def warm():
+    """Open the connection to ElevenLabs ahead of the first reply (no API call, no cost)."""
+    try:
+        _http.head("https://api.elevenlabs.io/", timeout=5)
+    except requests.RequestException:
+        pass
 
 
 def speak(text: str) -> dict:
@@ -30,7 +39,7 @@ def _speak_elevenlabs(text, t0):
     if not (ELEVENLABS_API_KEY and ELEVENLABS_VOICE_ID):
         raise RuntimeError("ELEVENLABS_API_KEY / ELEVENLABS_VOICE_ID missing")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{ELEVENLABS_VOICE_ID}/stream"
-    r = requests.post(
+    r = _http.post(
         url,
         params={"output_format": f"pcm_{RATE}", "optimize_streaming_latency": 2},
         headers={"xi-api-key": ELEVENLABS_API_KEY},

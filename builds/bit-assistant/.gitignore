@@ -3,3 +3,4 @@
 logs/
 notes/
 __pycache__/
+wakeword/data/

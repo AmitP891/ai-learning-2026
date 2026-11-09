@@ -36,6 +36,13 @@ class Brain:
         self.client = anthropic.Anthropic(api_key=ANTHROPIC_API_KEY or None, timeout=20.0)
         self.history: list[dict] = []
 
+    def warm(self):
+        """Open the connection to the API before the first question (free call, no tokens)."""
+        try:
+            self.client.models.retrieve(MODEL)
+        except anthropic.APIError as e:
+            log.warning("brain: warm-up failed: %s", e)
+
     def ask(self, text: str) -> dict:
         """Return {reply, think_s, sentences}. Never raises: Bit must keep talking."""
         self.history.append({"role": "user", "content": text})

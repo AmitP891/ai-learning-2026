@@ -74,37 +74,49 @@ def get_time() -> str:
     return now.strftime("%A %-d %B %Y, %H:%M (%Z)")
 
 
-_CAL_SCRIPT = '''
-on run argv
-    set offsetDays to (item 1 of argv) as integer
-    set d0 to current date
-    set time of d0 to 0
-    set d0 to d0 + offsetDays * days
-    set d1 to d0 + 1 * days
-    set out to {}
-    tell application "Calendar"
-        repeat with c in calendars
-            set evs to (every event of c whose start date < d1 and end date > d0)
-            repeat with e in evs
-                set s to start date of e
-                set end of out to ((s as «class isot» as string) & "|" & (allday event of e as string) & "|" & (summary of e))
-            end repeat
-        end repeat
-    end tell
-    set AppleScript's text item delimiters to linefeed
-    return out as text
-end run
-'''
+_store = None
+
+
+def _event_store():
+    """EventKit store (fast, and expands repeating events). Asks for Calendar access once."""
+    global _store
+    if _store is not None:
+        return _store
+    import threading
+    import EventKit
+    store = EventKit.EKEventStore.alloc().init()
+    status = EventKit.EKEventStore.authorizationStatusForEntityType_(EventKit.EKEntityTypeEvent)
+    if status not in (3,):  # 3 = full access
+        if status in (1, 2):  # restricted / denied
+            raise ToolError("Calendar access is off for Bit. Turn it on in System Settings > "
+                            "Privacy & Security > Calendars for your terminal app.")
+        done, ok = threading.Event(), []
+        def handler(granted, error):
+            ok.append(bool(granted)); done.set()
+        store.requestFullAccessToEventsWithCompletion_(handler)
+        done.wait(120)
+        if not (ok and ok[0]):
+            raise ToolError("Bit wasn't given Calendar access.")
+    _store = store
+    return store
 
 
 def get_calendar(day: str) -> str:
+    from Foundation import NSDate
     offset = {"today": 0, "tomorrow": 1}[day]
-    raw = _osascript(_CAL_SCRIPT, str(offset), timeout=30)
+    start = dt.datetime.combine(dt.date.today() + dt.timedelta(days=offset), dt.time())
+    end = start + dt.timedelta(days=1)
+    store = _event_store()
+    pred = store.predicateForEventsWithStartDate_endDate_calendars_(
+        NSDate.dateWithTimeIntervalSince1970_(start.timestamp()),
+        NSDate.dateWithTimeIntervalSince1970_(end.timestamp()), None)
     events = []
-    for line in filter(None, raw.splitlines()):
-        start, allday, title = line.split("|", 2)
-        when = "all day" if allday == "true" else start[11:16]
-        events.append((when != "all day", start, f"{when} {title}"))
+    for e in store.eventsMatchingPredicate_(pred) or []:
+        st = dt.datetime.fromtimestamp(e.startDate().timeIntervalSince1970())
+        if e.isAllDay():
+            events.append((0, st, f"all day {e.title()}"))
+        else:
+            events.append((1, st, f"{st:%H:%M} {e.title()}"))
     if not events:
         return f"No events {day}."
     events.sort()
