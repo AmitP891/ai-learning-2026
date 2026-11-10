@@ -47,3 +47,6 @@ Every piece of content published during the sprint, linked to the week and code 
 | 8 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXDJD8n/) | "Readable in Sunlight" Is NOT a Requirement: Vague Requirement of the Week #2 ([video](videos/2026-11-08-vague-req-02-sunlight.mp4)) | |
 | 8 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DffWaMvTi8e/) | "Readable in Sunlight" Is NOT a Requirement: Vague Requirement of the Week #2 ([video](videos/2026-11-08-vague-req-02-sunlight.mp4)) | |
 | 10 Nov 2026 | 4 | [LinkedIn](https://lnkd.in/p/e6WHC9yu) | MCP server + Claude certificate post | [mcp-server/](../01-anthropic-academy/) |
+| 10 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/rCKX4eDUo_U) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
+| 10 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXfWoAA/) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
+| 10 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfkgEEPTZ7U/) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
