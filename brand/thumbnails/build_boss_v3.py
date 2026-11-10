@@ -11,12 +11,12 @@ from build_boss_ep1_v2 import bit, prof, arrow, F, W, H, PK, CY, WH, GR, RD_SOFT
 OUT = os.path.join(ROOT, "content/thumbnails")
 MONO = lambda s: ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf", s)
 
-def background(seed=3):
+def background(seed=3, words=None):
     y = np.linspace(0, 1, H)[:, None]; x = np.linspace(0, 1, W)[None, :]
     base = np.zeros((H, W, 3)); base[..., 0] = 12 + 10 * y; base[..., 1] = 12 + 8 * y; base[..., 2] = 22 + 30 * y
     im = Image.fromarray(base.astype(np.uint8)).convert("RGBA")
     code = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(code); r = random.Random(seed)
-    words = ["def", "boss_fight():", "hp", "-=", "10", "if", "score", ">=", "8:", "render(frame)", "for", "beat", "in", "beats:", "return", "shield()", "bit.attack()", "# 3/10 -> 8/10"]
+    words = words or ["def", "boss_fight():", "hp", "-=", "10", "if", "score", ">=", "8:", "render(frame)", "for", "beat", "in", "beats:", "return", "shield()", "bit.attack()", "# 3/10 -> 8/10"]
     for row in range(0, H, 30):
         xx = r.randint(-40, 40)
         while xx < W:
