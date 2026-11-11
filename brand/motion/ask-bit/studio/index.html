@@ -1,0 +1,189 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Ask Bit studio</title>
+<style>
+html,body{margin:0;background:#000;overflow:hidden}
+#c{display:block}
+#ov{position:fixed;inset:0;pointer-events:none;font-family:'Inter Display','Inter',sans-serif}
+.cap{position:absolute;left:60px;right:60px;top:1250px;text-align:center;font-weight:800;font-size:64px;line-height:1.15;color:#fff;
+  text-shadow:0 4px 0 #0a0b18,0 0 24px rgba(0,0,0,.8);-webkit-text-stroke:2px #0a0b18;opacity:0;transition:none}
+.who{display:inline-block;font-size:34px;font-weight:800;letter-spacing:.12em;padding:6px 18px;border-radius:999px;margin-bottom:14px;-webkit-text-stroke:0;text-shadow:none;color:#0a0b18}
+.card{position:absolute;left:0;right:0;text-align:center;opacity:0}
+.big{font-family:'Inter Display';font-style:italic;font-weight:900;font-size:120px;color:#fff;-webkit-text-stroke:3px #0a0b18;text-shadow:0 8px 0 #0a0b18}
+.chip{display:inline-block;background:#F0359E;color:#0a0b18;font-weight:800;font-size:44px;padding:10px 30px;border-radius:999px}
+.sub{font-weight:800;font-size:50px;color:#00F0FF;-webkit-text-stroke:2px #0a0b18;margin-top:10px}
+</style></head>
+<body><canvas id="c"></canvas>
+<div id="ov">
+  <div class="cap" id="cap"></div>
+  <div class="card" id="end" style="top:260px"><div class="chip">NEW SERIES</div><div class="big" style="margin-top:24px">STARTS<br>SUNDAY</div><div class="sub">AI &amp; CODING, ANSWERED</div><div class="sub" style="color:#fff">FOLLOW SO YOU DON'T MISS IT</div></div>
+</div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
+import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
+import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || 1080), H = +(P.get('h') || 1920);
+const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('c'), antialias: true, preserveDrawingBuffer: true });
+renderer.setSize(W, H, false); renderer.domElement.style.width = W + 'px'; renderer.domElement.style.height = H + 'px';
+renderer.setPixelRatio(1); renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
+document.getElementById('ov').style.transform = `scale(${W / 1080})`; document.getElementById('ov').style.transformOrigin = '0 0';
+document.getElementById('ov').style.width = '1080px'; document.getElementById('ov').style.height = '1920px';
+
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x120d12); scene.fog = new THREE.Fog(0x120d12, 700, 1500);
+const camera = new THREE.PerspectiveCamera(58, W / H, 1, 3000);
+const PINK = 0xF0359E, CYAN = 0x00F0FF, LIME = 0x39FF88, WOOD = 0x6b4a33;
+const std = (c, o = {}) => new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .55, metalness: .05 }, o));
+const emis = (c, i = 2) => new THREE.MeshStandardMaterial({ color: c, emissive: c, emissiveIntensity: i, roughness: .4 });
+const add = (g, m, x, y, z, parent = scene) => { const o = new THREE.Mesh(g, m); o.position.set(x, y, z); o.castShadow = o.receiveShadow = true; parent.add(o); return o; };
+const canvasTex = (w, h, draw) => { const c = document.createElement('canvas'); c.width = w; c.height = h; const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.userData = { c, ctx: c.getContext('2d'), draw }; draw(t.userData.ctx, w, h, 0); t.needsUpdate = true; return t; };
+
+// ---------- room ----------
+add(new THREE.PlaneGeometry(3000, 3000), std(0x3a2a26, { roughness: .9 }), 0, 0, 0).rotation.x = -Math.PI / 2;
+const wallZ = -260;
+add(new THREE.BoxGeometry(1400, 900, 10), std(0x2a1d16, { roughness: .8 }), 0, 450, wallZ - 10);
+for (let x = -650; x <= 650; x += 34) {                                   // wooden slats
+  const s = add(new THREE.BoxGeometry(24, 900, 14), std(WOOD, { roughness: .7, color: new THREE.Color(WOOD).offsetHSL(0, 0, (Math.sin(x * 7.3) * .04)) }), x, 450, wallZ);
+}
+for (const sx of [-1, 1]) {                                               // dark acoustic side panels
+  add(new THREE.BoxGeometry(260, 420, 24), std(0x1c1b26, { roughness: 1 }), sx * 470, 330, wallZ + 18);
+  for (let i = 0; i < 4; i++) add(new THREE.BoxGeometry(240, 6, 26), std(0x262536), sx * 470, 150 + i * 100, wallZ + 20);
+}
+// neon sign
+const signTex = canvasTex(1024, 300, (g, w, h) => { g.clearRect(0, 0, w, h); g.font = '900 210px "Inter Display", Inter, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = '#F0359E'; g.shadowBlur = 40; g.fillStyle = '#ffd1ea'; g.fillText('ASK BIT', w / 2, h / 2 + 10); });
+const sign = add(new THREE.PlaneGeometry(300, 88), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, toneMapped: false, color: new THREE.Color(2.2, 2.2, 2.2) }), 0, 330, wallZ + 20);
+const signLight = new THREE.PointLight(PINK, 18000, 500, 2); signLight.position.set(0, 330, wallZ + 80); scene.add(signLight);
+// shelf with printer and plant (left), monitor (right)
+add(new THREE.BoxGeometry(220, 10, 60), std(0x4a3426), -300, 200, wallZ + 40);
+const pr = new THREE.Group(); pr.position.set(-340, 205, wallZ + 40); scene.add(pr);
+add(new THREE.BoxGeometry(70, 70, 50), std(0x2e3142), 0, 35, 0, pr); add(new THREE.BoxGeometry(50, 40, 52), std(0x15161f), 0, 30, 1, pr); add(new THREE.BoxGeometry(14, 12, 14), emis(PINK, 1.5), 0, 22, 2, pr);
+const pot = add(new THREE.CylinderGeometry(18, 14, 34, 16), std(0xc9b8a6), -240, 222, wallZ + 40);
+for (let i = 0; i < 7; i++) { const l = add(new THREE.SphereGeometry(16, 10, 8), std(0x3f8a4f, { roughness: .8 }), -240 + Math.sin(i * 2.1) * 16, 250 + (i % 3) * 14, wallZ + 40 + Math.cos(i * 2.1) * 12); l.scale.set(1, 1.5, .6); l.rotation.z = Math.sin(i) * .6; }
+const codeTex = canvasTex(512, 300, (g, w, h, t) => { g.fillStyle = '#0b0d16'; g.fillRect(0, 0, w, h); g.font = 'bold 22px monospace'; const lines = ['def ask(q):', '  parts = 3', '  for p in parts:', '    explain(p)', '  return truth', 'bit.reply()', '# is it real?', 'glitch.ship()', 'zap(bug)']; for (let i = 0; i < 9; i++) { const k = (i + Math.floor(t * 2)) % lines.length; g.fillStyle = i % 3 ? '#39FF88' : '#00F0FF'; g.globalAlpha = .85; g.fillText(lines[k], 24, 34 + i * 30); } g.globalAlpha = 1; });
+const mon = new THREE.Group(); mon.position.set(300, 180, wallZ + 50); scene.add(mon);
+add(new THREE.BoxGeometry(170, 110, 10), std(0x111219), 0, 70, 0, mon); add(new THREE.PlaneGeometry(156, 96), new THREE.MeshBasicMaterial({ map: codeTex, toneMapped: false }), 0, 70, 6, mon); add(new THREE.BoxGeometry(14, 30, 14), std(0x111219), 0, 10, 0, mon);
+add(new THREE.BoxGeometry(220, 10, 60), std(0x4a3426), 300, 175, wallZ + 40);
+// warm practical lamps on the wall
+for (const [x, y] of [[-420, 420], [420, 420], [-180, 440], [180, 440]]) { add(new THREE.SphereGeometry(10, 16, 12), emis(0xffb070, 3), x, y, wallZ + 30); const l = new THREE.PointLight(0xffa060, 9000, 380, 2); l.position.set(x, y - 10, wallZ + 70); scene.add(l); }
+
+// ---------- desk + mics ----------
+const deskY = 40;
+add(new THREE.BoxGeometry(620, 10, 150), std(0x8a5f3e, { roughness: .45 }), 0, deskY, 95);
+add(new THREE.BoxGeometry(600, deskY - 5, 10), std(0x1b1a24), 0, (deskY - 5) / 2, 168);
+add(new THREE.BoxGeometry(298, 4, 2), emis(PINK, 1.1), -150, deskY - 16, 174); add(new THREE.BoxGeometry(298, 4, 2), emis(LIME, 1.1), 150, deskY - 16, 174);
+const mics = [];
+for (const [x, col, ry] of [[-22, PINK, .6], [22, LIME, -.6]]) {
+  const m = new THREE.Group(); m.position.set(x, deskY + 5, 100); m.rotation.y = ry; scene.add(m);
+  add(new THREE.CylinderGeometry(14, 16, 6, 20), std(0x22232e), 0, 0, 0, m);
+  const arm = add(new THREE.CylinderGeometry(2.5, 2.5, 40, 8), std(0x2b2c38), 0, 20, 0, m);
+  const cap = add(new RoundedBoxGeometry(18, 36, 18, 4, 7), std(0x2a2b36, { roughness: .35, metalness: .4 }), 0, 52, -4, m); cap.rotation.x = -.5;
+  add(new THREE.TorusGeometry(10, 1.3, 8, 24), emis(col, 2.5), 0, 40, -1, m).rotation.x = Math.PI / 2 - .5;
+  mics.push(m);
+}
+
+// ---------- Bit (real 3D-print model) ----------
+const U = 0.26, X = x => (x - 300) * U, Z = y => (674 - y) * U + 5;
+const bit = new THREE.Group(); bit.position.set(-68, 0, 25); scene.add(bit);
+const bitInner = new THREE.Group(); bitInner.rotation.x = -Math.PI / 2; bit.add(bitInner);
+const loader = new STLLoader(); const BCOL = { pink: [PINK, {}], dark: [0x1e2132, { roughness: .3 }], cyan: [CYAN, { emissive: CYAN, emissiveIntensity: 0.7 }], grey: [0x464c69, {}] };
+const loads = Object.entries(BCOL).map(([k, [c, o]]) => new Promise(res => loader.load(`../../../bit/3d/bit_${k}.stl`, geo => { geo.computeVertexNormals(); const m = new THREE.Mesh(geo, std(c, Object.assign({ roughness: .5 }, o))); m.castShadow = m.receiveShadow = true; bitInner.add(m); res(); })));
+// Bit's talking chest screen (covers the printed </> while he speaks)
+const bitWave = { level: 0, hist: new Array(40).fill(0) };
+const bitScrTex = canvasTex(256, 160, (g, w, h) => { g.fillStyle = '#1e2132'; g.fillRect(0, 0, w, h); g.strokeStyle = '#00F0FF'; g.lineWidth = 6; g.lineCap = 'round'; g.shadowColor = '#00F0FF'; g.shadowBlur = 14; const n = bitWave.hist.length; for (let i = 0; i < n; i++) { const a = bitWave.hist[i] * (h * .42) + 4; const x = 18 + i * (w - 36) / (n - 1); g.beginPath(); g.moveTo(x, h / 2 - a); g.lineTo(x, h / 2 + a); g.stroke(); } });
+const bitScr = add(new THREE.PlaneGeometry(X(375) - X(225), Z(400) - Z(495)), new THREE.MeshBasicMaterial({ map: bitScrTex, toneMapped: false, transparent: true }), 0, (Z(400) + Z(495)) / 2, 22.2, bit);
+bitScr.visible = false;
+
+// ---------- Glitch (built from shapes to match his sheet) ----------
+const HOOD = 0x2B2F45, BODY = 0x3A3F55, VIS = 0x0E1A16;
+const gl = new THREE.Group(); gl.position.set(68, 0, 25); scene.add(gl);
+const glBody = new THREE.Group(); gl.add(glBody);
+add(new RoundedBoxGeometry(X(432) - X(168), Z(350) - Z(590), 40, 6, 14), std(HOOD), 0, (Z(350) + Z(590)) / 2, 0, glBody);
+for (const s of [-1, 1]) {                                                   // arms + hands, legs + lime soles
+  const a = add(new THREE.CapsuleGeometry(6.5, 30, 6, 12), std(HOOD), s * 38, 64, 2, glBody); a.rotation.z = s * .5;
+  add(new RoundedBoxGeometry(15, 13, 13, 3, 3), std(BODY), s * 47, 47, 4, glBody);
+  add(new RoundedBoxGeometry(10, 22, 10, 3, 3), std(BODY), s * 7.8, 18, 0, glBody);
+  add(new RoundedBoxGeometry(22, 8, 22, 3, 3), std(HOOD), s * 9.5, 4, 2, glBody); add(new THREE.BoxGeometry(22, 3, 22), emis(LIME, 1.5), s * 9.5, 1.5, 2, glBody);
+  const str = add(new THREE.CylinderGeometry(1.1, 1.1, 16, 6), emis(LIME, 1.2), s * 9.5, 68, 20.5, glBody); str.rotation.z = s * .17;
+  add(new THREE.SphereGeometry(2, 8, 6), emis(LIME, 1.5), s * 11, 59.5, 20.8, glBody);
+}
+const glChest = { level: 0 };
+const glScrTex = canvasTex(256, 120, (g, w, h) => { g.fillStyle = '#0E1A16'; g.fillRect(0, 0, w, h); const l = glChest.level; g.font = 'bold 74px "DejaVu Sans Mono", monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = '#39FF88'; g.shadowBlur = 10 + l * 40; g.fillStyle = `rgba(57,255,136,${.65 + .35 * l})`; g.fillText('{ }', w / 2, h / 2 + 4); });
+add(new THREE.PlaneGeometry(X(384) - X(216), Z(482) - Z(560)), new THREE.MeshBasicMaterial({ map: glScrTex, toneMapped: false }), 0, (Z(482) + Z(560)) / 2, 20.4, glBody);
+const glHead = new THREE.Group(); glHead.position.set(0, 0, 0); gl.add(glHead);
+add(new RoundedBoxGeometry(X(488) - X(112), Z(44) - Z(350), 64, 8, 30), std(HOOD, { roughness: .7 }), 0, (Z(44) + Z(350)) / 2, -2, glHead);
+{ // lime rim on the hood opening
+  const w = X(468) - X(132), h = Z(64) - Z(330), r = 26, sh = new THREE.Shape(); const hw = w / 2, hh = h / 2;
+  sh.moveTo(-hw, -hh); sh.lineTo(-hw, hh - r); sh.quadraticCurveTo(-hw, hh, -hw + r, hh); sh.lineTo(hw - r, hh); sh.quadraticCurveTo(hw, hh, hw, hh - r); sh.lineTo(hw, -hh); sh.lineTo(hw - 3, -hh); sh.lineTo(hw - 3, hh - r); sh.quadraticCurveTo(hw - 3, hh - 3, hw - r, hh - 3); sh.lineTo(-hw + r, hh - 3); sh.quadraticCurveTo(-hw + 3, hh - 3, -hw + 3, hh - r); sh.lineTo(-hw + 3, -hh);
+  add(new THREE.ExtrudeGeometry(sh, { depth: 1.5, bevelEnabled: false }), emis(LIME, 0.55), 0, (Z(64) + Z(330)) / 2, 30.2, glHead);
+}
+add(new RoundedBoxGeometry(X(436) - X(164), Z(118) - Z(332), 8, 4, 10), std(BODY), 0, (Z(118) + Z(332)) / 2, 30, glHead);
+const glFace = { expr: 'smirk' };
+const EXPR = { smirk: [[214, 200, 48, 34], [338, 178, 48, 58]], neutral: [[214, 186, 48, 50], [338, 186, 48, 50]], shocked: 'shocked', typing: 'typing' };
+const visTex = canvasTex(480, 256, (g, w, h) => { g.fillStyle = '#0E1A16'; g.fillRect(0, 0, w, h); g.fillStyle = '#39FF88'; g.shadowColor = '#39FF88'; g.shadowBlur = 18; const sx = w / 240, sy = h / 128, ox = 180, oy = 152;
+  const e = glFace.expr;
+  if (e === 'typing') { for (const [x, y, ww] of [[208, 186, 40], [254, 186, 14], [206, 204, 22], [234, 204, 34], [210, 222, 44], [330, 186, 22], [358, 186, 34], [334, 204, 48], [330, 222, 18], [354, 222, 30]]) { g.fillRect((x - ox) * sx, (y - oy) * sy, ww * sx, 10 * sy); } }
+  else for (const [x, y, ww, hh] of EXPR[e] || EXPR.smirk) { g.beginPath(); g.roundRect((x - ox) * sx, (y - oy) * sy, ww * sx, hh * sy, 9 * sx); g.fill(); }
+  g.lineWidth = 9 * sx; g.strokeStyle = '#39FF88'; g.lineCap = 'round'; g.beginPath(); g.moveTo((262 - ox) * sx, (258 - oy) * sy); g.lineTo((300 - ox) * sx, (265 - oy) * sy); g.lineTo((344 - ox) * sx, (248 - oy) * sy); g.stroke(); });
+add(new THREE.PlaneGeometry(X(420) - X(180), Z(152) - Z(280)), new THREE.MeshBasicMaterial({ map: visTex, toneMapped: false }), 0, (Z(152) + Z(280)) / 2, 34.2, glHead);
+
+// ---------- lights ----------
+scene.add(new THREE.HemisphereLight(0xffd6b0, 0x20121a, 0.6));
+const key = new THREE.SpotLight(0xfff0e0, 700000, 1600, .55, .6, 2); key.position.set(-180, 520, 520); key.target.position.set(0, 90, 0); key.castShadow = true; key.shadow.mapSize.set(2048, 2048); key.shadow.bias = -0.0005; scene.add(key, key.target);
+const fill = new THREE.PointLight(0xffc49a, 90000, 1200, 2); fill.position.set(250, 200, 380); scene.add(fill);
+const rimP = new THREE.PointLight(PINK, 30000, 450, 2); rimP.position.set(-230, 220, -90); scene.add(rimP);
+const rimL = new THREE.PointLight(LIME, 26000, 450, 2); rimL.position.set(230, 220, -90); scene.add(rimL);
+
+// ---------- post ----------
+const composer = new EffectComposer(renderer); composer.setSize(W, H);
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass(new THREE.Vector2(W, H), 0.55, 0.5, 0.82));
+composer.addPass(new OutputPass());
+
+// ---------- shots ----------
+const SHOTS = {
+  wide:   { pos: [0, 150, 540], look: [0, 165, 0], fov: 56 },
+  bit:    { pos: [-115, 132, 290], look: [-66, 118, 0], fov: 46 },
+  glitch: { pos: [115, 132, 290], look: [66, 118, 0], fov: 46 },
+  sign:   { pos: [0, 330, 420], look: [0, 380, -200], fov: 50 },
+};
+const lerp = (a, b, k) => a + (b - a) * k, ease = k => k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k);
+function setCam(a, b, k, drift) {
+  const A = SHOTS[a], B = SHOTS[b || a]; k = ease(k || 0);
+  const p = A.pos.map((v, i) => lerp(v, B.pos[i], k)), l = A.look.map((v, i) => lerp(v, B.look[i], k));
+  camera.position.set(p[0] + drift[0], p[1] + drift[1], p[2] + drift[2]); camera.lookAt(...l);
+  camera.fov = lerp(A.fov, B.fov, k); camera.updateProjectionMatrix();
+}
+
+// state: {t, shot:[a,b,k], drift:[x,y,z], bitLevel, glLevel, glExpr, speaker, caption:{who,text,o}, end:o, sign:0..1}
+window.setState = (s) => {
+  const t = s.t;
+  setCam(s.shot[0], s.shot[1], s.shot[2], s.drift || [0, 0, 0]);
+  // idle motion + turn to speaker
+  const tb = s.speaker === 'glitch' ? .32 : .12, tg = s.speaker === 'bit' ? -.32 : -.12;
+  bit.rotation.y = tb; bit.position.y = 10 + Math.sin(t * 2.1) * 1.2 + (s.bitLevel || 0) * 2;
+  gl.rotation.y = tg; gl.position.y = 10 + Math.sin(t * 2.4 + 1) * 1.2 + (s.glLevel || 0) * 2; glHead.rotation.z = Math.sin(t * 1.3) * .03 + (s.glLevel || 0) * .04;
+  // chest screens
+  bitWave.hist.push(s.bitLevel || 0); bitWave.hist.shift(); bitScr.visible = (s.bitLevel || 0) > 0.02 || bitWave.hist.some(v => v > .05);
+  bitScrTex.userData.draw(bitScrTex.userData.ctx, 256, 160); bitScrTex.needsUpdate = true;
+  glChest.level = s.glLevel || 0; glScrTex.userData.draw(glScrTex.userData.ctx, 256, 120); glScrTex.needsUpdate = true;
+  if (glFace.expr !== (s.glExpr || 'smirk')) { glFace.expr = s.glExpr || 'smirk'; visTex.userData.draw(visTex.userData.ctx, 480, 256); visTex.needsUpdate = true; }
+  // Glitch's signature sideways slice glitch
+  const gk = Math.floor(t * 12), r = Math.abs(Math.sin(gk * 12.9898) * 43758.5453) % 1;
+  glHead.position.x = r < .12 ? (r < .06 ? -2 : 2) : 0;
+  codeTex.userData.draw(codeTex.userData.ctx, 512, 300, t); codeTex.needsUpdate = true;
+  const sg = s.sign == null ? 1 : s.sign; sign.material.opacity = sg; signLight.intensity = 18000 * sg;
+  // overlays
+  const cap = document.getElementById('cap');
+  if (s.caption) { cap.style.opacity = s.caption.o; const c = s.caption.who === 'BIT' ? '#F0359E' : '#39FF88'; cap.innerHTML = `<span class="who" style="background:${c}">${s.caption.who}</span><br>${s.caption.text}`; } else cap.style.opacity = 0;
+  const end = document.getElementById('end'); end.style.opacity = s.end || 0; end.style.transform = `scale(${0.9 + 0.1 * Math.min(1, (s.end || 0))})`;
+  if (P.get('raw')) renderer.render(scene, camera); else composer.render();
+  return true;
+};
+Promise.all(loads).then(() => { window.READY = true; window.setState({ t: 0, shot: ['wide'] }); });
+</script></body></html>
