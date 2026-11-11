@@ -86,12 +86,13 @@ def main(grok, fable, out):
     band(P("b4.png"), ["THEN WE ADDED", "BOSS FIGHTS"], [WHITE, ORANGE])
     end_card(P("end.png")); music(P("m.wav"))
     crop = "crop=1800:1600:570:240,scale=1080:960,setsar=1"
-    fc = (f"[0:v]{crop},fps=30[g];[1:v]{crop},fps=30[f];[g][f]vstack[v0];"
+    cropf = "crop=1800:1600:120:240,scale=1080:960,setsar=1"   # shifted left so the boss bug (enters on the left) is fully in shot
+    fc = (f"[0:v]{crop},fps=30[g];[1:v]{cropf},fps=30[f];[g][f]vstack[v0];"
           "[v0][2:v]overlay=0:0[v1];[v1][3:v]overlay=0:0[v2];"
           "[v2][4:v]overlay=0:0:enable='lt(t,3.5)'[v3];[v3][5:v]overlay=0:0:enable='between(t,3.5,7.5)'[v4];"
           "[v4][6:v]overlay=0:0:enable='between(t,7.5,11.5)'[v5];[v5][7:v]overlay=0:0:enable='between(t,11.5,15)'[v6];"
           "[8:v]format=rgba,fade=t=in:st=15:d=0.35:alpha=1[e];[v6][e]overlay=0:0:enable='gte(t,15)'[v]")
-    cmd = ["ffmpeg", "-v", "error", "-y", "-ss", "20", "-t", str(DUR), "-i", grok, "-ss", "50", "-t", str(DUR), "-i", fable]
+    cmd = ["ffmpeg", "-v", "error", "-y", "-ss", "20", "-t", str(DUR), "-i", grok, "-ss", "51.5", "-t", str(DUR), "-i", fable]
     for n in ["lg", "lf", "b1", "b2", "b3", "b4", "end"]: cmd += ["-loop", "1", "-t", str(DUR), "-i", P(n + ".png")]
     cmd += ["-i", P("m.wav"), "-filter_complex", fc, "-map", "[v]", "-map", "9:a", "-t", str(DUR),
             "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "19", "-preset", "medium", "-c:a", "aac", "-b:a", "192k", "-r", "30", out]
