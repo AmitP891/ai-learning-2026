@@ -32,9 +32,11 @@ and the Hype Bot's 3 title ideas.
 ```
 
 ## Results
-| | Grok | Claude Code |
-|---|---|---|
-| Date | 10 Nov 2026 | |
-| Time (send to finished) | 9 min (20:18 to 20:27) | |
-| Fix rounds | 2 | |
-| Lines | 1,082 | |
+| | Grok | Fable 5.2 | Opus 5.5 |
+|---|---|---|---|
+| Date | 10 Nov 2026 | 11 Nov 2026 | |
+| Time (send to finished) | 9 min (20:18 to 20:27) | 16 min 33 s (16:40 to 16:56) | |
+| Fix rounds | 2 | clean playthrough reported | |
+| Lines | 1,082 | 1,030 | |
+| Test hook left in | yes, with cheats (clear level, set lives) | yes, keys + time step only | |
+| Notes | plain grid, box Bit, tick looks like a T, phone view cuts sides | detailed circuit board, on-model Bit, proper ticks, music, best score; level 1 bugs come too fast | |
