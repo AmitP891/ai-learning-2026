@@ -1,6 +1,6 @@
 # Ask Bit: series brief (build episode 1)
 
-You are the director, animator, sound designer and render engineer for **"Ask Bit"**, a recurring 9:16 explainer series made entirely in code. Each episode is a ~45–55 s conversation in a small neon studio: **GLITCH** asks about something trending in AI and coding, **BIT** explains it in **3 parts** with on-screen graphics, ends on an honest reality check and a dry one-liner.
+You are the director, animator, sound designer and render engineer for **"Ask Bit"**, a recurring 9:16 explainer series made entirely in code, as a **3D animated podcast studio** (reference: a low-poly 3D studio explainer reel Amit shared: warm studio lighting, two characters at a desk with broadcast mics, 2D graphics panels over the top, calm conversational voices). Each episode is a ~45–55 s conversation in a small neon studio: **GLITCH** asks about something trending in AI and coding, **BIT** explains it in **3 parts** with on-screen graphics, ends on an honest reality check and a dry one-liner.
 
 Build it so every future episode is just a new `epNN-script.md` + `epNN.json` and one command.
 
@@ -16,8 +16,8 @@ Build it so every future episode is just a new `epNN-script.md` + `epNN.json` an
 | `build.py` | `python3 build.py ep01` rebuilds the episode from scratch (re-uses cached voices) |
 
 ## 2. Cast
-- **BIT** (`brand/bit/bit.svg`): the expert. Calm, clever, brief, a little dry. His visor shows eyes only (no mouth). **When he talks, his chest screen becomes a cyan audio waveform** driven by his voice loudness, 30× a second. Expressions: neutral, thinking (eyes up), happy (^ ^).
-- **GLITCH** (`brand/glitch/glitch.svg`, expressions from `brand/glitch/build_glitch.py` EXPR): cocky, impatient, wants shortcuts. Same render pipeline as Level 3 (strip eyes and mouth, draw the expression in code). **When he talks, his `{ }` chest screen pulses lime with his voice.** Keep his signature 1–3 px sideways slice glitch every few frames, subtle.
+- **BIT** (3D: `brand/bit/3d/bit_pink.stl`, `bit_cyan.stl`, `bit_dark.stl`, `bit_grey.stl`, the same model as the real 3D-printed Bit; 2D reference `brand/bit/bit.svg`): the expert. Calm, clever, brief, a little dry. His visor shows eyes only (no mouth). **When he talks, his chest screen becomes a cyan audio waveform** driven by his voice loudness, 30× a second. Expressions: neutral, thinking (eyes up), happy (^ ^).
+- **GLITCH** (reference `brand/glitch/glitch.svg` and `glitch_sheet.png`, expressions from `brand/glitch/build_glitch.py` EXPR): cocky, impatient, wants shortcuts. **Build him in 3D from simple shapes** to match the sheet: dark hood (#2B2F45) with a lime rim, gunmetal face plate, dark visor, hoodie strings, `{ }` chest screen, lime soles. His eyes and expressions are an emissive texture on the visor drawn from the EXPR shapes. **When he talks, his `{ }` chest screen pulses lime with his voice.** Keep his signature 1–3 px sideways slice glitch every few frames, subtle.
 - Both robots idle-bob gently when not talking and turn slightly towards whoever is speaking.
 
 ## 3. Voices (ElevenLabs, on Amit's Mac)
@@ -28,10 +28,11 @@ Build it so every future episode is just a new `epNN-script.md` + `epNN.json` an
 - Gap between lines: 0.15 s (snappy), 0.4 s before a new part starts. Glitch's "…Respect." gets a 0.6 s pause before it.
 
 ## 4. Look
-- **Studio:** a small dark room, front view. A desk across the lower third with two broadcast mics on arms. Bit sits left, Glitch right. Behind them: a wall of soft neon (pink left, lime right), a small shelf with a tiny 3D-printer, a monitor showing scrolling code, a sign reading `ASK BIT` in pink neon. Flat-shaded, clean shapes, gentle glow; same palette as Levels 1–3. All original.
+- **Engine:** Three.js in a single HTML page, rendered **frame by frame** with headless Chromium (Playwright): step the scene to time t, screenshot the canvas, pipe frames to ffmpeg. Never record in real time. Load Bit's STLs with `STLLoader` and give each part its colour (pink body, cyan eyes and screen, dark visor, grey parts).
+- **Studio (3D, low-poly, warm):** a cosy dark room with **depth**: wooden slat wall behind with warm practical lights, acoustic panels, a shelf with a tiny 3D printer, a plant and a monitor of scrolling code, a pink neon `ASK BIT` sign on the back wall. A desk across the lower third with two broadcast mics on arms. Bit sits left, Glitch right. Soft key light, warm rim lights, gentle shadows, subtle depth of field on the background. Pink accent lights on Bit's side, lime on Glitch's. All original.
 - **HUD (top ~45 % of the frame):** dark rounded panels with a cyan border slide in for each part. Title chip at the top (`WHAT PEOPLE SAY`, `WHAT WE TRIED`, `FACT CHECK`). Text and simple icons animate in on the words they match. A small footer chip `UP NEXT: …` at the end of each part. Gameplay stills for line 6: `brand/thumbnails/src/bugblaster_grok.jpg` and `bugblaster_fable.jpg`.
 - **Captions:** the spoken line, 2 lines max, bottom centre above the Shorts UI (inside the safe zone), current word highlighted pink for Bit and lime for Glitch.
-- **Camera:** wide studio shot for most of it; cut to a closer shot of the speaker for punchlines (lines 7, 9, 12). No shot longer than 6 s without some movement (HUD change, push-in or cut).
+- **Camera:** a slow drifting wide shot of the studio for most of it, cuts to a medium close-up of whoever is speaking on their key lines (always for lines 7, 9, 12), a slight push-in on reveals. No shot longer than 6 s without some movement (HUD change, push-in or cut).
 - **Fonts:** Inter Display (Black for titles, Bold for HUD and captions). No pixel font here; this series is cleaner than the Level films.
 - **Banned:** real company logos (write "Grok" and "Claude Fable 5.2" as plain text only), any human face, lens flares, centred text on a gradient.
 
@@ -44,6 +45,9 @@ Build it so every future episode is just a new `epNN-script.md` + `epNN.json` an
 Dark screen, warm glow, both robots small at the bottom. Text: `Full showdown on the channel` · `Comment GAME for the prompt` · `Follow for the next one`.
 
 ## 7. Gates (stop and show Amit at each one)
+
+After Gate 2 is approved, also render a **12 s coming-soon teaser** from the same studio (`out/coming_soon_9x16.mp4`): the sign lights up, wide shot, Glitch: "Bit, what's this show?" Bit: "You ask. I explain. In three parts." Glitch: "…Fine." Then text `NEW SERIES · STARTS SUNDAY · FOLLOW`.
+
 At every gate, finish your message with this line on its own:
 
 > ⏹ **STOP RECORDING** — Gate N done. Start a new recording before you reply.
@@ -64,7 +68,8 @@ Extract one frame every 2 s and score 1–10:
 6. **Ending:** the reality check and the one-liner land; the CTA is the clearest thing on the end card
 
 ## 9. Gotchas
-- Reuse the Level 3 font remap for macOS and the cairo `DYLD_FALLBACK_LIBRARY_PATH` setting.
+- Three.js from a CDN pinned to one version (or vendored into the folder). Fonts for HUD and captions are drawn in a 2D overlay (HTML/canvas on top of the WebGL canvas) so they stay crisp.
+- Rendering 1,500+ frames headless will take a while: render a low-res preview (540×960) for critique rounds, full res only for the final.
 - Timings come from the real voice files, never hand-typed.
 - Shorts safe zone: keep text out of the bottom 420 px and the right 140 px.
 - `out/voices/` and any `.env` stay git-ignored. Run a secret scan before committing.
