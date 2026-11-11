@@ -1,3 +1,4 @@
 .env
 __pycache__/
 *.pyc
+brand/motion/ask-bit/out/voices/
