@@ -4,7 +4,7 @@
 html,body{margin:0;background:#000;overflow:hidden}
 #c{display:block}
 #ov{position:fixed;inset:0;pointer-events:none;font-family:'Inter Display','Inter',sans-serif}
-.cap{position:absolute;left:60px;right:60px;top:1250px;text-align:center;font-weight:800;font-size:64px;line-height:1.15;color:#fff;
+.cap{position:absolute;left:60px;right:60px;top:1385px;text-align:center;font-weight:800;font-size:60px;line-height:1.15;color:#fff;
   text-shadow:0 4px 0 #0a0b18,0 0 24px rgba(0,0,0,.8);-webkit-text-stroke:2px #0a0b18;opacity:0;transition:none}
 .who{display:inline-block;font-size:34px;font-weight:800;letter-spacing:.12em;padding:6px 18px;border-radius:999px;margin-bottom:14px;-webkit-text-stroke:0;text-shadow:none;color:#0a0b18}
 .card{position:absolute;left:0;right:0;text-align:center;opacity:0}
@@ -109,8 +109,8 @@ for (const s of [-1, 1]) {                                                   // 
   add(new RoundedBoxGeometry(15, 13, 13, 3, 3), std(BODY), s * 47, 47, 4, glBody);
   add(new RoundedBoxGeometry(10, 22, 10, 3, 3), std(BODY), s * 7.8, 18, 0, glBody);
   add(new RoundedBoxGeometry(22, 8, 22, 3, 3), std(HOOD), s * 9.5, 4, 2, glBody); add(new THREE.BoxGeometry(22, 3, 22), emis(LIME, 1.5), s * 9.5, 1.5, 2, glBody);
-  const str = add(new THREE.CylinderGeometry(1.1, 1.1, 16, 6), emis(LIME, 1.2), s * 9.5, 68, 20.5, glBody); str.rotation.z = s * .17;
-  add(new THREE.SphereGeometry(2, 8, 6), emis(LIME, 1.5), s * 11, 59.5, 20.8, glBody);
+  const str = add(new THREE.CylinderGeometry(1.1, 1.1, 16, 6), emis(LIME, 0.5), s * 9.5, 68, 20.5, glBody); str.rotation.z = s * .17;
+  add(new THREE.SphereGeometry(2, 8, 6), emis(LIME, 0.6), s * 11, 59.5, 20.8, glBody);
 }
 const glChest = { level: 0 };
 const glScrTex = canvasTex(256, 120, (g, w, h) => { g.fillStyle = '#0E1A16'; g.fillRect(0, 0, w, h); const l = glChest.level; g.font = 'bold 74px "DejaVu Sans Mono", monospace'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = '#39FF88'; g.shadowBlur = 10 + l * 40; g.fillStyle = `rgba(57,255,136,${.65 + .35 * l})`; g.fillText('{ }', w / 2, h / 2 + 4); });
@@ -148,8 +148,8 @@ composer.addPass(new OutputPass());
 // ---------- shots ----------
 const SHOTS = {
   wide:   { pos: [0, 150, 540], look: [0, 165, 0], fov: 56 },
-  bit:    { pos: [-115, 132, 290], look: [-66, 118, 0], fov: 46 },
-  glitch: { pos: [115, 132, 290], look: [66, 118, 0], fov: 46 },
+  bit:    { pos: [-115, 122, 310], look: [-66, 102, 0], fov: 46 },
+  glitch: { pos: [115, 122, 320], look: [66, 102, 0], fov: 46 },
   sign:   { pos: [0, 330, 420], look: [0, 380, -200], fov: 50 },
 };
 const lerp = (a, b, k) => a + (b - a) * k, ease = k => k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k);
