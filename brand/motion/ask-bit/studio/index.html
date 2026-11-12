@@ -160,7 +160,7 @@ let amit = null;
 if (P.get('amit')) {
   amit = buildAmit(P.get('amit')); scene.add(amit);
   if (P.get('solo')) { amit.position.set(0, 0, 10); bit.visible = gl.visible = false; mics.forEach(m => m.visible = false); }
-  else amit.position.set(0, 0, -10);
+  else { amit.position.set(0, 0, -25); bit.position.x = -150; gl.position.x = 150; mics[0].position.x = -108; mics[1].position.x = 108; amit.userData.trio = true; const am = mics[0].clone(); am.position.set(34, deskY + 5, 70); am.rotation.y = -.35; scene.add(am); }
 }
 // ---------- lights ----------
 scene.add(new THREE.HemisphereLight(0xffd6b0, 0x20121a, 0.6));
@@ -183,6 +183,8 @@ const SHOTS = {
   sign:   { pos: [0, 330, 420], look: [0, 380, -200], fov: 50 },
   lsign:  { pos: [0, 320, 330], look: [0, 330, -260], fov: 34 },
   lwide:  { pos: [0, 175, 470], look: [0, 165, 0], fov: 40 },
+  trio:   { pos: [0, 175, 760], look: [0, 160, 0], fov: 56 },
+  ltrio:  { pos: [0, 175, 560], look: [0, 150, 0], fov: 40 },
   amitc:  { pos: [90, 190, 370], look: [0, 165, 0], fov: 40 },
   amitf:  { pos: [0, 185, 400], look: [0, 160, 0], fov: 40 },
   lend:   { pos: [-135, 150, 480], look: [-135, 140, 0], fov: 40 },

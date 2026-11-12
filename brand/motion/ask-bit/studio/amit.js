@@ -19,7 +19,10 @@ export function buildAmit(style = 'A') {
     add(sph(26), M(NAVY), s * 72, 116, 0).scale.set(1, .85, 1);                  // shoulder caps
     const arm = add(new THREE.CapsuleGeometry(20, 44, flat ? 2 : 6, flat ? 6 : 14), M(NAVY), s * 82, 84, 10); arm.rotation.z = s * .2; arm.rotation.x = -.4;
     const fore = add(new THREE.CapsuleGeometry(15, 30, flat ? 2 : 6, flat ? 6 : 14), M(SKIN), s * 84, 56, 34); fore.rotation.x = -1.3;
-    add(sph(13), M(0x8c5d42), s * 82, 50, 54);                                   // hands resting on the desk
+    const hand = new THREE.Group(); hand.position.set(s * 80, 49, 58); hand.rotation.y = -s * .35; g.add(hand);   // hands resting on the desk
+    add(box(26, 11, 24, flat ? 0 : 5), M(SKIN), 0, 0, 0, hand);
+    for (let f = 0; f < 4; f++) add(box(5.5, 8, 10, flat ? 0 : 2.5), M(SKIN), -9 + f * 6, -1.5, 15, hand);   // fingers
+    add(box(7, 7, 13, flat ? 0 : 3), M(SKIN), -s * 15, 0, 4, hand).rotation.y = s * .6;                   // thumb
   }
   // pink Bit badge on the chest
   const badge = add(box(18, 15, 3, 3), M(0xF0359E, { emissive: 0xF0359E, emissiveIntensity: .25 }), -34, 110, 34.5);
