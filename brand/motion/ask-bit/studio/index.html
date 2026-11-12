@@ -17,6 +17,12 @@ html,body{margin:0;background:#000;overflow:hidden}
   <div class="cap" id="cap"></div>
   <div class="card" id="end" style="top:260px"><div class="chip">NEW SERIES</div><div class="big" style="margin-top:24px">STARTS<br>SUNDAY</div><div class="sub">AI &amp; CODING, ANSWERED</div><div class="sub" style="color:#fff">FOLLOW SO YOU DON'T MISS IT</div></div>
 </div>
+<div id="es" style="position:fixed;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;pointer-events:none;opacity:0;font-family:'Inter Display',Inter,sans-serif">
+  <div style="position:absolute;left:110px;top:150px;font-style:italic;font-weight:900;font-size:64px;color:#fff;-webkit-text-stroke:2px #0a0b18;text-shadow:0 6px 0 #0a0b18">WATCH NEXT</div>
+  <div style="position:absolute;left:110px;top:250px;width:820px;height:462px;border:6px solid #00F0FF;border-radius:22px;box-shadow:0 0 40px rgba(0,240,255,.45), inset 0 0 40px rgba(0,240,255,.15);background:rgba(8,10,22,.35)"></div>
+  <div style="position:absolute;left:110px;top:760px;width:190px;height:190px;border-radius:50%;border:6px solid #F0359E;box-shadow:0 0 34px rgba(240,53,158,.5);background:rgba(8,10,22,.35)"></div>
+  <div style="position:absolute;left:330px;top:820px;font-style:italic;font-weight:900;font-size:56px;color:#fff;-webkit-text-stroke:2px #0a0b18;text-shadow:0 5px 0 #0a0b18">SUBSCRIBE</div>
+</div>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
 <script type="module">
 import * as THREE from 'three';
@@ -35,6 +41,7 @@ renderer.setPixelRatio(1); renderer.shadowMap.enabled = true; renderer.shadowMap
 renderer.toneMapping = THREE.ACESFilmicToneMapping; renderer.toneMappingExposure = 1.05;
 document.getElementById('ov').style.transform = `scale(${W / 1080})`; document.getElementById('ov').style.transformOrigin = '0 0';
 document.getElementById('ov').style.width = '1080px'; document.getElementById('ov').style.height = '1920px';
+document.getElementById('es').style.transform = `scale(${W / 1920})`; if (W < H) document.getElementById('ov').style.display = 'block'; else document.getElementById('ov').style.display = 'none';
 
 const scene = new THREE.Scene(); scene.background = new THREE.Color(0x120d12); scene.fog = new THREE.Fog(0x120d12, 700, 1500);
 const camera = new THREE.PerspectiveCamera(58, W / H, 1, 3000);
@@ -56,8 +63,9 @@ for (const sx of [-1, 1]) {                                               // dar
   for (let i = 0; i < 4; i++) add(new THREE.BoxGeometry(240, 6, 26), std(0x262536), sx * 470, 150 + i * 100, wallZ + 20);
 }
 // neon sign
-const signTex = canvasTex(1024, 300, (g, w, h) => { g.clearRect(0, 0, w, h); g.font = '900 210px "Inter Display", Inter, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = '#F0359E'; g.shadowBlur = 40; g.fillStyle = '#ffd1ea'; g.fillText('ASK BIT', w / 2, h / 2 + 10); });
-const sign = add(new THREE.PlaneGeometry(300, 88), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, toneMapped: false, color: new THREE.Color(2.2, 2.2, 2.2) }), 0, 330, wallZ + 20);
+let SIGN_TEXT = P.get('sign') || 'ASK BIT';
+const signTex = canvasTex(2048, 300, (g, w, h) => { g.clearRect(0, 0, w, h); g.font = '900 210px "Inter Display", Inter, sans-serif'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.shadowColor = '#F0359E'; g.shadowBlur = 40; g.fillStyle = '#ff8fcd'; g.fillText(SIGN_TEXT, w / 2, h / 2 + 10); });
+const sign = add(new THREE.PlaneGeometry(600, 88), new THREE.MeshBasicMaterial({ map: signTex, transparent: true, toneMapped: false, color: new THREE.Color(1.25, 1.25, 1.25) }), 0, 330, wallZ + 20);
 const signLight = new THREE.PointLight(PINK, 18000, 500, 2); signLight.position.set(0, 330, wallZ + 80); scene.add(signLight);
 // shelf with printer and plant (left), monitor (right)
 add(new THREE.BoxGeometry(220, 10, 60), std(0x4a3426), -300, 200, wallZ + 40);
@@ -151,6 +159,9 @@ const SHOTS = {
   bit:    { pos: [-115, 122, 310], look: [-66, 102, 0], fov: 46 },
   glitch: { pos: [115, 122, 320], look: [66, 102, 0], fov: 46 },
   sign:   { pos: [0, 330, 420], look: [0, 380, -200], fov: 50 },
+  lsign:  { pos: [0, 320, 330], look: [0, 330, -260], fov: 34 },
+  lwide:  { pos: [0, 175, 470], look: [0, 165, 0], fov: 40 },
+  lend:   { pos: [-150, 150, 470], look: [-150, 140, 0], fov: 40 },
 };
 const lerp = (a, b, k) => a + (b - a) * k, ease = k => k < 0 ? 0 : k > 1 ? 1 : k * k * (3 - 2 * k);
 function setCam(a, b, k, drift) {
@@ -166,7 +177,7 @@ window.setState = (s) => {
   setCam(s.shot[0], s.shot[1], s.shot[2], s.drift || [0, 0, 0]);
   // idle motion + turn to speaker
   const tb = s.speaker === 'glitch' ? .32 : .12, tg = s.speaker === 'bit' ? -.32 : -.12;
-  bit.rotation.y = tb; bit.position.y = 10 + Math.sin(t * 2.1) * 1.2 + (s.bitLevel || 0) * 2;
+  bit.rotation.y = s.bitTurn != null ? s.bitTurn : tb; bit.position.y = 10 + Math.sin(t * 2.1) * 1.2 + (s.bitLevel || 0) * 2;
   gl.rotation.y = tg; gl.position.y = 10 + Math.sin(t * 2.4 + 1) * 1.2 + (s.glLevel || 0) * 2; glHead.rotation.z = Math.sin(t * 1.3) * .03 + (s.glLevel || 0) * .04;
   // chest screens
   bitWave.hist.push(s.bitLevel || 0); bitWave.hist.shift(); bitScr.visible = (s.bitLevel || 0) > 0.02 || bitWave.hist.some(v => v > .05);
@@ -177,6 +188,8 @@ window.setState = (s) => {
   const gk = Math.floor(t * 12), r = Math.abs(Math.sin(gk * 12.9898) * 43758.5453) % 1;
   glHead.position.x = r < .12 ? (r < .06 ? -2 : 2) : 0;
   codeTex.userData.draw(codeTex.userData.ctx, 512, 300, t); codeTex.needsUpdate = true;
+  if (s.eyes != null) { for (const m of bitInner.children) if (m.material.emissive && m.material.color.getHex() === CYAN) m.material.emissiveIntensity = 0.7 * s.eyes; }
+  const es = document.getElementById('es'); if (es) es.style.opacity = s.es || 0;
   const sg = s.sign == null ? 1 : s.sign; sign.material.opacity = sg; signLight.intensity = 18000 * sg;
   // overlays
   const cap = document.getElementById('cap');

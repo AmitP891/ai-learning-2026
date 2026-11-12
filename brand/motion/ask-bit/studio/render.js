@@ -10,7 +10,7 @@ const ROOT = path.resolve(__dirname, '../../../..'); const NM = process.env.THRE
   const p = await b.newPage({ viewport: { width: +w, height: +h } });
   p.on('pageerror', e => console.log('ERR', e.message));
   if (NM) await p.route('https://cdn.jsdelivr.net/npm/three@0.160.1/**', r => { const rel = r.request().url().split('three@0.160.1/')[1]; r.fulfill({ path: path.join(NM, rel), contentType: 'application/javascript' }); });
-  await p.goto(`http://localhost:${srv.address().port}/brand/motion/ask-bit/studio/index.html?w=${w}&h=${h}`);
+  await p.goto(`http://localhost:${srv.address().port}/brand/motion/ask-bit/studio/index.html?w=${w}&h=${h}${process.env.QS ? '&' + process.env.QS : ''}`);
   await p.waitForFunction('window.READY === true', null, { timeout: 120000 });
   await p.evaluate(() => document.fonts.ready);
   const ff = spawn('ffmpeg', ['-v', 'error', '-y', '-f', 'image2pipe', '-framerate', '30', '-i', '-', '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-preset', 'medium', out], { stdio: ['pipe', 'inherit', 'inherit'] });
