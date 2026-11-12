@@ -50,3 +50,6 @@ Every piece of content published during the sprint, linked to the week and code 
 | 10 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/rCKX4eDUo_U) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
 | 10 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXfWoAA/) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
 | 10 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfkgEEPTZ7U/) | I Rated My AI Builds on the Agentic AI Scale (Most Autonomous ≠ Most Trusted) ([video](videos/2026-11-10-agentic-scale.mp4)) | |
+| 12 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/sqPOzuJGrhU) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
+| 12 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXmsSJ6/) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
+| 12 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfpplJ6ToY8/) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
