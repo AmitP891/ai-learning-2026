@@ -106,6 +106,18 @@ const bitWave = { level: 0, hist: new Array(40).fill(0) };
 const bitScrTex = canvasTex(256, 160, (g, w, h) => { g.fillStyle = '#1e2132'; g.fillRect(0, 0, w, h); g.strokeStyle = '#00F0FF'; g.lineWidth = 6; g.lineCap = 'round'; g.shadowColor = '#00F0FF'; g.shadowBlur = 14; const n = bitWave.hist.length; for (let i = 0; i < n; i++) { const a = bitWave.hist[i] * (h * .42) + 4; const x = 18 + i * (w - 36) / (n - 1); g.beginPath(); g.moveTo(x, h / 2 - a); g.lineTo(x, h / 2 + a); g.stroke(); } });
 const bitScr = add(new THREE.PlaneGeometry(X(375) - X(225), Z(400) - Z(495)), new THREE.MeshBasicMaterial({ map: bitScrTex, toneMapped: false, transparent: true }), 0, (Z(400) + Z(495)) / 2, 22.2, bit);
 bitScr.visible = false;
+// Bit's mouth: covers the printed smile and redraws it, opening with his voice
+const bitMouth = { level: 0 };
+const BM = { x0: 246, x1: 354, y0: 241, y1: 294 };                       // svg units of the area covered
+const drawMouth = (g, w, h, emissive) => { const k = w / (BM.x1 - BM.x0), X_ = x => (x - BM.x0) * k, Y_ = y => (y - BM.y0) * k;
+  g.fillStyle = emissive ? '#000' : '#1e2132'; g.fillRect(0, 0, w, h); const l = bitMouth.level;
+  g.strokeStyle = emissive ? '#00F0FF' : '#5fe9f0'; g.lineCap = 'round'; g.lineJoin = 'round'; g.lineWidth = 9 * k;
+  g.beginPath(); g.moveTo(X_(262), Y_(255)); g.quadraticCurveTo(X_(300), Y_(282 - l * 12), X_(338), Y_(255));
+  if (l > 0.04) { g.quadraticCurveTo(X_(300), Y_(282 + l * 46), X_(262), Y_(255)); g.closePath(); g.fillStyle = emissive ? '#003038' : '#0a2c33'; g.fill(); }
+  g.stroke(); };
+const bitMouthTex = canvasTex(432, 212, (g, w, h) => drawMouth(g, w, h, false));
+const bitMouthEm = canvasTex(432, 212, (g, w, h) => drawMouth(g, w, h, true));
+const bitMouthMesh = add(new THREE.PlaneGeometry((BM.x1 - BM.x0) * U, (BM.y1 - BM.y0) * U), new THREE.MeshStandardMaterial({ map: bitMouthTex, emissive: 0xffffff, emissiveMap: bitMouthEm, emissiveIntensity: 0.7, roughness: .3, metalness: .05 }), 0, Z((BM.y0 + BM.y1) / 2), 25.7, bit);
 
 // ---------- Glitch (built from shapes to match his sheet) ----------
 const HOOD = 0x2B2F45, BODY = 0x3A3F55, VIS = 0x0E1A16;
@@ -137,7 +149,9 @@ const visTex = canvasTex(480, 256, (g, w, h) => { g.fillStyle = '#0E1A16'; g.fil
   const e = glFace.expr;
   if (e === 'typing') { for (const [x, y, ww] of [[208, 186, 40], [254, 186, 14], [206, 204, 22], [234, 204, 34], [210, 222, 44], [330, 186, 22], [358, 186, 34], [334, 204, 48], [330, 222, 18], [354, 222, 30]]) { g.fillRect((x - ox) * sx, (y - oy) * sy, ww * sx, 10 * sy); } }
   else for (const [x, y, ww, hh] of EXPR[e] || EXPR.smirk) { g.beginPath(); g.roundRect((x - ox) * sx, (y - oy) * sy, ww * sx, hh * sy, 9 * sx); g.fill(); }
-  g.lineWidth = 9 * sx; g.strokeStyle = '#39FF88'; g.lineCap = 'round'; g.beginPath(); g.moveTo((262 - ox) * sx, (258 - oy) * sy); g.lineTo((300 - ox) * sx, (265 - oy) * sy); g.lineTo((344 - ox) * sx, (248 - oy) * sy); g.stroke(); });
+  const l = glFace.level || 0; g.lineWidth = 9 * sx; g.strokeStyle = '#39FF88'; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath(); g.moveTo((262 - ox) * sx, (258 - oy) * sy); g.lineTo((300 - ox) * sx, (265 - oy) * sy); g.lineTo((344 - ox) * sx, (248 - oy) * sy);
+  if (l > 0.04) { g.quadraticCurveTo((310 - ox) * sx, (265 + l * 40 - oy) * sy, (262 - ox) * sx, (258 - oy) * sy); g.closePath(); g.fillStyle = '#0d3a22'; g.fill(); }
+  g.stroke(); });
 add(new THREE.PlaneGeometry(X(420) - X(180), Z(152) - Z(280)), new THREE.MeshBasicMaterial({ map: visTex, toneMapped: false }), 0, (Z(152) + Z(280)) / 2, 34.2, glHead);
 
 // ---------- lights ----------
@@ -183,7 +197,9 @@ window.setState = (s) => {
   bitWave.hist.push(s.bitLevel || 0); bitWave.hist.shift(); bitScr.visible = (s.bitLevel || 0) > 0.02 || bitWave.hist.some(v => v > .05);
   bitScrTex.userData.draw(bitScrTex.userData.ctx, 256, 160); bitScrTex.needsUpdate = true;
   glChest.level = s.glLevel || 0; glScrTex.userData.draw(glScrTex.userData.ctx, 256, 120); glScrTex.needsUpdate = true;
-  if (glFace.expr !== (s.glExpr || 'smirk')) { glFace.expr = s.glExpr || 'smirk'; visTex.userData.draw(visTex.userData.ctx, 480, 256); visTex.needsUpdate = true; }
+  const gl_l = s.glLevel || 0;
+  if (glFace.expr !== (s.glExpr || 'smirk') || gl_l > 0 || glFace.level > 0) { glFace.expr = s.glExpr || 'smirk'; glFace.level = gl_l; visTex.userData.draw(visTex.userData.ctx, 480, 256); visTex.needsUpdate = true; }
+  if ((s.bitLevel || 0) > 0 || bitMouth.level > 0) { bitMouth.level = s.bitLevel || 0; bitMouthTex.userData.draw(bitMouthTex.userData.ctx, 432, 212); bitMouthTex.needsUpdate = true; bitMouthEm.userData.draw(bitMouthEm.userData.ctx, 432, 212); bitMouthEm.needsUpdate = true; }
   // Glitch's signature sideways slice glitch
   const gk = Math.floor(t * 12), r = Math.abs(Math.sin(gk * 12.9898) * 43758.5453) % 1;
   glHead.position.x = r < .12 ? (r < .06 ? -2 : 2) : 0;
