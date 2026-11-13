@@ -53,3 +53,6 @@ Every piece of content published during the sprint, linked to the week and code 
 | 12 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/sqPOzuJGrhU) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
 | 12 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXmsSJ6/) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
 | 12 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfpplJ6ToY8/) | Grok vs Claude Fable 5.2: same game prompt (teaser) ([video](videos/2026-11-12-grok-vs-fable-teaser.mp4)) | |
+| 13 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/n8S4GT98tNc) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
+| 13 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfsOa0zzWCZ/) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
+| 13 Nov 2026 | 4 | TikTok (link to add) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
