@@ -56,3 +56,4 @@ Every piece of content published during the sprint, linked to the week and code 
 | 13 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/n8S4GT98tNc) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
 | 13 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfsOa0zzWCZ/) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
 | 13 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXHXPNg/) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
+| 14 Nov 2026 | 4 | [YouTube](https://youtu.be/dSx9iNcnkug) | How I Make Faceless YouTube Videos With Code (No Editor, No Face) | long-form, 2:35 |
