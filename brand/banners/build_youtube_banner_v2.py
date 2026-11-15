@@ -20,8 +20,8 @@ b.glow(im, (SX0 - 80, SY0 - 120, SX0 + 560, SY1 + 120), PK, 110, 140)
 b.glow(im, (SX0 + 600, SY0, SX1, SY1), CY, 28, 180)
 
 # real 3D-printed Bit, left side of the safe area
-p = Image.open(os.path.join(ROOT, "brand/photos/bit_real_cutout.png")).convert("RGBA")
-p = b.light_eyes(b.grade_photo(p)); hgt = 420; s = hgt / p.height
+# painted-collectible look (option E, 15 Nov): made by brand/bit/lab/physical_mockups.py
+p = Image.open(os.path.join(ROOT, "brand/photos/bit_painted_mockup.png")).convert("RGBA"); hgt = 420; s = hgt / p.height
 p = p.resize((round(p.width * s), hgt), Image.LANCZOS)
 rimp = b.rim(p, CY, 9, 170)
 # the photo is cropped through the base: fade the bottom so no hard edge shows

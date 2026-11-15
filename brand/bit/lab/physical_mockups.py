@@ -52,6 +52,7 @@ d = ImageDraw.Draw(pt); f = b.MONO(118)
 d.text(((CHEST[0] + CHEST[2]) / 2, (CHEST[1] + CHEST[3]) / 2), "</>", font=f, fill=CY, anchor="mm")
 hl = Image.new("RGBA", src.size, (0, 0, 0, 0)); ImageDraw.Draw(hl).rounded_rectangle((220, 145, 520, 175), 15, fill=(255, 255, 255, 50))
 pt.alpha_composite(hl.filter(ImageFilter.GaussianBlur(6))); pt.putalpha(src.getchannel("A")); bg(pt).save(os.path.join(OUT, "real_painted.png"))
+pt.save(os.path.join(ROOT, "brand/photos/bit_painted_mockup.png"))  # cutout used by the banner
 
 # 3. AMOLED face: true-black screen, happy eyes, little pixel glare
 am = shade_paint(src, VISOR, (2, 2, 4), 255, 60)
