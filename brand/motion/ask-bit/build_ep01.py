@@ -16,8 +16,9 @@ MONO = lambda s: ImageFont.truetype("/usr/share/fonts/truetype/dejavu/DejaVuSans
 PINK, LIME, CYAN, WHITE, RED, GOLD, INK = (240, 53, 158), (57, 255, 136), (0, 240, 255), (255, 255, 255), (255, 70, 90), (255, 200, 80), (10, 11, 24)
 
 # (start, end, speaker) per script line, measured from the audio
+# v2 (15 Nov): 41.65-49.87 re-voiced by Bit (the first take had those lines in Glitch's voice); later lines +0.75 s
 LINES = [(0.00, 4.60, "G"), (4.97, 11.38, "B"), (12.08, 18.39, "B"), (18.75, 20.91, "G"), (21.25, 22.00, "B"), (22.68, 32.39, "B"),
-         (32.86, 35.53, "G"), (35.88, 39.78, "B"), (40.07, 40.71, "G"), (41.17, 49.12, "B"), (49.60, 51.29, "G"), (51.60, 53.54, "B")]
+         (32.86, 35.53, "G"), (35.88, 39.78, "B"), (40.07, 40.71, "G"), (41.17, 41.40, "B"), (41.68, 49.83, "B"), (50.35, 52.04, "G"), (52.35, 54.29, "B")]
 CAPS = [(0.0, 4.0, "G", "Bit. People say AI can build a whole game in ten minutes."), (4.0, 4.8, "G", "True?"),
         (4.9, 7.6, "B", "Let's check. Three simple parts."), (7.6, 11.6, "B", "What people say. What we tried. And is it real."),
         (12.0, 14.25, "B", "What people say: one prompt, one shot,"), (14.25, 18.6, "B", "a full 3D game. Done before your coffee's cold."),
@@ -25,14 +26,15 @@ CAPS = [(0.0, 4.0, "G", "Bit. People say AI can build a whole game in ten minute
         (22.6, 26.1, "B", "What we tried: the same prompt to two AIs."), (26.1, 30.8, "B", "Grok took nine minutes. Claude Fable 5.2 took seventeen."),
         (30.8, 32.7, "B", "Both games ran first time."), (32.8, 35.75, "G", "Nine minutes. Grok wins. Next."),
         (35.8, 39.95, "B", "Grok's tester skipped the levels using a cheat it hid in its own code."), (39.95, 41.0, "G", "…Respect."),
-        (41.1, 43.0, "B", "Is it real? It's real."), (43.0, 46.6, "B", "But a human still has to play it. The fast one cut corners."),
-        (46.6, 49.4, "B", "And the slow one made level one too hard to beat."), (49.5, 51.45, "G", "So am I a game dev now?"),
-        (51.5, 53.9, "B", "You're a prompt writer. With a game.")]
-END = 53.9; DUR = END + 3.6
+        (41.1, 42.8, "B", "Is it real? It's real."), (42.8, 46.9, "B", "But a human still has to play it. The fast one cut corners."),
+        (46.9, 50.15, "B", "And the slow one made level one too hard to beat."), (50.25, 52.2, "G", "So am I a game dev now?"),
+        (52.25, 54.65, "B", "You're a prompt writer. With a game.")]
+END = 54.65; DUR = END + 4.2
+NEXT_EP = "IS FABLE WORTH PAYING FOR?"   # next-episode tease on the end card
 
 def shot_at(t):
     plan = [(0, "wide"), (4.85, "bit"), (11.9, "wide"), (18.6, "glitch"), (21.1, "bit"), (22.5, "wide"), (32.75, "glitch"),
-            (35.75, "bit"), (39.95, "glitch"), (41.0, "wide"), (49.45, "glitch"), (51.45, "bit"), (END, "wide")]
+            (35.75, "bit"), (39.95, "glitch"), (41.0, "wide"), (50.2, "glitch"), (52.2, "bit"), (END, "wide")]
     cur, t0 = plan[0][1], 0
     for s, name in plan:
         if t >= s: cur, t0 = name, s
@@ -110,13 +112,13 @@ def hud(t):
         if t >= 40.0: chip(im, "UP NEXT: IS IT REAL?", 890, PINK, k(40.0, .25), 40)
     elif t < END:                                                  # fact check
         a = k(41.1); chip(im, "FACT CHECK", 130, GOLD, a); off = panel(im, a, 250, 800)
-        b = k(42.24, .18)
+        b = k(41.75, .18)
         if b > 0:
             s = 1.6 - 0.6 * b; st = Image.new("RGBA", (420, 170), (0, 0, 0, 0)); sd = ImageDraw.Draw(st)
             rr(sd, (8, 8, 412, 162), 20, outline=(40, 220, 120, 255), width=12); sd.text((210, 88), "REAL", font=BK(110), fill=(40, 220, 120, 255), anchor="mm")
             st = st.resize((int(420 * s), int(170 * s))).rotate(-8, expand=True, resample=Image.BICUBIC)
             st.putalpha(st.getchannel("A").point(lambda v: int(v * b))); im.alpha_composite(st, (540 - st.width // 2, 375 + off - st.height // 2))
-        for i, (s0, line, col) in enumerate([(43.09, "A human still has to play it", WHITE), (44.99, "Fast one cut corners", RED), (46.71, "Slow one: level 1 too hard", GOLD)]):
+        for i, (s0, line, col) in enumerate([(42.95, "A human still has to play it", WHITE), (45.23, "Fast one cut corners", RED), (47.0, "Slow one: level 1 too hard", GOLD)]):
             c = k(s0, .25)
             if c <= 0: continue
             y = 520 + i * 90 + off; x = 130 - int((1 - c) * 50); d.ellipse((x, y - 14, x + 28, y + 14), fill=col + (int(255 * c),)); txt(d, (x + 52, y), line, BK(50), col, c, "lm")
@@ -126,12 +128,15 @@ def hud(t):
         b = k(END + .5, .35); txt(d, (540, 800), "COMMENT", BK(80), WHITE, b, "mm", 5)
         rr(d, (330, 870, 750, 1010), 30, fill=PINK + (int(255 * b),)); txt(d, (540, 940), "GAME", BK(100), INK, b, "mm")
         txt(d, (540, 1080), "FOR THE PROMPT", BK(64), WHITE, b, "mm", 5)
-        c = k(END + 1.1, .35); txt(d, (540, 1250), "Follow for the next one", BD(54), PINK, c, "mm", 4)
+        c = k(END + 1.1, .35); txt(d, (540, 1200), "NEXT TIME ON ASK BIT", BD(46), GOLD, c, "mm", 4)
+        txt(d, (540, 1275), NEXT_EP, BK(58), WHITE, c, "mm", 5); txt(d, (540, 1360), "Follow so you don't miss it", BD(46), PINK, c, "mm", 4)
     return im
 
 def main(voice, out, w=1080, h=1920):
+    # PREV=old.mp4 START=41.0 → keep the old picture before START and render only from START on
+    prev, start = os.environ.get("PREV"), float(os.environ.get("START", 0)); i0 = int(round(start * FPS)) if prev else 0
     x = pcm(voice); env = envelope(x); tmp = tempfile.mkdtemp(); N = int(DUR * FPS); states = []
-    for i in range(N):
+    for i in range(i0, N):
         t = i / FPS; shot, dt = shot_at(t)
         s = {"t": t, "shot": [shot], "drift": [0, 0, -dt * (10 if shot == "wide" else 6)], "bitLevel": 0, "glLevel": 0, "speaker": None, "glExpr": "smirk"}
         k = min(i, len(env) - 1)
@@ -140,7 +145,7 @@ def main(voice, out, w=1080, h=1920):
                 lv = float(env[k]) if i < len(env) else 0
                 if who == "B": s["bitLevel"] = lv; s["speaker"] = "bit"
                 else: s["glLevel"] = lv; s["speaker"] = "glitch"
-        if 49.5 <= t < 51.5: s["glExpr"] = "neutral"
+        if 50.25 <= t < 52.25: s["glExpr"] = "neutral"
         for (a, b, who, text) in CAPS:
             if a <= t < b: s["caption"] = {"who": "BIT" if who == "B" else "GLITCH", "text": text, "o": 1}
         states.append(s)
@@ -150,13 +155,18 @@ def main(voice, out, w=1080, h=1920):
     dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", raw, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     vid = os.path.join(tmp, "hud.mp4")
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-preset", "medium", vid], stdin=subprocess.PIPE)
-    for i in range(N):
+    for i in range(i0, N):
         buf = dec.stdout.read(w * h * 3)
         if len(buf) < w * h * 3: break
         fr = Image.frombuffer("RGB", (w, h), buf).convert("RGBA"); H = hud(i / FPS)
         if (w, h) != (1080, 1920): H = H.resize((w, h))
         fr.alpha_composite(H); enc.stdin.write(fr.convert("RGB").tobytes())
     enc.stdin.close(); enc.wait(); dec.wait()
+    if prev:
+        head = os.path.join(tmp, "head.mp4"); joined = os.path.join(tmp, "joined.mp4")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", prev, "-an", "-vf", f"trim=end_frame={i0},setpts=PTS-STARTPTS", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", head], check=True)
+        lst = os.path.join(tmp, "l.txt"); open(lst, "w").write(f"file '{head}'\nfile '{vid}'\n")
+        subprocess.run(["ffmpeg", "-v", "error", "-y", "-f", "concat", "-safe", "0", "-i", lst, "-c", "copy", joined], check=True); vid = joined
     # audio: voice + ducked lo-fi bed + UI pops
     n = int(DUR * SR); tt = np.arange(n) / SR; v = pcm(voice); mix = np.zeros(n); mix[:len(v)] += v[:n] * 0.95
     noise = np.random.default_rng(9).uniform(-1, 1, n)
@@ -168,9 +178,9 @@ def main(voice, out, w=1080, h=1920):
         s0 = kk * beat; fr_ = 55 * 2 ** (-np.clip((tt - s0) * 30, 0, 3)); bed += 0.18 * np.sin(2 * np.pi * np.cumsum(fr_) / SR) * dec_(s0, .08) * (tt >= s0); bed += .035 * noise * dec_(s0 + beat / 2, .02) * (tt >= s0 + beat / 2)
     env_v = np.convolve(np.abs(np.pad(v, (0, max(0, n - len(v))))[:n]), np.ones(6000) / 6000, mode="same"); duck = 1 - 0.65 * np.clip(env_v / (env_v.max() * 0.25), 0, 1)
     mix += bed * duck
-    for s0 in (0.15, 7.72, 8.98, 10.15, 12.1, 14.31, 16.98, 23.87, 26.2, 27.87, 30.9, 36.4, 43.09, 44.99, 46.71, END + .5):
+    for s0 in (0.15, 7.72, 8.98, 10.15, 12.1, 14.31, 16.98, 23.87, 26.2, 27.87, 30.9, 36.4, 42.95, 45.23, 47.0, END + .5):
         mix += 0.10 * np.sin(2 * np.pi * 880 * tt) * dec_(s0, .05) * (tt >= s0) + 0.06 * np.sin(2 * np.pi * 1320 * tt) * dec_(s0, .04) * (tt >= s0)
-    f2 = 70 * 2 ** (-np.clip((tt - 42.24) * 25, 0, 2)); mix += 0.5 * np.sin(2 * np.pi * np.cumsum(f2) / SR) * dec_(42.24, .15) * (tt >= 42.24) + 0.15 * noise * dec_(42.24, .05) * (tt >= 42.24)  # REAL stamp
+    f2 = 70 * 2 ** (-np.clip((tt - 41.75) * 25, 0, 2)); mix += 0.5 * np.sin(2 * np.pi * np.cumsum(f2) / SR) * dec_(41.75, .15) * (tt >= 41.75) + 0.15 * noise * dec_(41.75, .05) * (tt >= 41.75)  # REAL stamp
     for s0 in (11.9, 22.5, 41.0): mix += 0.06 * noise * dec_(s0, .15) * (tt >= s0)   # whooshes between parts
     mix = mix / np.max(np.abs(mix)) * 0.89; wav = os.path.join(tmp, "a.wav")
     with wave.open(wav, "w") as wf: wf.setnchannels(1); wf.setsampwidth(2); wf.setframerate(SR); wf.writeframes((mix * 32767).astype(np.int16).tobytes())
