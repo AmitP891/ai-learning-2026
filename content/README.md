@@ -58,6 +58,7 @@ Every piece of content published during the sprint, linked to the week and code 
 | 13 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXHXPNg/) | Ask Bit: new series coming soon (3D teaser) ([video](videos/2026-11-13-ask-bit-coming-soon.mp4)) | |
 | 14 Nov 2026 | 4 | [YouTube](https://youtu.be/dSx9iNcnkug) | How I Make Faceless YouTube Videos With Code (No Editor, No Face) | long-form, 2:35 |
 | 15 Nov 2026 | 4 | [YouTube](https://youtu.be/Nqyr0hdKNqY) | I Gave Grok and Claude Fable 5.2 the Same Game Prompt (One Hid a Cheat) | long-form, 4:18 |
+| 15 Nov 2026 | 4 | [YouTube](https://youtu.be/AawgeK-r9K4) | Vibe with Amit: AI builds games, Bit plays them | channel trailer (non-subscribers), 0:35 |
 | 15 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/P-3YIDPA-L4) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
 | 15 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/DfxX-2QztDu/) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
 | 15 Nov 2026 | 4 | [TikTok](https://vm.tiktok.com/ZGdXC4eUM/) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
