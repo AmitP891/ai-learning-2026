@@ -43,8 +43,8 @@ and the Hype Bot's 3 title ideas.
 ## Results
 | | Opus 5.5 |
 |---|---|
-| Date |
-| Time (send to finished) |
-| Fix rounds |
-| Lines |
-| Notes |
+| Date | |
+| Time (send to finished) | |
+| Fix rounds | |
+| Lines | |
+| Notes | |
