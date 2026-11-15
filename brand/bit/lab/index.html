@@ -1,0 +1,64 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Bit lab</title>
+<style>html,body{margin:0;background:#0c0b12;overflow:hidden}</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/"}}</script>
+</head><body>
+<script type="module">
+// Bit look-development page: ?mat=std|gloss  &expr=normal|happy|shocked|smug|sleepy|love  &w=&h=
+import * as THREE from 'three';
+import { STLLoader } from 'three/addons/loaders/STLLoader.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const P = new URLSearchParams(location.search);
+const W = +(P.get('w') || 900), H = +(P.get('h') || 1100), MAT = P.get('mat') || 'std', EXPR = P.get('expr') || 'normal';
+const r = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
+r.setSize(W, H); r.setPixelRatio(1); r.toneMapping = THREE.ACESFilmicToneMapping; r.toneMappingExposure = 1.0;
+r.shadowMap.enabled = true; r.shadowMap.type = THREE.PCFSoftShadowMap; document.body.appendChild(r.domElement);
+const scene = new THREE.Scene(); scene.background = new THREE.Color(0x14111c);
+if (MAT === 'gloss') { const pm = new THREE.PMREMGenerator(r); scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = 0.3; }
+const cam = new THREE.PerspectiveCamera(30, W / H, 1, 5000); cam.position.set(60, 120, 520); cam.lookAt(0, 92, 0);
+// floor + back glow
+const floor = new THREE.Mesh(new THREE.PlaneGeometry(4000, 4000), new THREE.MeshStandardMaterial({ color: 0x120f18, roughness: .9 }));
+floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
+const back = new THREE.Mesh(new THREE.PlaneGeometry(2000, 1200), new THREE.MeshBasicMaterial({ color: 0x1d1530 })); back.position.set(0, 300, -400); scene.add(back);
+// lights: warm key, pink fill, cyan rim
+const key = new THREE.DirectionalLight(0xfff1e6, 2.6); key.position.set(250, 420, 380); key.castShadow = true;
+key.shadow.mapSize.set(2048, 2048); Object.assign(key.shadow.camera, { left: -300, right: 300, top: 300, bottom: -300 }); scene.add(key);
+scene.add(new THREE.HemisphereLight(0x8a7aa8, 0x201a26, 0.9));
+const rim = new THREE.DirectionalLight(0x00f0ff, MAT === 'gloss' ? 3.2 : 1.6); rim.position.set(-380, 260, -300); scene.add(rim);
+const fill = new THREE.PointLight(0xf0359e, 60000, 900, 2); fill.position.set(-260, 120, 220); scene.add(fill);
+
+const PINK = 0xF0359E, CYAN = 0x00F0FF;
+const mk = (c, o = {}) => MAT === 'gloss'
+  ? new THREE.MeshPhysicalMaterial(Object.assign({ color: c, roughness: .32, metalness: 0, clearcoat: 1, clearcoatRoughness: .08, sheen: .2 }, o))
+  : new THREE.MeshStandardMaterial(Object.assign({ color: c, roughness: .5, metalness: .05 }, o));
+const U = 0.26, X = x => (x - 300) * U, Z = y => (674 - y) * U + 5;
+const bit = new THREE.Group(); bit.rotation.y = -0.18; scene.add(bit);
+const inner = new THREE.Group(); inner.rotation.x = -Math.PI / 2; bit.add(inner);
+const COL = { pink: [PINK, {}], dark: [0x1e2132, { roughness: .25 }], cyan: [CYAN, { emissive: CYAN, emissiveIntensity: MAT === 'gloss' ? 1.4 : 0.7 }], grey: [0x464c69, {}] };
+const loader = new STLLoader();
+await Promise.all(Object.entries(COL).map(([k, [c, o]]) => new Promise(res => loader.load(`../3d/bit_${k}.stl`, g => {
+  g.computeVertexNormals(); const m = new THREE.Mesh(g, mk(c, o)); m.castShadow = m.receiveShadow = true; inner.add(m); res(); }))));
+
+// expression patch over the printed eyes (same trick as the studio mouth patch)
+if (EXPR !== 'normal') {
+  const E = { x0: 200, x1: 400, y0: 150, y1: 240 }, S = 4, cw = (E.x1 - E.x0) * S, ch = (E.y1 - E.y0) * S;
+  const draw = em => { const c = document.createElement('canvas'); c.width = cw; c.height = ch; const g = c.getContext('2d');
+    g.fillStyle = em ? '#000' : '#1e2132'; g.fillRect(0, 0, cw, ch); const col = em ? '#00F0FF' : '#5fe9f0';
+    g.strokeStyle = g.fillStyle = col; g.lineCap = g.lineJoin = 'round'; g.lineWidth = 11 * S;
+    const ex = [244, 356].map(x => (x - E.x0) * S), ey = (199 - E.y0) * S;
+    for (const x of ex) {
+      g.beginPath();
+      if (EXPR === 'happy') { g.moveTo(x - 20 * S, ey + 10 * S); g.quadraticCurveTo(x, ey - 26 * S, x + 20 * S, ey + 10 * S); g.stroke(); }
+      else if (EXPR === 'shocked') { g.lineWidth = 9 * S; g.arc(x, ey, 25 * S, 0, Math.PI * 2); g.stroke(); g.beginPath(); g.arc(x, ey, 9 * S, 0, Math.PI * 2); g.fill(); }
+      else if (EXPR === 'smug') { g.roundRect(x - 22 * S, ey - 2 * S, 44 * S, 20 * S, 9 * S); g.fill(); g.lineWidth = 7 * S; g.beginPath(); g.moveTo(x - 24 * S, ey - 14 * S); g.lineTo(x + 24 * S, ey - 6 * S); g.stroke(); }
+      else if (EXPR === 'sleepy') { g.moveTo(x - 20 * S, ey + 4 * S); g.quadraticCurveTo(x, ey + 22 * S, x + 20 * S, ey + 4 * S); g.stroke(); }
+      else if (EXPR === 'love') { const s = 1.05 * S; g.moveTo(x, ey + 22 * s); g.bezierCurveTo(x - 34 * s, ey - 2 * s, x - 18 * s, ey - 28 * s, x, ey - 10 * s); g.bezierCurveTo(x + 18 * s, ey - 28 * s, x + 34 * s, ey - 2 * s, x, ey + 22 * s); g.fillStyle = em ? '#FF4FB8' : '#ff7fc8'; g.fill(); }
+    }
+    if (EXPR === 'sleepy') { g.fillStyle = col; g.font = `bold ${26 * S}px sans-serif`; g.fillText('z', cw - 34 * S, 30 * S); g.font = `bold ${18 * S}px sans-serif`; g.fillText('z', cw - 18 * S, 14 * S); }
+    const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; };
+  const m = new THREE.Mesh(new THREE.PlaneGeometry((E.x1 - E.x0) * U, (E.y1 - E.y0) * U),
+    new THREE.MeshStandardMaterial({ map: draw(false), emissive: 0xffffff, emissiveMap: draw(true), emissiveIntensity: MAT === 'gloss' ? 1.3 : 0.8, roughness: .2 }));
+  m.position.set(0, Z((E.y0 + E.y1) / 2), 25.7); bit.add(m);
+}
+r.render(scene, cam); window.READY = true;
+</script></body></html>
