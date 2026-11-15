@@ -10,6 +10,9 @@ Run through this before every video goes out.
 - [ ] Pinned comment ready.
 - [ ] 2 to 3 Shorts cut from it, each with the long-form set as Related video.
 
+## Before rendering any voiced video
+- [ ] Check every line is in the right voice (Bit vs Glitch) against the script; the lip-sync follows the script, not the audio.
+
 ## Every Short / Ask Bit episode
 - [ ] Ends by naming the next episode ("Next time on Ask Bit: …") plus a follow/subscribe line.
 - [ ] Related video set to the matching long-form.
