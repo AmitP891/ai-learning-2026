@@ -1,10 +1,9 @@
 # Bit's Maze Muncher: the shared prompt (video 22 Nov)
 
-Video: "Can Claude Make Pac-Man From Scratch? (Fable 5.2 vs Opus 5.5)"
-Fable access ends 16 Nov, so both builds happen 15 to 16 Nov.
+Video: "Can Claude Make Pac-Man From Scratch?" (single build, Opus 5.5)
 
-Give this to each model **word for word**, each in a fresh Claude Code session
-inside its own empty folder (`builds/pac-bit/fable/` and `builds/pac-bit/opus/`).
+Give this to Opus 5.5 **word for word** in a fresh Claude Code session inside an
+empty folder (`builds/pac-bit/opus/`).
 Start a screen recording ("Record Entire Screen") and note the clock time when you press Enter.
 
 ```
@@ -42,10 +41,10 @@ and the Hype Bot's 3 title ideas.
 ```
 
 ## Results
-| | Fable 5.2 | Opus 5.5 |
-|---|---|---|
-| Date | | |
-| Time (send to finished) | | |
-| Fix rounds | | |
-| Lines | | |
-| Notes | | |
+| | Opus 5.5 |
+|---|---|
+| Date |
+| Time (send to finished) |
+| Fix rounds |
+| Lines |
+| Notes |
