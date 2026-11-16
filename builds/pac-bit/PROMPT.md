@@ -3,7 +3,7 @@
 Video: "Can Claude Make Pac-Man? Then I Gave It 79 Game-Dev Skills" (Opus 5.5, two runs)
 
 - **Run 1: Opus alone** in `builds/pac-bit/opus/`. Do this BEFORE installing the skills.
-- **Run 2: Opus + skills** in `builds/pac-bit/opus-skills/`, after installing
+- **Run 2: skills installed but not used** in `builds/pac-bit/opus-skills/`, after installing
   [awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) (Apache-2.0):
   ```
   claude plugin marketplace add gamedev-skills/awesome-gamedev-agent-skills
@@ -11,7 +11,8 @@ Video: "Can Claude Make Pac-Man? Then I Gave It 79 Game-Dev Skills" (Opus 5.5, t
   claude plugin install web-engines@awesome-gamedev-agent-skills
   claude plugin install disciplines@awesome-gamedev-agent-skills
   ```
-  Same prompt word for word, fresh Claude Code session. Note which skills it loads (shown in the session).
+  Same prompt word for word, fresh Claude Code session. Note which skills it loads (shown in the session). Claude never called them.
+- **Run 3: skills forced on** in `~/pac-bit/opus-skills-on/`: same prompt with one first line added: "Before you start, use the router skill to load the right game-dev skills, and use them throughout."
 
 Give this to Opus 5.5 **word for word** in a fresh Claude Code session inside each run's empty folder.
 Start a screen recording ("Record Entire Screen") and note the clock time when you press Enter.
@@ -51,11 +52,11 @@ and the Hype Bot's 3 title ideas.
 ```
 
 ## Results
-| | Run 1: Opus alone | Run 2: Opus + skills |
-|---|---|---|
-| Date | 16 Nov 2026 | 16 Nov 2026 |
-| Time (send to finished) | 27m 43s | 12m 50s |
-| Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | 2 (kept the limit; round 2 found nothing new) |
-| Lines | 911 (41 KB) | |
-| Skills loaded | n/a | |
-| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | Tester autopilot won all 3 levels in 2 of 3 runs on 3 lives; tested phone 390x844 layout; fixed blue bugs blending into L1 walls. Titles: Byte Club / Glitch Panic! / Debug or Be Bugged. |
+| | Run 1: Opus alone | Run 2: skills installed, NOT used | Run 3: skills forced on |
+|---|---|---|---|
+| Date | 16 Nov 2026 | 16 Nov 2026 | 16 Nov 2026 |
+| Time (send to finished) | 27m 43s | 12m 50s | 15m 12s |
+| Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | 2 (kept the limit; round 2 found nothing new) | 1 fix round (round 1 found 3 bugs; round 2 clean) |
+| Lines | 911 (41 KB) | |  |
+| Skills loaded | n/a | none (Claude never called them) | router → game-ai, input-systems, audio-design, game-ui-ux (not game-feel) |
+| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | Tester autopilot won all 3 levels in 2 of 3 runs on 3 lives; tested phone 390x844 layout; fixed blue bugs blending into L1 walls. Titles: Byte Club / Glitch Panic! / Debug or Be Bugged. | Tester bot won with 2 lives left (9,810); second bot run lost with 8 bits left. Bug state machine, BFS home, buffered turns, music ducking, auto-pause. Titles: Glitch Panic! / Byte Night / Bit Rush. |
