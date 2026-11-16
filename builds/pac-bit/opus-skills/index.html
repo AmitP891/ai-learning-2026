@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Bit's Maze Muncher</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05030f; overflow: hidden;
+    touch-action: none; -webkit-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent; }
+  canvas { display: block; touch-action: none; }
+</style>
+</head>
+<body>
+<canvas id="game"></canvas>
+<script>
+"use strict";
+(function () {
+  // ======================= CONFIG =======================
+  const COLS = 21, ROWS = 21;
+  // # wall   _ void (outside)   . data bit   o antivirus chip   - nest door   N nest   P Bit start   (space) empty
+  const MAP_SRC = [
+    "#####################",
+    "#o........#........o#",
+    "#.###.###.#.###.###.#",
+    "#...................#",
+    "#.###.#.#####.#.###.#",
+    "#.....#...#...#.....#",
+    "#####.###.#.###.#####",
+    "____#.#.......#.#____",
+    "#####.#.##-##.#.#####",
+    "     ...#NNN#...     ",
+    "#####.#.#####.#.#####",
+    "____#.#.......#.#____",
+    "#####.#.#####.#.#####",
+    "#.........#.........#",
+    "#.###.###.#.###.###.#",
+    "#o..#.....P.....#..o#",
+    "###.#.#.#####.#.#.###",
+    "#.....#...#...#.....#",
+    "#.#######.#.#######.#",
+    "#...................#",
+    "#####################"
+  ];
+  const EPS = 1e-6;
+  const DIRS = [[0, -1], [-1, 0], [0, 1], [1, 0]];
+  const DOOR_OUT = { x: 10, y: 7 };
+  const NEST_Y = 9;
+  const PLAYER_START = { x: 10, y: 15 };
+  const LEVELS = [
+    { p: 6.0, b: 5.0, fright: 7.0, release: [0, 2, 5, 8],    wall: "#2f7bff" },
+    { p: 6.4, b: 5.8, fright: 5.0, release: [0, 1.5, 3.5, 6], wall: "#ff3df0" },
+    { p: 6.8, b: 6.5, fright: 3.5, release: [0, 1, 2, 4],    wall: "#ffb000" }
+  ];
+  const MODES = [6, 20, 6, 20, 4, Infinity]; // patrol, chase, patrol, chase...
+  const BUG_DEFS = [
+    { name: "BLAZE", color: "#ff3b5c", style: "hunts you directly",  home: { x: 10, y: 7 }, corner: { x: 19, y: -3 } },
+    { name: "SNAG",  color: "#c86bff", style: "cuts you off ahead",  home: { x: 10, y: 9 }, corner: { x: 1,  y: -3 } },
+    { name: "FIZZ",  color: "#46ff7e", style: "wanders at random",   home: { x: 9,  y: 9 }, corner: { x: 20, y: 23 } },
+    { name: "PIP",   color: "#ffb02e", style: "shy - keeps its distance", home: { x: 11, y: 9 }, corner: { x: 0, y: 23 } }
+  ];
+  const BEST_KEY = "bitsMazeMuncherBest";
+  const FONT = '"Courier New", ui-monospace, Menlo, monospace';
+
+  // ======================= STATE =======================
+  const G = {
+    state: "title", paused: false, score: 0, best: 0, level: 0, lives: 3,
+    map: null, bits: null, bitsLeft: 0, totalBits: 0, homeDist: null,
+    player: null, bugs: [], frightTimer: 0, chain: 0, modeIdx: 0, modeTimer: MODES[0],
+    stateTimer: 0, freeze: 0, popups: [], time: 0, god: false
+  };
+
+  function loadBest() {
+    try { const v = parseInt(localStorage.getItem(BEST_KEY), 10); return isFinite(v) ? v : 0; }
+    catch (e) { return 0; }
+  }
+  function saveBest() {
+    if (G.score > G.best) G.best = G.score;
+    try { localStorage.setItem(BEST_KEY, String(G.best)); } catch (e) { /* storage blocked */ }
+  }
+
+  // ======================= GRID =======================
+  function wrapC(c) { return ((c % COLS) + COLS) % COLS; }
+  function tileAt(c, r) {
+    if (r < 0 || r >= ROWS) return "#";
+    return G.map[r][wrapC(c)];
+  }
+  function isOpen(c, r) {
+    const t = tileAt(c, r);
+    return !(t === "#" || t === "_" || t === "-" || t === "N");
+  }
+  function inTunnel(e) { return Math.round(e.y) === NEST_Y && (e.x < 4.5 || e.x > 15.5); }
+
+  function computeHomeDist() {
+    const d = [];
+    for (let r = 0; r < ROWS; r++) d.push(new Array(COLS).fill(Infinity));
+    const q = [[DOOR_OUT.x, DOOR_OUT.y]];
+    d[DOOR_OUT.y][DOOR_OUT.x] = 0;
+    while (q.length) {
+      const [c, r] = q.shift();
+      for (const [dx, dy] of DIRS) {
+        const nc = wrapC(c + dx), nr = r + dy;
+        if (!isOpen(nc, nr) || d[nr][nc] !== Infinity) continue;
+        d[nr][nc] = d[r][c] + 1;
+        q.push([nc, nr]);
+      }
+    }
+    G.homeDist = d;
+  }
+
+  function loadLevel() {
+    G.map = []; G.bits = []; G.bitsLeft = 0;
+    for (let r = 0; r < ROWS; r++) {
+      const row = [], brow = [];
+      for (let c = 0; c < COLS; c++) {
+        let ch = MAP_SRC[r][c], b = 0;
+        if (ch === ".") { b = 1; ch = " "; }
+        else if (ch === "o") { b = 2; ch = " "; }
+        else if (ch === "P") ch = " ";
+        row.push(ch); brow.push(b);
+        if (b) G.bitsLeft++;
+      }
+      G.map.push(row); G.bits.push(brow);
+    }
+    G.totalBits = G.bitsLeft;
+    computeHomeDist();
+    buildMaze();
+    resetActors();
+  }
+
+  function resetActors() {
+    const L = LEVELS[G.level];
+    G.player = { x: PLAYER_START.x, y: PLAYER_START.y, dx: 0, dy: 0, ndx: -1, ndy: 0,
+                 face: Math.PI, anim: 0, munch: 0 };
+    G.bugs = BUG_DEFS.map((d, i) => ({
+      id: i, kind: i, name: d.name, color: d.color, corner: d.corner, home: d.home,
+      x: d.home.x, y: d.home.y, dx: 0, dy: 0,
+      face: i === 0 ? Math.PI : -Math.PI / 2,
+      state: (d.home.x === DOOR_OUT.x && d.home.y === DOOR_OUT.y) ? "roam" : "nest",
+      release: L.release[i], fright: false, decided: null, anim: Math.random() * 10
+    }));
+    G.frightTimer = 0; G.chain = 0; G.modeIdx = 0; G.modeTimer = MODES[0]; G.freeze = 0;
+    Snd.hum(false);
+  }
+
+  function startGame() {
+    G.score = 0; G.lives = 3; G.level = 0; G.popups = []; G.paused = false;
+    loadLevel();
+    G.state = "ready"; G.stateTimer = 2.4;
+    Snd.start();
+  }
+
+  // ======================= MOVEMENT =======================
+  function isCenter(e) {
+    return Math.abs(e.x - Math.round(e.x)) < EPS && Math.abs(e.y - Math.round(e.y)) < EPS;
+  }
+  // Moves entity along its direction; calls onCenter each time a tile centre is reached.
+  function moveEntity(e, dist, onCenter) {
+    let guard = 0;
+    while (dist > EPS && guard++ < 24) {
+      if (isCenter(e)) {
+        e.x = Math.round(e.x); e.y = Math.round(e.y);
+        if (e.x < 0) e.x += COLS; else if (e.x >= COLS) e.x -= COLS;
+        onCenter(e);
+        if (!e.dx && !e.dy) return;
+      }
+      const horiz = e.dx !== 0;
+      const cur = horiz ? e.x : e.y;
+      const dir = horiz ? e.dx : e.dy;
+      const target = dir > 0 ? Math.floor(cur + EPS) + 1 : Math.ceil(cur - EPS) - 1;
+      const d = Math.abs(target - cur);
+      if (d <= dist) { if (horiz) e.x = target; else e.y = target; dist -= d; }
+      else { if (horiz) e.x += dir * dist; else e.y += dir * dist; dist = 0; }
+    }
+  }
+
+  function playerCenter(p) {
+    if ((p.ndx || p.ndy) && isOpen(p.x + p.ndx, p.y + p.ndy)) { p.dx = p.ndx; p.dy = p.ndy; }
+    else if (!isOpen(p.x + p.dx, p.y + p.dy)) { p.dx = 0; p.dy = 0; }
+  }
+
+  function bugTarget(b) {
+    const p = G.player;
+    if (G.modeIdx % 2 === 0) return b.corner; // patrol
+    if (b.kind === 1) {
+      const fx = Math.round(Math.cos(p.face)), fy = Math.round(Math.sin(p.face));
+      return { x: p.x + fx * 4, y: p.y + fy * 4 };
+    }
+    if (b.kind === 3) {
+      const dx = b.x - p.x, dy = b.y - p.y;
+      return (dx * dx + dy * dy > 49) ? { x: p.x, y: p.y } : b.corner;
+    }
+    return { x: p.x, y: p.y };
+  }
+
+  function bugCenter(b) {
+    const key = b.x + "," + b.y;
+    if (b.decided === key && (b.dx || b.dy) && isOpen(b.x + b.dx, b.y + b.dy)) return;
+    b.decided = key;
+    if (b.state === "dead" && b.x === DOOR_OUT.x && b.y === DOOR_OUT.y) {
+      b.state = "enter"; b.dx = 0; b.dy = 0; return;
+    }
+    const all = DIRS.filter(d => isOpen(b.x + d[0], b.y + d[1]));
+    let opts = all.filter(d => !((b.dx || b.dy) && d[0] === -b.dx && d[1] === -b.dy));
+    if (!opts.length) opts = all;
+    if (!opts.length) { b.dx = 0; b.dy = 0; return; }
+    let choice = opts[0];
+    if (b.state === "dead") {
+      let best = Infinity;
+      for (const d of all) {
+        const v = G.homeDist[b.y + d[1]][wrapC(b.x + d[0])];
+        if (v < best) { best = v; choice = d; }
+      }
+    } else if (b.fright || (b.kind === 2 && Math.random() < 0.6)) {
+      choice = opts[(Math.random() * opts.length) | 0];
+    } else {
+      const t = bugTarget(b);
+      let best = Infinity;
+      for (const d of opts) {
+        const nx = b.x + d[0] - t.x, ny = b.y + d[1] - t.y, v = nx * nx + ny * ny;
+        if (v < best - EPS) { best = v; choice = d; }
+      }
+    }
+    b.dx = choice[0]; b.dy = choice[1];
+  }
+
+  function updateBug(b, dt, L) {
+    b.anim += dt;
+    if (b.state === "nest") {
+      b.release -= dt;
+      if (b.release <= 0) b.state = "exit";
+    } else if (b.state === "exit") {
+      const sp = 3.2 * dt;
+      if (Math.abs(b.x - DOOR_OUT.x) > EPS) {
+        const s = Math.sign(DOOR_OUT.x - b.x);
+        b.x += s * Math.min(sp, Math.abs(DOOR_OUT.x - b.x));
+        b.face = s > 0 ? 0 : Math.PI;
+      } else {
+        b.x = DOOR_OUT.x;
+        b.y -= Math.min(sp, b.y - DOOR_OUT.y);
+        b.face = -Math.PI / 2;
+        if (b.y - DOOR_OUT.y < EPS) {
+          b.y = DOOR_OUT.y; b.state = "roam"; b.dx = 0; b.dy = 0; b.decided = null;
+        }
+      }
+    } else if (b.state === "enter") {
+      b.y += Math.min(8 * dt, NEST_Y - b.y);
+      b.face = Math.PI / 2;
+      if (NEST_Y - b.y < EPS) { b.y = NEST_Y; b.state = "exit"; b.fright = false; }
+    } else {
+      let sp = L.b;
+      if (b.state === "dead") sp = 12;
+      else if (b.fright) sp = L.b * 0.55;
+      else if (inTunnel(b)) sp = L.b * 0.5;
+      moveEntity(b, sp * dt, bugCenter);
+      if (b.dx || b.dy) b.face = Math.atan2(b.dy, b.dx);
+    }
+  }
+
+  // ======================= GAME LOGIC =======================
+  function addPopup(x, y, text, color) { G.popups.push({ x, y, text, color, t: 1 }); }
+
+  function frighten() {
+    const L = LEVELS[G.level];
+    G.frightTimer = L.fright; G.chain = 0;
+    for (const b of G.bugs) {
+      if (b.state === "dead" || b.state === "enter") continue;
+      b.fright = true;
+      if (b.state === "roam") { b.dx = -b.dx; b.dy = -b.dy; b.decided = null; }
+    }
+    Snd.hum(true);
+  }
+
+  function eatAt(p) {
+    const r = Math.round(p.y), c = wrapC(Math.round(p.x));
+    if (r < 0 || r >= ROWS) return;
+    const v = G.bits[r][c];
+    if (!v) return;
+    G.bits[r][c] = 0; G.bitsLeft--;
+    p.munch = 0.18;
+    if (v === 1) { G.score += 10; Snd.bit(); }
+    else { G.score += 50; Snd.chip(); frighten(); addPopup(c, r, "ANTIVIRUS!", "#39ff8f"); }
+  }
+
+  function loseLife() {
+    G.state = "dying"; G.stateTimer = 2.2; G.lives--;
+    Snd.hum(false); Snd.die();
+  }
+
+  function checkCollisions() {
+    const p = G.player;
+    for (const b of G.bugs) {
+      if (b.state !== "roam" && b.state !== "exit") continue;
+      let dx = Math.abs(b.x - p.x); dx = Math.min(dx, COLS - dx);
+      const dy = Math.abs(b.y - p.y);
+      if (dx * dx + dy * dy < 0.36) {
+        if (b.fright) {
+          const pts = 200 * Math.pow(2, Math.min(G.chain, 3));
+          G.chain++; G.score += pts;
+          b.state = "dead"; b.fright = false; b.decided = null;
+          if (!isCenter(b)) { /* keep moving to next centre on grid */ }
+          addPopup(b.x, b.y, String(pts), "#5ff6ff");
+          G.freeze = 0.45; Snd.zap();
+          if (G.bugs.every(o => !o.fright)) Snd.hum(false);
+        } else if (!G.god) {
+          loseLife(); return;
+        }
+      }
+    }
+  }
+
+  function updatePlay(dt) {
+    if (G.freeze > 0) { G.freeze -= dt; return; }
+    const L = LEVELS[G.level];
+    if (G.frightTimer > 0) {
+      G.frightTimer -= dt;
+      if (G.frightTimer <= 0) {
+        G.frightTimer = 0;
+        for (const b of G.bugs) b.fright = false;
+        Snd.hum(false);
+      }
+    } else {
+      G.modeTimer -= dt;
+      if (G.modeTimer <= 0 && G.modeIdx < MODES.length - 1) {
+        G.modeIdx++; G.modeTimer = MODES[G.modeIdx];
+        for (const b of G.bugs) if (b.state === "roam") { b.dx = -b.dx; b.dy = -b.dy; b.decided = null; }
+      }
+    }
+    const p = G.player;
+    if ((p.dx || p.dy) && p.ndx === -p.dx && p.ndy === -p.dy) { p.dx = p.ndx; p.dy = p.ndy; }
+    moveEntity(p, L.p * dt, playerCenter);
+    if (p.dx || p.dy) { p.face = Math.atan2(p.dy, p.dx); p.anim += L.p * dt; }
+    if (p.munch > 0) p.munch -= dt;
+    eatAt(p);
+    if (G.bitsLeft <= 0) {
+      G.state = "clear"; G.stateTimer = 2.6; Snd.hum(false); Snd.clear(); saveBest(); return;
+    }
+    checkCollisions();
+    if (G.state !== "play" || G.freeze > 0) return;
+    for (const b of G.bugs) updateBug(b, dt, L);
+    checkCollisions();
+  }
+
+  function update(dt) {
+    G.time += dt;
+    for (const pp of G.popups) pp.t -= dt * 0.9;
+    G.popups = G.popups.filter(pp => pp.t > 0);
+    if (G.score > G.best) G.best = G.score;
+    if (G.paused) return;
+    switch (G.state) {
+      case "ready":
+        G.stateTimer -= dt;
+        if (G.stateTimer <= 0) G.state = "play";
+        break;
+      case "play":
+        updatePlay(dt);
+        break;
+      case "dying":
+        G.stateTimer -= dt;
+        if (G.stateTimer <= 0) {
+          if (G.lives <= 0) { G.state = "over"; saveBest(); Snd.over(); }
+          else { resetActors(); G.state = "ready"; G.stateTimer = 1.8; }
+        }
+        break;
+      case "clear":
+        G.stateTimer -= dt;
+        if (G.stateTimer <= 0) {
+          if (G.level < LEVELS.length - 1) {
+            G.level++; loadLevel(); G.state = "ready"; G.stateTimer = 2.4; Snd.start();
+          } else {
+            G.state = "win"; saveBest(); Snd.win();
+          }
+        }
+        break;
+    }
+  }
+
+  // ======================= SOUND (Web Audio) =======================
+  const Snd = (function () {
+    let ac = null, master = null, humGain = null, noiseBuf = null, muted = false, note = 0;
+    const SCALE = [523.25, 587.33, 659.25, 783.99, 880.0, 783.99, 659.25, 587.33];
+    function init() {
+      if (ac) { if (ac.state === "suspended") ac.resume(); return; }
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      try {
+        ac = new AC();
+        master = ac.createGain(); master.gain.value = muted ? 0 : 0.32; master.connect(ac.destination);
+        noiseBuf = ac.createBuffer(1, ac.sampleRate * 0.5, ac.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+        // fright hum: wobbling low saw, silent until needed
+        const o = ac.createOscillator(), lfo = ac.createOscillator(), lfoG = ac.createGain(), f = ac.createBiquadFilter();
+        humGain = ac.createGain(); humGain.gain.value = 0;
+        o.type = "sawtooth"; o.frequency.value = 98;
+        lfo.frequency.value = 7; lfoG.gain.value = 22;
+        f.type = "lowpass"; f.frequency.value = 600;
+        lfo.connect(lfoG); lfoG.connect(o.frequency);
+        o.connect(f); f.connect(humGain); humGain.connect(master);
+        o.start(); lfo.start();
+      } catch (e) { ac = null; }
+    }
+    function tone(freq, dur, type, vol, slideTo, delay) {
+      if (!ac || muted) return;
+      const t = ac.currentTime + (delay || 0);
+      const o = ac.createOscillator(), g = ac.createGain();
+      o.type = type || "square";
+      o.frequency.setValueAtTime(freq, t);
+      if (slideTo) o.frequency.exponentialRampToValueAtTime(slideTo, t + dur);
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(vol || 0.2, t + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      o.connect(g); g.connect(master);
+      o.start(t); o.stop(t + dur + 0.03);
+    }
+    function noise(dur, vol, freq, delay) {
+      if (!ac || muted) return;
+      const t = ac.currentTime + (delay || 0);
+      const s = ac.createBufferSource(), f = ac.createBiquadFilter(), g = ac.createGain();
+      s.buffer = noiseBuf; f.type = "bandpass"; f.frequency.value = freq || 2000; f.Q.value = 1.2;
+      g.gain.setValueAtTime(vol || 0.2, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+      s.connect(f); f.connect(g); g.connect(master);
+      s.start(t); s.stop(t + dur + 0.02);
+    }
+    return {
+      init,
+      get muted() { return muted; },
+      toggleMute() {
+        muted = !muted;
+        if (master) master.gain.setTargetAtTime(muted ? 0 : 0.32, ac.currentTime, 0.02);
+      },
+      bit() { tone(SCALE[note++ % SCALE.length], 0.05, "square", 0.07); },
+      chip() { tone(180, 0.35, "sawtooth", 0.16, 1400); tone(1200, 0.12, "triangle", 0.12, 2400, 0.18); },
+      zap() { tone(260, 0.25, "square", 0.16, 2200); noise(0.2, 0.18, 3500); tone(1760, 0.08, "triangle", 0.12, null, 0.22); },
+      die() {
+        for (let i = 0; i < 10; i++) tone(900 - i * 75 + Math.random() * 60, 0.09, i % 2 ? "square" : "sawtooth", 0.13, null, i * 0.09);
+        noise(0.5, 0.15, 900, 0.9); tone(160, 0.5, "sawtooth", 0.15, 40, 0.95);
+      },
+      start() {
+        const m = [392, 523.25, 659.25, 523.25, 783.99, 659.25, 880, 1046.5];
+        m.forEach((f, i) => { tone(f, 0.13, "triangle", 0.16, null, i * 0.13); tone(f / 4, 0.12, "square", 0.06, null, i * 0.13); });
+      },
+      clear() { [523.25, 659.25, 783.99, 1046.5, 1318.5, 1568].forEach((f, i) => tone(f, 0.16, "square", 0.12, null, i * 0.1)); },
+      win() {
+        const m = [523.25, 659.25, 783.99, 659.25, 783.99, 1046.5, 1318.5, 1046.5, 1568, 2093];
+        m.forEach((f, i) => { tone(f, 0.18, "triangle", 0.16, null, i * 0.14); tone(f / 2, 0.16, "square", 0.05, null, i * 0.14); });
+      },
+      over() { [440, 392, 330, 262, 196].forEach((f, i) => tone(f, 0.28, "triangle", 0.16, null, i * 0.24)); },
+      hum(on) { if (humGain && ac) humGain.gain.setTargetAtTime(on && !muted ? 0.07 : 0, ac.currentTime, 0.05); }
+    };
+  })();
+
+  // ======================= RENDERING =======================
+  const canvas = document.getElementById("game");
+  const ctx = canvas.getContext("2d");
+  let W = 0, H = 0, T = 16, DPR = 1, boardX = 0, boardY = 0;
+  let mazeCv = null, bitSprite = null, bitSpriteSize = 0;
+
+  function rr(c, x, y, w, h, r) {
+    r = Math.max(0, Math.min(r, w / 2, h / 2));
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+
+  function resize() {
+    DPR = Math.min(window.devicePixelRatio || 1, 3);
+    W = window.innerWidth; H = window.innerHeight;
+    canvas.width = Math.floor(W * DPR); canvas.height = Math.floor(H * DPR);
+    canvas.style.width = W + "px"; canvas.style.height = H + "px";
+    T = Math.max(8, Math.floor(Math.min(W / (COLS + 0.6), H / (ROWS + 4))));
+    boardX = Math.round((W - COLS * T) / 2);
+    boardY = Math.round((H - (ROWS + 3.9) * T) / 2 + 2.3 * T);
+    buildMaze();
+    buildBitSprite();
+  }
+
+  function isWallCell(c, r) {
+    if (c < 0 || c >= COLS || r < 0 || r >= ROWS) return false;
+    return G.map[r][c] === "#";
+  }
+
+  function buildMaze() {
+    if (!G.map || !T) return;
+    const col = LEVELS[G.level].wall;
+    mazeCv = document.createElement("canvas");
+    mazeCv.width = Math.ceil(COLS * T * DPR); mazeCv.height = Math.ceil(ROWS * T * DPR);
+    const m = mazeCv.getContext("2d");
+    m.scale(DPR, DPR);
+    // faint board grid
+    m.strokeStyle = "rgba(120,80,255,0.07)"; m.lineWidth = 1;
+    m.beginPath();
+    for (let c = 0; c <= COLS; c++) { m.moveTo(c * T + 0.5, 0); m.lineTo(c * T + 0.5, ROWS * T); }
+    for (let r = 0; r <= ROWS; r++) { m.moveTo(0, r * T + 0.5); m.lineTo(COLS * T, r * T + 0.5); }
+    m.stroke();
+    const ins = T * 0.22;
+    const edge = new Path2D();
+    const clears = [];
+    m.fillStyle = "rgba(20,30,70,0.55)";
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (!isWallCell(c, r)) continue;
+      const up = !isWallCell(c, r - 1), dn = !isWallCell(c, r + 1), lf = !isWallCell(c - 1, r), rt = !isWallCell(c + 1, r);
+      const x0 = c * T, y0 = r * T, x1 = x0 + T, y1 = y0 + T;
+      const L = x0 + (lf ? ins : 0), R = x1 - (rt ? ins : 0), U = y0 + (up ? ins : 0), D = y1 - (dn ? ins : 0);
+      m.fillRect(L, U, R - L, D - U);
+      if (up) { edge.moveTo(L, U); edge.lineTo(R, U); }
+      if (dn) { edge.moveTo(L, D); edge.lineTo(R, D); }
+      if (lf) { edge.moveTo(L, U); edge.lineTo(L, D); }
+      if (rt) { edge.moveTo(R, U); edge.lineTo(R, D); }
+      for (const sx of [-1, 1]) for (const sy of [-1, 1]) {
+        if (isWallCell(c + sx, r) && isWallCell(c, r + sy) && !isWallCell(c + sx, r + sy)) {
+          const px = sx < 0 ? x0 + ins : x1 - ins, py = sy < 0 ? y0 + ins : y1 - ins;
+          edge.moveTo(px, sy < 0 ? y0 : y1); edge.lineTo(px, py); edge.lineTo(sx < 0 ? x0 : x1, py);
+          clears.push([sx < 0 ? x0 : x1 - ins, sy < 0 ? y0 : y1 - ins]);
+        }
+      }
+    }
+    for (const [x, y] of clears) m.clearRect(x, y, ins, ins);
+    // internal circuit traces + solder pads
+    m.strokeStyle = col; m.globalAlpha = 0.28; m.lineWidth = Math.max(1, T * 0.07);
+    m.beginPath();
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (!isWallCell(c, r)) continue;
+      const cx = c * T + T / 2, cy = r * T + T / 2;
+      if (isWallCell(c + 1, r)) { m.moveTo(cx, cy); m.lineTo(cx + T, cy); }
+      if (isWallCell(c, r + 1)) { m.moveTo(cx, cy); m.lineTo(cx, cy + T); }
+    }
+    m.stroke();
+    m.globalAlpha = 0.6; m.fillStyle = col;
+    for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+      if (!isWallCell(c, r)) continue;
+      let n = 0;
+      for (const [dx, dy] of DIRS) if (isWallCell(c + dx, r + dy)) n++;
+      if (n === 1 || n >= 3 || (c * 7 + r * 3) % 9 === 0) {
+        m.beginPath(); m.arc(c * T + T / 2, r * T + T / 2, T * 0.09, 0, Math.PI * 2); m.fill();
+      }
+    }
+    m.globalAlpha = 1;
+    // neon edge, two passes for glow
+    m.lineCap = "round"; m.lineJoin = "round";
+    m.shadowColor = col; m.shadowBlur = T * 0.6;
+    m.strokeStyle = col; m.globalAlpha = 0.55; m.lineWidth = T * 0.18; m.stroke(edge);
+    m.shadowBlur = 0; m.globalAlpha = 1; m.strokeStyle = "#e8f2ff"; m.lineWidth = Math.max(1, T * 0.06); m.stroke(edge);
+  }
+
+  function buildBitSprite() {
+    bitSpriteSize = T * 0.7;
+    bitSprite = document.createElement("canvas");
+    const s = Math.max(4, Math.ceil(bitSpriteSize * DPR));
+    bitSprite.width = s; bitSprite.height = s;
+    const b = bitSprite.getContext("2d");
+    const g = b.createRadialGradient(s / 2, s / 2, 0, s / 2, s / 2, s / 2);
+    g.addColorStop(0, "rgba(111,246,255,0.65)"); g.addColorStop(0.35, "rgba(111,246,255,0.18)"); g.addColorStop(1, "rgba(111,246,255,0)");
+    b.fillStyle = g; b.fillRect(0, 0, s, s);
+    b.translate(s / 2, s / 2); b.rotate(Math.PI / 4);
+    const q = s * 0.14;
+    b.fillStyle = "#e4feff"; b.fillRect(-q / 2, -q / 2, q, q);
+  }
+
+  const px = x => boardX + (x + 0.5) * T;
+  const py = y => boardY + (y + 0.5) * T;
+
+  function glowText(text, x, y, size, color, align, blur) {
+    ctx.font = "bold " + Math.round(size) + "px " + FONT;
+    ctx.textAlign = align || "center"; ctx.textBaseline = "middle";
+    ctx.shadowColor = color; ctx.shadowBlur = blur === undefined ? size * 0.5 : blur;
+    ctx.fillStyle = color; ctx.fillText(text, x, y);
+    ctx.shadowBlur = 0;
+  }
+
+  function drawChip(cx, cy) {
+    const pulse = 0.88 + 0.12 * Math.sin(G.time * 6);
+    const s = T * 0.56 * pulse;
+    ctx.save(); ctx.translate(cx, cy);
+    ctx.fillStyle = "#b9ffd6";
+    for (let k = 0; k < 4; k++) {
+      for (let i = -1; i <= 1; i++) ctx.fillRect(i * s * 0.3 - s * 0.05, -s * 0.5 - s * 0.17, s * 0.1, s * 0.17);
+      ctx.rotate(Math.PI / 2);
+    }
+    ctx.shadowColor = "#39ff8f"; ctx.shadowBlur = T * 0.7 * pulse;
+    rr(ctx, -s / 2, -s / 2, s, s, s * 0.14); ctx.fillStyle = "#18e07a"; ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(0, -s * 0.32); ctx.lineTo(s * 0.26, -s * 0.2); ctx.lineTo(s * 0.22, s * 0.08);
+    ctx.lineTo(0, s * 0.32); ctx.lineTo(-s * 0.22, s * 0.08); ctx.lineTo(-s * 0.26, -s * 0.2); ctx.closePath();
+    ctx.fillStyle = "#06351d"; ctx.fill();
+    ctx.strokeStyle = "#d9ffe9"; ctx.lineWidth = Math.max(1, s * 0.07); ctx.lineCap = "round";
+    ctx.beginPath(); ctx.moveTo(-s * 0.1, 0); ctx.lineTo(-s * 0.02, s * 0.09); ctx.lineTo(s * 0.12, -s * 0.1); ctx.stroke();
+    ctx.restore();
+  }
+
+  // Bit: small pink robot seen from above. +x in local space is "forward".
+  function drawBitBot(x, y, R, face, anim, munch, scale) {
+    ctx.save(); ctx.translate(x, y); ctx.rotate(face);
+    if (scale !== undefined) ctx.scale(scale, scale);
+    if (munch > 0) { const k = 1 + Math.sin((0.18 - munch) / 0.18 * Math.PI) * 0.08; ctx.scale(k, k); }
+    // treads
+    for (const s of [-1, 1]) {
+      rr(ctx, -R * 0.7, s * R * 0.8 - R * 0.21, R * 1.4, R * 0.42, R * 0.16);
+      ctx.fillStyle = "#2a1838"; ctx.fill();
+      ctx.strokeStyle = "#6b4688"; ctx.lineWidth = Math.max(1, R * 0.08);
+      const step = R * 0.34, off = (anim * R * 1.4) % step;
+      ctx.beginPath();
+      for (let i = -3; i <= 3; i++) {
+        const tx = i * step - off;
+        if (tx > -R * 0.62 && tx < R * 0.62) { ctx.moveTo(tx, s * R * 0.8 - R * 0.15); ctx.lineTo(tx, s * R * 0.8 + R * 0.15); }
+      }
+      ctx.stroke();
+    }
+    // antenna (back)
+    ctx.strokeStyle = "#ffa7d4"; ctx.lineWidth = Math.max(1, R * 0.1);
+    ctx.beginPath(); ctx.moveTo(-R * 0.6, R * 0.25); ctx.lineTo(-R * 0.98, R * 0.42); ctx.stroke();
+    ctx.fillStyle = Math.floor(G.time * 3) % 2 ? "#5ff6ff" : "#ff5fa8";
+    ctx.beginPath(); ctx.arc(-R * 0.98, R * 0.42, R * 0.11, 0, Math.PI * 2); ctx.fill();
+    // body
+    const g = ctx.createRadialGradient(-R * 0.3, -R * 0.3, R * 0.05, 0, 0, R * 0.85);
+    g.addColorStop(0, "#ffd0e8"); g.addColorStop(0.5, "#ff6fb5"); g.addColorStop(1, "#c92f80");
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.82, 0, Math.PI * 2); ctx.fillStyle = g; ctx.fill();
+    // chest screen
+    rr(ctx, -R * 0.56, -R * 0.27, R * 0.44, R * 0.54, R * 0.08);
+    ctx.fillStyle = "#101a2a"; ctx.fill();
+    ctx.strokeStyle = "#ffb3da"; ctx.lineWidth = Math.max(1, R * 0.05); ctx.stroke();
+    ctx.fillStyle = "#5fffc8";
+    for (let i = 0; i < 3; i++) {
+      const h = R * (0.12 + 0.24 * Math.abs(Math.sin(G.time * 5 + i * 1.7)));
+      ctx.fillRect(-R * 0.5 + i * R * 0.13, -h / 2, R * 0.08, h);
+    }
+    // visor
+    ctx.save();
+    ctx.beginPath(); ctx.arc(0, 0, R * 0.82, 0, Math.PI * 2); ctx.clip();
+    ctx.beginPath(); ctx.ellipse(R * 0.48, 0, R * 0.4, R * 0.7, 0, 0, Math.PI * 2);
+    ctx.fillStyle = "#1a0f2e"; ctx.fill();
+    ctx.strokeStyle = "rgba(255,255,255,0.25)"; ctx.lineWidth = Math.max(1, R * 0.05);
+    ctx.beginPath(); ctx.ellipse(R * 0.48, 0, R * 0.32, R * 0.6, 0, Math.PI * 1.15, Math.PI * 1.45); ctx.stroke();
+    ctx.restore();
+    // eyes
+    const blink = (G.time % 3.3) < 0.1;
+    const ry = (munch > 0 || blink) ? R * 0.04 : R * 0.15;
+    ctx.fillStyle = "#5ff6ff"; ctx.shadowColor = "#5ff6ff"; ctx.shadowBlur = R * 0.6;
+    for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(R * 0.55, s * R * 0.28, R * 0.11, ry, 0, 0, Math.PI * 2); ctx.fill(); }
+    ctx.shadowBlur = 0;
+    ctx.restore();
+  }
+
+  function drawBug(b, x, y) {
+    const R = T * 0.44;
+    if (b.state === "dead") {
+      ctx.save(); ctx.translate(x, y);
+      ctx.fillStyle = "#ffffff"; ctx.shadowColor = "#5ff6ff"; ctx.shadowBlur = T * 0.5;
+      const ox = Math.cos(b.face) * R * 0.2, oy = Math.sin(b.face) * R * 0.2;
+      const nx = -Math.sin(b.face) * R * 0.22, ny = Math.cos(b.face) * R * 0.22;
+      ctx.fillRect(ox + nx - R * 0.1, oy + ny - R * 0.1, R * 0.2, R * 0.2);
+      ctx.fillRect(ox - nx - R * 0.1, oy - ny - R * 0.1, R * 0.2, R * 0.2);
+      ctx.fillStyle = "rgba(95,246,255,0.5)";
+      for (let i = 1; i <= 3; i++) ctx.fillRect(-Math.cos(b.face) * R * 0.35 * i - R * 0.05, -Math.sin(b.face) * R * 0.35 * i - R * 0.05, R * 0.1, R * 0.1);
+      ctx.restore();
+      return;
+    }
+    let col = b.color, legCol = "rgba(0,0,0,0.55)";
+    if (b.fright) {
+      const flash = G.frightTimer < 2 && Math.floor(G.time * 8) % 2 === 0;
+      col = flash ? "#eaf2ff" : "#1f3dff";
+      legCol = flash ? "#9db7ff" : "#dfe8ff";
+    }
+    const bob = b.state === "nest" ? Math.sin(G.time * 5 + b.id) * T * 0.12 : 0;
+    const jitter = b.fright ? (Math.random() - 0.5) * T * 0.06 : 0;
+    ctx.save(); ctx.translate(x + jitter, y + bob); ctx.rotate(b.face);
+    const w = Math.sin(b.anim * 22) * R * 0.14;
+    // legs
+    ctx.strokeStyle = b.fright ? legCol : col; ctx.lineWidth = Math.max(1.2, R * 0.1); ctx.lineCap = "round";
+    ctx.beginPath();
+    for (let i = -1; i <= 1; i++) for (const s of [-1, 1]) {
+      const lx = i * R * 0.32, wig = w * ((i + 2) % 2 ? 1 : -1) * s;
+      ctx.moveTo(lx, s * R * 0.3);
+      ctx.lineTo(lx + i * R * 0.12 + wig, s * R * 0.62);
+      ctx.lineTo(lx + i * R * 0.22 + wig, s * R * 0.84);
+    }
+    ctx.stroke();
+    // antennae
+    ctx.beginPath();
+    for (const s of [-1, 1]) {
+      ctx.moveTo(R * 0.62, s * R * 0.1);
+      ctx.quadraticCurveTo(R * 0.95, s * R * 0.15, R * 1.0, s * R * (0.42 + w / R * 0.4));
+    }
+    ctx.stroke();
+    // body
+    ctx.shadowColor = b.fright ? "#bcd0ff" : col; ctx.shadowBlur = T * (b.fright ? 0.6 : 0.35);
+    ctx.fillStyle = col;
+    ctx.beginPath(); ctx.ellipse(-R * 0.12, 0, R * 0.56, R * 0.44, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.shadowBlur = 0;
+    if (b.fright) { // bright rim so blue bugs never blend into blue walls
+      ctx.strokeStyle = col === "#eaf2ff" ? "#1f3dff" : "#eaf2ff";
+      ctx.lineWidth = Math.max(1.5, R * 0.12); ctx.stroke();
+    }
+    // head
+    ctx.fillStyle = b.fright ? "#1c2f8a" : "#1b1028";
+    ctx.beginPath(); ctx.arc(R * 0.5, 0, R * 0.25, 0, Math.PI * 2); ctx.fill();
+    // shell split and glitch pixels
+    ctx.strokeStyle = "rgba(0,0,0,0.45)"; ctx.lineWidth = Math.max(1, R * 0.07);
+    ctx.beginPath(); ctx.moveTo(R * 0.3, 0); ctx.lineTo(-R * 0.66, 0); ctx.stroke();
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.fillRect(-R * 0.35, -R * 0.28, R * 0.12, R * 0.12);
+    ctx.fillRect(-R * 0.05, R * 0.14, R * 0.12, R * 0.12);
+    ctx.fillRect(-R * 0.48, R * 0.08, R * 0.08, R * 0.08);
+    // eyes
+    if (b.fright) {
+      ctx.strokeStyle = "#ffffff"; ctx.lineWidth = Math.max(1, R * 0.06);
+      ctx.beginPath();
+      for (const s of [-1, 1]) {
+        const ex = R * 0.56, ey = s * R * 0.11, k = R * 0.06;
+        ctx.moveTo(ex - k, ey - k); ctx.lineTo(ex + k, ey + k); ctx.moveTo(ex + k, ey - k); ctx.lineTo(ex - k, ey + k);
+      }
+      ctx.stroke();
+    } else {
+      for (const s of [-1, 1]) {
+        ctx.fillStyle = "#ffffff"; ctx.beginPath(); ctx.arc(R * 0.56, s * R * 0.11, R * 0.085, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = col; ctx.fillRect(R * 0.58, s * R * 0.11 - R * 0.035, R * 0.06, R * 0.07);
+      }
+    }
+    ctx.restore();
+    // glitch slices
+    if (((G.time * 12 + b.id * 5) | 0) % 13 === 0) {
+      ctx.save(); ctx.globalCompositeOperation = "lighter";
+      for (let i = 0; i < 3; i++) {
+        const sy = y + bob + (Math.random() - 0.5) * R * 1.4, off = (Math.random() - 0.5) * R * 0.8;
+        ctx.fillStyle = i % 2 ? "rgba(255,0,200,0.55)" : "rgba(0,255,255,0.55)";
+        ctx.fillRect(x - R * 0.7 + off, sy, R * 1.4, Math.max(1, R * 0.1));
+      }
+      ctx.restore();
+    }
+  }
+
+  function drawWrapped(x, y, fn) {
+    fn(px(x), py(y));
+    if (x < 0.5) fn(px(x + COLS), py(y));
+    if (x > COLS - 1.5) fn(px(x - COLS), py(y));
+  }
+
+  function banner(lines) {
+    const bw = COLS * T, cy = boardY + 11.5 * T, h = T * (0.6 + lines.length * 1.1);
+    ctx.fillStyle = "rgba(5,3,15,0.82)";
+    ctx.fillRect(boardX, cy - h / 2, bw, h);
+    ctx.strokeStyle = "rgba(255,111,181,0.7)"; ctx.lineWidth = 2;
+    ctx.strokeRect(boardX + 1, cy - h / 2, bw - 2, h);
+    lines.forEach((l, i) => glowText(l[0], boardX + bw / 2, cy - h / 2 + T * (0.85 + i * 1.1), l[2] || T * 0.9, l[1]));
+  }
+
+  function drawHUD() {
+    const bw = COLS * T, topLabel = boardY - 1.75 * T, topVal = boardY - 0.75 * T;
+    glowText("SCORE", boardX + T * 0.2, topLabel, T * 0.55, "#9aa6ff", "left", 0);
+    glowText(String(G.score).padStart(6, "0"), boardX + T * 0.2, topVal, T * 0.95, "#ffffff", "left");
+    glowText("BEST", boardX + bw / 2, topLabel, T * 0.55, "#9aa6ff", "center", 0);
+    glowText(String(G.best).padStart(6, "0"), boardX + bw / 2, topVal, T * 0.95, "#ff6fb5", "center");
+    glowText("LEVEL", boardX + bw - T * 0.2, topLabel, T * 0.55, "#9aa6ff", "right", 0);
+    glowText((G.level + 1) + "/3", boardX + bw - T * 0.2, topVal, T * 0.95, "#5ff6ff", "right");
+    const by = boardY + ROWS * T + 0.85 * T;
+    glowText("LIVES", boardX + T * 0.2, by, T * 0.55, "#9aa6ff", "left", 0);
+    const shown = G.state === "dying" ? G.lives + 1 : G.lives;
+    for (let i = 0; i < Math.max(0, shown); i++) {
+      const fade = G.state === "dying" && i === shown - 1;
+      ctx.globalAlpha = fade ? 0.3 + 0.3 * Math.sin(G.time * 12) : 1;
+      drawBitBot(boardX + T * (3.4 + i * 1.05), by, T * 0.36, -Math.PI / 2, 0, 0);
+      ctx.globalAlpha = 1;
+    }
+    glowText(Snd.muted ? "SOUND OFF" : "SOUND ON", boardX + bw - T * 0.2, by - T * 0.22, T * 0.5, Snd.muted ? "#ff5f7a" : "#46ff7e", "right", 0);
+    glowText("M mute  P pause", boardX + bw - T * 0.2, by + T * 0.36, T * 0.4, "#6b6f9a", "right", 0);
+  }
+
+  function drawTitle() {
+    const bw = COLS * T, cx = boardX + bw / 2;
+    ctx.fillStyle = "rgba(5,3,15,0.82)"; ctx.fillRect(boardX, boardY, bw, ROWS * T);
+    glowText("BIT'S", cx, boardY + 1.9 * T, T * 1.1, "#ff6fb5");
+    glowText("MAZE MUNCHER", cx, boardY + 3.3 * T, T * 1.5, "#5ff6ff");
+    drawBitBot(cx, boardY + 6.1 * T, T * 1.25, -Math.PI / 2 + Math.sin(G.time * 2) * 0.35, G.time * 3, (G.time % 1.2) < 0.18 ? 0.1 : 0);
+    const names = BUG_DEFS;
+    for (let i = 0; i < names.length; i++) {
+      const y = boardY + (9.0 + i * 1.45) * T;
+      const fake = { id: i, color: names[i].color, fright: false, state: "roam", face: 0, anim: G.time + i };
+      drawBug(fake, boardX + 3.2 * T, y);
+      glowText(names[i].name, boardX + 4.4 * T, y - T * 0.22, T * 0.72, names[i].color, "left", 4);
+      glowText(names[i].style, boardX + 4.4 * T, y + T * 0.42, T * 0.5, "#c9c9e8", "left", 0);
+    }
+    drawChip(boardX + 3.2 * T, boardY + 15.0 * T);
+    glowText("Antivirus chip: bugs turn blue,", boardX + 4.4 * T, boardY + 14.8 * T, T * 0.5, "#b9ffd6", "left", 0);
+    glowText("zap them for 200-1600!", boardX + 4.4 * T, boardY + 15.4 * T, T * 0.5, "#b9ffd6", "left", 0);
+    glowText("Arrows / WASD - or swipe", cx, boardY + 17.1 * T, T * 0.58, "#9aa6ff", "center", 0);
+    if (Math.floor(G.time * 2.5) % 2 === 0) glowText("PRESS ENTER OR TAP TO START", cx, boardY + 18.8 * T, T * 0.7, "#ffe95f");
+  }
+
+  function render() {
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    ctx.fillStyle = "#05030f"; ctx.fillRect(0, 0, W, H);
+    const bw = COLS * T, bh = ROWS * T;
+    const g = ctx.createRadialGradient(boardX + bw / 2, boardY + bh / 2, T, boardX + bw / 2, boardY + bh / 2, bw * 0.8);
+    g.addColorStop(0, "#160c36"); g.addColorStop(1, "#06040f");
+    ctx.fillStyle = g; ctx.fillRect(boardX, boardY, bw, bh);
+    if (mazeCv) ctx.drawImage(mazeCv, boardX, boardY, bw, bh);
+    if (G.state === "clear" && Math.floor(G.time * 7) % 2 === 0) {
+      ctx.save(); ctx.globalCompositeOperation = "lighter"; ctx.globalAlpha = 0.6;
+      if (mazeCv) ctx.drawImage(mazeCv, boardX, boardY, bw, bh);
+      ctx.restore();
+    }
+    // nest door
+    ctx.strokeStyle = "#ff5fd0"; ctx.lineWidth = Math.max(2, T * 0.12);
+    ctx.shadowColor = "#ff5fd0"; ctx.shadowBlur = T * 0.4;
+    ctx.setLineDash([T * 0.18, T * 0.12]);
+    ctx.beginPath(); ctx.moveTo(boardX + 10 * T - T * 0.2, py(8)); ctx.lineTo(boardX + 11 * T + T * 0.2, py(8)); ctx.stroke();
+    ctx.setLineDash([]); ctx.shadowBlur = 0;
+
+    ctx.save();
+    ctx.beginPath(); ctx.rect(boardX, boardY, bw, bh); ctx.clip();
+    // data bits + chips
+    if (G.bits) {
+      const s = bitSpriteSize;
+      for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++) {
+        const v = G.bits[r][c];
+        if (v === 1) ctx.drawImage(bitSprite, px(c) - s / 2, py(r) - s / 2, s, s);
+        else if (v === 2) drawChip(px(c), py(r));
+      }
+    }
+    const playing = G.state !== "title";
+    if (playing && G.player) {
+      const hideBugs = G.state === "clear" || (G.state === "dying" && G.stateTimer < 1.7);
+      if (!hideBugs) for (const b of G.bugs) drawWrapped(b.x, b.y, (x, y) => drawBug(b, x, y));
+      const p = G.player;
+      if (G.state === "dying") {
+        const t = Math.min(1, (2.2 - G.stateTimer) / 1.6);
+        const x = px(p.x), y = py(p.y);
+        if (t < 0.85) drawBitBot(x, y, T * 0.44, p.face + t * t * 30, p.anim, 0.1, 1 - t / 0.85);
+        ctx.strokeStyle = "#ff6fb5"; ctx.lineWidth = Math.max(1, T * 0.08);
+        ctx.shadowColor = "#ff6fb5"; ctx.shadowBlur = T * 0.4; ctx.globalAlpha = Math.max(0, 1 - t);
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const a = i * Math.PI / 5, r0 = T * (0.2 + t * 0.6), r1 = T * (0.4 + t * 1.2);
+          ctx.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); ctx.lineTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1);
+        }
+        ctx.stroke(); ctx.globalAlpha = 1; ctx.shadowBlur = 0;
+      } else {
+        drawWrapped(p.x, p.y, (x, y) => drawBitBot(x, y, T * 0.44, p.face, p.anim, p.munch));
+      }
+    }
+    for (const pp of G.popups) {
+      ctx.globalAlpha = Math.min(1, pp.t * 2);
+      glowText(pp.text, px(pp.x), py(pp.y) - (1 - pp.t) * T * 1.2, T * 0.6, pp.color);
+    }
+    ctx.globalAlpha = 1;
+    ctx.restore();
+
+    drawHUD();
+
+    if (G.state === "title") drawTitle();
+    else if (G.paused) banner([["PAUSED", "#ffe95f"], ["P or Enter to resume", "#9aa6ff", T * 0.55]]);
+    else if (G.state === "ready") banner([["LEVEL " + (G.level + 1), "#5ff6ff"], ["READY!", "#ffe95f"]]);
+    else if (G.state === "clear") banner([[G.level < LEVELS.length - 1 ? "LEVEL CLEAR!" : "MAZE CONQUERED!", "#46ff7e"]]);
+    else if (G.state === "over") banner([["GAME OVER", "#ff3b5c", T * 1.2], ["SCORE " + G.score, "#ffffff", T * 0.7], ["Enter / tap to retry", "#9aa6ff", T * 0.55]]);
+    else if (G.state === "win") banner([["YOU WIN!", "#46ff7e", T * 1.2], ["All 3 levels cleared", "#5ff6ff", T * 0.6], ["SCORE " + G.score, "#ffffff", T * 0.7], ["Enter / tap to play again", "#9aa6ff", T * 0.55]]);
+  }
+
+  // ======================= INPUT =======================
+  function setDir(dx, dy) { if (G.player) { G.player.ndx = dx; G.player.ndy = dy; } }
+  function canStart() { return G.state === "title" || G.state === "over" || G.state === "win"; }
+  function togglePause() {
+    if (G.state === "play" || G.state === "ready") {
+      G.paused = !G.paused;
+      Snd.hum(!G.paused && G.frightTimer > 0);
+    }
+  }
+
+  window.addEventListener("keydown", e => {
+    Snd.init();
+    const k = e.key;
+    let used = true;
+    if (k === "ArrowUp" || k === "w" || k === "W") setDir(0, -1);
+    else if (k === "ArrowDown" || k === "s" || k === "S") setDir(0, 1);
+    else if (k === "ArrowLeft" || k === "a" || k === "A") setDir(-1, 0);
+    else if (k === "ArrowRight" || k === "d" || k === "D") setDir(1, 0);
+    else if (k === "Enter" || k === " ") { if (canStart()) startGame(); else if (G.paused) togglePause(); }
+    else if (k === "p" || k === "P" || k === "Escape") togglePause();
+    else if (k === "m" || k === "M") { Snd.toggleMute(); Snd.hum(G.state === "play" && G.frightTimer > 0 && !G.paused); }
+    else used = false;
+    if (used) e.preventDefault();
+  });
+
+  function tapAt(x, y) {
+    Snd.init();
+    if (canStart()) { startGame(); return; }
+    if (G.paused) { togglePause(); return; }
+    if (y > boardY + ROWS * T) { Snd.toggleMute(); Snd.hum(G.state === "play" && G.frightTimer > 0); }
+    else if (y < boardY) togglePause();
+  }
+  let touch = null;
+  window.addEventListener("touchstart", e => {
+    Snd.init();
+    const t = e.changedTouches[0];
+    touch = { x: t.clientX, y: t.clientY, sx: t.clientX, sy: t.clientY, moved: false };
+    e.preventDefault();
+  }, { passive: false });
+  window.addEventListener("touchmove", e => {
+    if (!touch) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touch.x, dy = t.clientY - touch.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > 22) {
+      if (Math.abs(dx) > Math.abs(dy)) setDir(Math.sign(dx), 0); else setDir(0, Math.sign(dy));
+      touch.x = t.clientX; touch.y = t.clientY; touch.moved = true;
+    }
+    e.preventDefault();
+  }, { passive: false });
+  window.addEventListener("touchend", e => {
+    if (touch && !touch.moved) tapAt(touch.sx, touch.sy);
+    touch = null;
+    e.preventDefault();
+  }, { passive: false });
+  canvas.addEventListener("mousedown", e => tapAt(e.clientX, e.clientY));
+  window.addEventListener("resize", resize);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && !G.paused && (G.state === "play" || G.state === "ready")) togglePause();
+  });
+
+  // ======================= MAIN LOOP =======================
+  let last = 0;
+  function frame(ts) {
+    const dt = last ? Math.min(0.05, Math.max(0, (ts - last) / 1000)) : 0;
+    last = ts;
+    let rem = dt;
+    while (rem > 1e-9) { const s = Math.min(rem, 1 / 60); update(s); rem -= s; }
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  G.best = loadBest();
+  loadLevel();
+  resize();
+  requestAnimationFrame(frame);
+
+  // Small hook used by the automated playtest (harmless in normal play).
+  window.BitMazeDebug = { G, update, startGame, setDir, isOpen, wrapC, COLS, ROWS, LEVELS };
+})();
+</script>
+</body>
+</html>

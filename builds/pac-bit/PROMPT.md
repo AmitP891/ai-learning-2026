@@ -57,6 +57,11 @@ and the Hype Bot's 3 title ideas.
 | Date | 16 Nov 2026 | 16 Nov 2026 | 16 Nov 2026 |
 | Time (send to finished) | 27m 43s | 12m 50s | 15m 12s |
 | Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | 2 (kept the limit; round 2 found nothing new) | 1 fix round (round 1 found 3 bugs; round 2 clean) |
-| Lines | 911 (41 KB) | |  |
+| Lines | 911 (41 KB) | 943 (41 KB) | 1,111 (42 KB) |
 | Skills loaded | n/a | none (Claude never called them) | router → game-ai, input-systems, audio-design, game-ui-ux (not game-feel) |
 | Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | Tester autopilot won all 3 levels in 2 of 3 runs on 3 lives; tested phone 390x844 layout; fixed blue bugs blending into L1 walls. Titles: Byte Club / Glitch Panic! / Debug or Be Bugged. | Tester bot won with 2 lives left (9,810); second bot run lost with 8 bits left. Bug state machine, BFS home, buffered turns, music ducking, auto-pause. Titles: Glitch Panic! / Byte Night / Bit Rush. |
+
+
+**Amit's verdict:** build 3 (skills forced on) was his favourite to play. Nobody beat level 1 in any build by hand.
+
+Play them: [run 1](https://amitp891.github.io/ai-learning-2026/builds/pac-bit/opus/) · [run 2](https://amitp891.github.io/ai-learning-2026/builds/pac-bit/opus-skills/) · [run 3](https://amitp891.github.io/ai-learning-2026/builds/pac-bit/opus-skills-on/)
