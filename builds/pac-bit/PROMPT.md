@@ -1,9 +1,19 @@
 # Bit's Maze Muncher: the shared prompt (video 22 Nov)
 
-Video: "Can Claude Make Pac-Man From Scratch?" (single build, Opus 5.5)
+Video: "Can Claude Make Pac-Man? Then I Gave It 79 Game-Dev Skills" (Opus 5.5, two runs)
 
-Give this to Opus 5.5 **word for word** in a fresh Claude Code session inside an
-empty folder (`builds/pac-bit/opus/`).
+- **Run 1: Opus alone** in `builds/pac-bit/opus/`. Do this BEFORE installing the skills.
+- **Run 2: Opus + skills** in `builds/pac-bit/opus-skills/`, after installing
+  [awesome-gamedev-agent-skills](https://github.com/gamedev-skills/awesome-gamedev-agent-skills) (Apache-2.0):
+  ```
+  claude plugin marketplace add gamedev-skills/awesome-gamedev-agent-skills
+  claude plugin install router@awesome-gamedev-agent-skills
+  claude plugin install web-engines@awesome-gamedev-agent-skills
+  claude plugin install disciplines@awesome-gamedev-agent-skills
+  ```
+  Same prompt word for word, fresh Claude Code session. Note which skills it loads (shown in the session).
+
+Give this to Opus 5.5 **word for word** in a fresh Claude Code session inside each run's empty folder.
 Start a screen recording ("Record Entire Screen") and note the clock time when you press Enter.
 
 ```
@@ -41,10 +51,11 @@ and the Hype Bot's 3 title ideas.
 ```
 
 ## Results
-| | Opus 5.5 |
-|---|---|
-| Date | |
-| Time (send to finished) | |
-| Fix rounds | |
-| Lines | |
-| Notes | |
+| | Run 1: Opus alone | Run 2: Opus + skills |
+|---|---|---|
+| Date | | |
+| Time (send to finished) | | |
+| Fix rounds | | |
+| Lines | | |
+| Skills loaded | n/a | |
+| Notes | | |
