@@ -53,9 +53,9 @@ and the Hype Bot's 3 title ideas.
 ## Results
 | | Run 1: Opus alone | Run 2: Opus + skills |
 |---|---|---|
-| Date | 16 Nov 2026 | |
-| Time (send to finished) | 27m 43s | |
-| Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | |
+| Date | 16 Nov 2026 | 16 Nov 2026 |
+| Time (send to finished) | 27m 43s | 12m 50s |
+| Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | 2 (kept the limit; round 2 found nothing new) |
 | Lines | 911 (41 KB) | |
 | Skills loaded | n/a | |
-| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | |
+| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | Tester autopilot won all 3 levels in 2 of 3 runs on 3 lives; tested phone 390x844 layout; fixed blue bugs blending into L1 walls. Titles: Byte Club / Glitch Panic! / Debug or Be Bugged. |
