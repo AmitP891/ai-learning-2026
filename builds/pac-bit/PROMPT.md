@@ -53,9 +53,9 @@ and the Hype Bot's 3 title ideas.
 ## Results
 | | Run 1: Opus alone | Run 2: Opus + skills |
 |---|---|---|
-| Date | | |
-| Time (send to finished) | | |
+| Date | 16 Nov 2026 | |
+| Time (send to finished) | 27m 43s | |
 | Fix rounds | | |
-| Lines | | |
+| Lines | 911 (41 KB) | |
 | Skills loaded | n/a | |
-| Notes | | |
+| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). | |
