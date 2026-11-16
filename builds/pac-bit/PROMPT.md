@@ -55,7 +55,7 @@ and the Hype Bot's 3 title ideas.
 |---|---|---|
 | Date | 16 Nov 2026 | |
 | Time (send to finished) | 27m 43s | |
-| Fix rounds | | |
+| Fix rounds | 2 labelled, 3-4 in practice (admitted it broke the 2-round limit) | |
 | Lines | 911 (41 KB) | |
 | Skills loaded | n/a | |
-| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). | |
+| Notes | Neon circuit maze, 4 named bugs (ZAPP, SNIP, WOBBLE, SHY) with their own chase styles, chips, title/game-over screens, sound. Amit lost all 3 lives on level 1 (2,770 pts). Tester's own autopilot also died on L1 with 3 lives; needed 99 lives to win (20 deaths). Hidden debug hook window.__bitDebug (setLives). Titles: Glitch Patrol / Byte Night / Circuit Crunch. | |
