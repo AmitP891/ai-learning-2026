@@ -133,7 +133,7 @@ def card_png(path):
         stroked(d, (W / 2 + dy * .6, 760 + dy), "BUG PATROL", B(220), col, 12)
     stroked(d, (W / 2, 940), "EPISODE 1 · THE BREACH", B(92), (0, 230, 255), 8)
     d.rounded_rectangle([140, 1060, 940, 1250], 40, fill=(255, 225, 77), outline=(0, 0, 0), width=8)
-    d.text((W / 2, 1157), "SATURDAY 6PM", font=B(130), fill=(17, 17, 17), anchor="mm")
+    d.text((W / 2, 1157), "SAT 28 NOV · 6PM", font=B(112), fill=(17, 17, 17), anchor="mm")
     stroked(d, (W / 2, 1360), "FOLLOW SO YOU DON'T MISS IT", B(70), (255, 255, 255), 6)
     bg.convert("RGB").save(path)
 
