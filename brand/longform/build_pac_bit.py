@@ -27,20 +27,21 @@ ENC = ["-c:v", "libx264", "-crf", "20", "-preset", "veryfast", "-pix_fmt", "yuv4
 GAME = {1: ("17_39_46", "crop=1400:1600:780:230"), 2: ("18_10_09", "crop=1440:1600:760:290"), 3: ("18_52_05", "crop=1400:1600:760:240")}
 def rec(R, n): return os.path.join(R, f"Screen_Recording_2026-11-16_at_{n}.mov")
 
-def game(out, R, r, ss, L, dx=0, dark=False):
-    """Run r's gameplay: the game column on a blurred copy of itself. dx shifts the game right (room for callouts)."""
-    n, crop = GAME[r]; dk = ",eq=brightness=-0.35" if dark else ""
-    fc = (f"[0:v]{crop},split[a][b];[a]scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=24:2,eq=brightness=-0.32[bg];"
-          f"[b]scale=-2:1040{dk}[fg];[bg][fg]overlay=(W-w)/2+{dx}:20")
-    run(["ffmpeg", "-v", "error", "-y", "-ss", str(ss), "-t", str(L), "-i", rec(R, n), "-an", "-filter_complex", fc, "-t", str(L), *ENC, out])
+def game(out, R, r, ss, L, dx=0, bg_only=False):
+    """Run r's gameplay: the game column on a blurred copy of itself. dx shifts the game right (room for callouts).
+    bg_only: just the blurred backdrop, so text panels never sit on top of the game."""
+    n, crop = GAME[r]
+    bg = f"[0:v]{crop},scale={W}:{H}:force_original_aspect_ratio=increase,crop={W}:{H},boxblur=24:2,eq=brightness=-0.32"
+    fc = bg + ("[v]" if bg_only else f"[bg];[0:v]{crop},scale=-2:1040[fg];[bg][fg]overlay=(W-w)/2+{dx}:20[v]")
+    run(["ffmpeg", "-v", "error", "-y", "-ss", str(ss), "-t", str(L), "-i", rec(R, n), "-an", "-filter_complex", fc, "-map", "[v]", "-t", str(L), *ENC, out])
 
 def triple(out, R, starts, L, dark=False):
-    """All three games side by side (run 1 | run 2 | run 3), 640 px columns with room for labels."""
+    """All three games side by side (run 1 | run 2 | run 3): labels above (y<170), games in y 170-810, a text band below (y>830)."""
     ins, fc = [], ""
     for i, r in enumerate((1, 2, 3)):
         n, crop = GAME[r]; ins += ["-ss", str(starts[i]), "-t", str(L), "-i", rec(R, n)]
-        dk = ",boxblur=8:1,eq=brightness=-0.4" if dark else ""
-        fc += f"[{i}:v]{crop},scale=640:-2,pad=640:{H}:0:200:color=0x0a0b18{dk}[c{i}];"
+        dk = ",boxblur=30:3,eq=brightness=-0.5" if dark else ""
+        fc += f"[{i}:v]{crop},scale=-2:640,pad=640:{H}:(ow-iw)/2:170:color=0x0a0b18{dk}[c{i}];"
     run(["ffmpeg", "-v", "error", "-y", *ins, "-an", "-filter_complex", fc + "[c0][c1][c2]hstack=3", "-t", str(L), *ENC, out])
 
 def lapse(out, src, ss, dur, L, crop, blur=False):
@@ -59,7 +60,7 @@ def build_bg(tmp, R):
     b1 = rec(R, "17_05_39"); b2 = os.path.join(R, "run2-build.mp4"); b3 = os.path.join(R, "run3-build.mp4")
     C1, C2, C3 = "crop=3120:1755:0:73", "crop=1600:900:0:41", "crop=1600:900:0:26"
     triple(P("s1.mp4"), R, (20, 10, 15), L[0])
-    game(P("s2.mp4"), R, 1, 0, L[1], dark=True)
+    game(P("s2.mp4"), R, 1, 0, L[1], bg_only=True)
     lapse(P("s3a.mp4"), b1, 0, 900, 6.5, C1); game(P("s3b.mp4"), R, 1, 2, L[2] - 6.5, 420); cat(P("s3.mp4"), [P("s3a.mp4"), P("s3b.mp4")])
     game(P("s4.mp4"), R, 1, 14, L[3], 420)
     lapse(P("s5.mp4"), b2, 0, 780, L[4], C2, blur=True)
@@ -85,8 +86,26 @@ def next_card(path):
 
 def make_outro(tmp, out):
     card = os.path.join(tmp, "next.png"); next_card(card)
-    run(["ffmpeg", "-v", "error", "-y", "-i", os.path.join(ROOT, "content/videos/brand-outro-15s.mp4"), "-loop", "1", "-i", card, "-filter_complex",
-         "[1:v]format=rgba,fade=in:st=0.6:d=0.4:alpha=1[c];[0:v][c]overlay=116:256:shortest=1", "-an", "-t", str(OUTRO), *ENC, out])
+    circ = os.path.join(tmp, "circ.png"); sub_circle(circ)
+    # Both are pasted opaque on every frame (darkened with the scene's own fade-up from black), so the old card never shows.
+    src = os.path.join(ROOT, "content/videos/brand-outro-15s.mp4"); cimg = Image.open(card).convert("RGB"); simg = Image.open(circ)
+    dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", src, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
+    enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-", *ENC, out], stdin=subprocess.PIPE)
+    for i in range(int(OUTRO * FPS)):
+        buf = dec.stdout.read(W * H * 3)
+        if len(buf) < W * H * 3: break
+        f = min(1.0, (i / FPS) / 0.4); fr = Image.frombuffer("RGB", (W, H), buf).copy()
+        c = cimg if f >= 1 else Image.eval(cimg, lambda v: int(v * f))
+        s = simg if f >= 1 else Image.merge("RGBA", [*Image.eval(simg.convert("RGB"), lambda v: int(v * f)).split(), simg.getchannel("A")])
+        fr.paste(c, (116, 256)); fr.paste(s, (124, 774), s); enc.stdin.write(fr.tobytes())
+    enc.stdin.close(); enc.wait(); dec.kill()
+
+def sub_circle(path):
+    """Subscribe icon: the painted Bit inside the pink ring (inner radius ~86 px, centre 210,860)."""
+    D = 173; im = Image.new("RGBA", (D, D), (20, 20, 40, 255))
+    p = Image.open(os.path.join(ROOT, "brand/photos/bit_painted_mockup.png")).convert("RGBA").crop((90, 30, 890, 830)).resize((D, D), Image.LANCZOS)
+    im.alpha_composite(p); m = Image.new("L", (D * 4, D * 4), 0); ImageDraw.Draw(m).ellipse((0, 0, D * 4 - 1, D * 4 - 1), fill=255)
+    im.putalpha(m.resize((D, D), Image.LANCZOS)); im.save(path)
 
 # ---------------- callouts ----------------
 def T(d, xy, s, f, fill, a=1.0, anchor="la", stroke=0):
@@ -115,13 +134,13 @@ def callouts(t):
     if s is None: return None
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
     a0, b0 = SEC[s]; u = t - a0; L = b0 - a0; k = lambda x, dur=0.35: ease((u - x) / dur)
-    if s == 0:
+    if s == 0:   # games sit in y 170-810; every word stays in the band above or below them
         labels3(d, k(0.2))
-        if u > 3.7: T(d, (W / 2, H - 230), "SAME PROMPT. 3 RUNS.", BI(84), WHITE, k(3.7), "mm", 7)
-        if u > 5.8 and u < 11.9: pill(d, 320, H - 130, "BROKE THE RULES + HID A CHEAT", RED, k(5.8), 30, "m", WHITE)
-        if u > 8.7: pill(d, W / 2, H / 2 - 40, "79 GAME-DEV SKILLS", GOLD, k(8.7), 64, "m")
-        if u > 12: T(d, (W / 2, H / 2 + 80), "…IGNORED.", BI(110), RED, k(12), "mm", 8)
-        if u > 15.1: pill(d, 1600, H - 130, "SO I MADE IT USE THEM", R3C, k(15.1), 34, "m")
+        if 3.7 < u < 8.7: T(d, (W / 2, 885), "SAME PROMPT. 3 RUNS.", BI(76), WHITE, k(3.7), "mm", 7)
+        if 5.8 < u < 8.7: pill(d, 320, 965, "BROKE THE RULES + HID A CHEAT", RED, k(5.8), 34, "m", WHITE)
+        if u > 8.7: T(d, (W / 2, 885), "79 GAME-DEV SKILLS…", BI(76), GOLD, k(8.7), "mm", 7)
+        if 12 < u < 15.1: T(d, (W / 2, 1000), "CLAUDE IGNORED THEM.", BI(66), RED, k(12), "mm", 6)
+        if u > 15.1: pill(d, 1600, 965, "SO I MADE IT USE THEM", R3C, k(15.1), 38, "m")
     elif s == 1:
         a = k(0.2); panel(d, (70, 70, 1010, 1010), a); T(d, (110, 115), "THE PROMPT (x3, word for word)", BD(36), CYAN, a)
         lines = [("Bit's Maze Muncher", PINK, BK(58)), ("· Neon circuit-board maze", WHITE, BD(44)), ("· Collect glowing data bits", WHITE, BD(44)),
@@ -206,10 +225,11 @@ def callouts(t):
         if u > 19.6: d.rounded_rectangle((260, 900, 1660, 990), 30, fill=R3C + (int(250 * k(19.6)),)); T(d, (W / 2, 945), "SKILLS ONLY HELP IF YOU TELL CLAUDE TO USE THEM", BK(40), INK, k(19.6), "mm")
     elif s == 9:
         labels3(d, k(0.2), subs=("PLAY IT", "PLAY IT", "PLAY IT"))
-        T(d, (W / 2, H - 260), "ALL 3 GAMES + THE PROMPT: IN THE DESCRIPTION", BK(46), WHITE, k(0.8), "mm", 6)
-        if u > 6.6: pill(d, W / 2, H - 200, "CAN YOU BEAT LEVEL 1? COMMENT YOUR SCORE", GOLD, k(6.6), 44, "m")
-        if u > 9.2: pill(d, W / 2, H - 110, "MOST-LIKED COMMENT PICKS MY NEXT POWER-UP", PINK, k(9.2), 40, "m", WHITE)
-        if u > 13.2: T(d, (W / 2, H / 2), "NEXT WEEK: BIT PET", BI(100), PINK, k(13.2), "mm", 8)
+        if u < 6.6: T(d, (W / 2, 885), "ALL 3 GAMES + THE PROMPT", BK(60), WHITE, k(0.8), "mm", 6); T(d, (W / 2, 975), "LINKS IN THE DESCRIPTION", BD(46), CYAN, k(1.1), "mm", 5)
+        elif u < 13.2:
+            pill(d, W / 2, 840, "CAN YOU BEAT LEVEL 1? COMMENT YOUR SCORE", GOLD, k(6.6), 44, "m")
+            if u > 9.2: pill(d, W / 2, 955, "MOST-LIKED COMMENT PICKS MY NEXT POWER-UP", PINK, k(9.2), 40, "m", WHITE)
+        else: T(d, (W / 2, 930), "NEXT WEEK: BIT PET", BI(100), PINK, k(13.2), "mm", 8)
     return im
 
 def main(vo, R, out):
