@@ -166,7 +166,7 @@ def video():
               f"trim=duration={END_LEN},fade=in:st=0:d=0.25[c{n}]")
     fc.append("".join(f"[c{i}]" for i in range(n + 1)) + f"concat=n={n + 1}:v=1:a=0[base]")
     # overlays
-    items = [(f"{TMP}/title.png", 0.0, 2.4, 0.35)]
+    items = [] if os.environ.get("NO_TITLE") else [(f"{TMP}/title.png", 0.0, 2.4, 0.35)]
     for j, (s, e, text) in enumerate(CAPS):
         p = f"{TMP}/cap{j}.png"; narration_png(text, p)
         t0 = at(s); nxt = at(CAPS[j + 1][0]) if j + 1 < len(CAPS) else 99
