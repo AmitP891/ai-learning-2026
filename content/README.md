@@ -62,3 +62,7 @@ Every piece of content published during the sprint, linked to the week and code 
 | 15 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/ryWMTq4IwYs) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
 | 15 Nov 2026 | 4 | [Instagram Reels](https://www.instagram.com/reel/Dfxj7u5i_Bj/) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
 | 15 Nov 2026 | 4 | [TikTok](https://www.tiktok.com/@vibewithamiai/video/7708486145729907990) | Ask Bit ep1: Can AI build a game in 10 minutes? ([video](videos/2026-11-15-ask-bit-ep01.mp4)) | |
+| 17 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/UcU2cmMykk8) | Bit: Bug Patrol teaser ([video](videos/2026-11-17-bug-patrol-trailer.mp4)) | also TikTok + IG; slow opening, 74% IG skip rate → cold opens from now on |
+| 22 Nov 2026 | 4 | [YouTube](https://youtu.be/II-9d9HuPn0) | I Gave Claude 79 Game-Dev Skills. It Ignored Them. | long-form, scheduled Sun 09:00 |
+| 25 Nov 2026 | 4 | [YouTube](https://youtu.be/bM0CGRnKVwo) | Claude Code Made a Boss Fight for My Robot (3/10 → 8/10) | long-form, moved to Wed 18:00 |
+| 28 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/XTz2gJ0AIbA) | Bit: Bug Patrol Ep 1: The Breach (cold open) ([video](videos/2026-11-28-bug-patrol-ep1-coldopen.mp4)) | scheduled Sat 18:00; old cut flIce77G6gg deleted |
