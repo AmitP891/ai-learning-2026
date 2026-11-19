@@ -66,3 +66,4 @@ Every piece of content published during the sprint, linked to the week and code 
 | 22 Nov 2026 | 4 | [YouTube](https://youtu.be/II-9d9HuPn0) | I Gave Claude 79 Game-Dev Skills. It Ignored Them. | long-form, scheduled Sun 09:00 |
 | 25 Nov 2026 | 4 | [YouTube](https://youtu.be/bM0CGRnKVwo) | Claude Code Made a Boss Fight for My Robot (3/10 → 8/10) | long-form, moved to Wed 18:00 |
 | 28 Nov 2026 | 4 | [YouTube Shorts](https://youtube.com/shorts/XTz2gJ0AIbA) | Bit: Bug Patrol Ep 1: The Breach (cold open) ([video](videos/2026-11-28-bug-patrol-ep1-coldopen.mp4)) | scheduled Sat 18:00; old cut flIce77G6gg deleted |
+| 5 Dec 2026 | 5 | [YouTube Shorts](https://youtube.com/shorts/YDM-7TwqhI8) | Bit: Bug Patrol Ep 2: Swarm City ([video](videos/2026-12-05-bug-patrol-ep2.mp4), [copy](scripts/2026-12-05-bug-patrol-ep2-upload-copy.md)) | scheduled Sat 18:00; TikTok/IG same time |
