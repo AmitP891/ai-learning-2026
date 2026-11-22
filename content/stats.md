@@ -20,3 +20,18 @@ Reviewed every Sunday. YouTube Analytics lags ~2 days, so YT per-video figures c
 - Comic teaser on TikTok: 147 views, 4 comments vs 17 views on YT. Comic is TikTok-first.
 - 79 Skills long-form (II-9d9HuPn0) live 22 Nov: 7 views by 14:30. Thumbnail v1 (game screen grab) scored 19; v2 painted built for an A/B test.
 - Focus for 23–29 Nov: Ep 1 on 28 Nov is the real test (watch % watched, comments per 100 views, follows). Every caption ends with a reason to follow the series.
+
+## Comic go/no-go (review Sun 13 Dec 2026, after Ep 3 on 12 Dec)
+Question: does the channel become comic-only (Bit: Bug Patrol)?
+Judge on TikTok first (where the comic and the followers are), YouTube second. Use Ep 1–3, each at 48 h.
+
+| Gate | Pass if | Ep 1 (28 Nov) | Ep 2 (5 Dec) | Ep 3 (12 Dec) |
+|---|---|---|---|---|
+| Holds viewers | average % watched ≥ 60% | | | |
+| Gets talked about | ≥ 3 comments per 100 views | | | |
+| Drives follows | new followers per episode > the best Bit Level / Ask Bit Short of the same week | | | |
+| Affordable | Runway credits cover ~4 episodes a month (~1,100 credits) on the current plan | | | |
+
+- All four pass on at least 2 of 3 episodes → go comic-only: Saturday episode, one midweek teaser Short, a monthly "how I made it". Ask Bit and Bit Levels become occasional.
+- Engagement passes but credits don't → comic every 2 weeks, keep Ask Bit in between.
+- Fails → keep the comic as one format among the others and put the effort back into what did drive follows.
