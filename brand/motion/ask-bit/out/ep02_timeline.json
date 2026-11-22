@@ -1,0 +1,268 @@
+{
+ "lines": [
+  {
+   "who": "G",
+   "s": 0.1,
+   "e": 4.502086167800453,
+   "chunks": [
+    "Bit. Everyone's installing AI skills.",
+    "Do they actually make Claude better?"
+   ]
+  },
+  {
+   "who": "B",
+   "s": 4.902086167800453,
+   "e": 11.851723356009071,
+   "chunks": [
+    "Let's check. Three parts.",
+    "What people say. What we tried. And is it real."
+   ]
+  },
+  {
+   "who": "B",
+   "s": 12.251723356009071,
+   "e": 17.455600907029478,
+   "chunks": [
+    "What people say: install a skill pack,",
+    "and Claude codes like a pro game studio."
+   ]
+  },
+  {
+   "who": "G",
+   "s": 17.605600907029476,
+   "e": 19.688390022675733,
+   "chunks": [
+    "So I install them\u2026 and I'm done?"
+   ]
+  },
+  {
+   "who": "B",
+   "s": 19.838390022675732,
+   "e": 20.8391156462585,
+   "chunks": [
+    "That's the claim."
+   ]
+  },
+  {
+   "who": "B",
+   "s": 21.239115646258497,
+   "e": 31.2750566893424,
+   "chunks": [
+    "What we tried: the same maze game prompt, three times.",
+    "Claude on its own took twenty-seven minutes.",
+    "With seventy-nine skills installed\u2026 twelve."
+   ]
+  },
+  {
+   "who": "G",
+   "s": 31.425056689342398,
+   "e": 34.09467120181405,
+   "chunks": [
+    "Twelve minutes. Skills win. Next."
+   ]
+  },
+  {
+   "who": "B",
+   "s": 34.24467120181405,
+   "e": 39.84233560090702,
+   "chunks": [
+    "I asked which skills it used. None.",
+    "It said it should probably have checked them first."
+   ]
+  },
+  {
+   "who": "G",
+   "s": 40.44233560090702,
+   "e": 41.83433106575963,
+   "chunks": [
+    "\u2026Relatable."
+   ]
+  },
+  {
+   "who": "B",
+   "s": 42.234331065759626,
+   "e": 53.314489795918355,
+   "chunks": [
+    "Is it real? Only if you ask.",
+    "One extra line, \"use the skills\",",
+    "and it loaded four, needed one fix round\u2026",
+    "and its tester won with two lives to spare."
+   ]
+  },
+  {
+   "who": "G",
+   "s": 53.51448979591836,
+   "e": 55.38195011337868,
+   "chunks": [
+    "So skills make me a pro?"
+   ]
+  },
+  {
+   "who": "B",
+   "s": 55.53195011337868,
+   "e": 59.08274376417233,
+   "chunks": [
+    "Skills make Claude a pro.",
+    "You just have to tell it."
+   ]
+  }
+ ],
+ "captions": [
+  [
+   0.1,
+   2.94,
+   "G",
+   "Bit. Everyone's installing AI skills."
+  ],
+  [
+   2.94,
+   4.652086167800453,
+   "G",
+   "Do they actually make Claude better?"
+  ],
+  [
+   4.902086167800453,
+   7.552086167800454,
+   "B",
+   "Let's check. Three parts."
+  ],
+  [
+   7.552086167800454,
+   12.001723356009071,
+   "B",
+   "What people say. What we tried. And is it real."
+  ],
+  [
+   12.251723356009071,
+   15.073890754614082,
+   "B",
+   "What people say: install a skill pack,"
+  ],
+  [
+   15.073890754614082,
+   17.605600907029476,
+   "B",
+   "and Claude codes like a pro game studio."
+  ],
+  [
+   17.605600907029476,
+   19.838390022675732,
+   "G",
+   "So I install them\u2026 and I'm done?"
+  ],
+  [
+   19.838390022675732,
+   20.989115646258497,
+   "B",
+   "That's the claim."
+  ],
+  [
+   21.239115646258497,
+   25.419115646258497,
+   "B",
+   "What we tried: the same maze game prompt, three times."
+  ],
+  [
+   25.419115646258497,
+   28.4791156462585,
+   "B",
+   "Claude on its own took twenty-seven minutes."
+  ],
+  [
+   28.4791156462585,
+   31.425056689342398,
+   "B",
+   "With seventy-nine skills installed\u2026 twelve."
+  ],
+  [
+   31.425056689342398,
+   34.24467120181405,
+   "G",
+   "Twelve minutes. Skills win. Next."
+  ],
+  [
+   34.24467120181405,
+   37.5,
+   "B",
+   "I asked which skills it used. None."
+  ],
+  [
+   37.5,
+   39.99233560090702,
+   "B",
+   "It said it should probably have checked them first."
+  ],
+  [
+   40.44233560090702,
+   41.984331065759626,
+   "G",
+   "\u2026Relatable."
+  ],
+  [
+   42.234331065759626,
+   45.164331065759626,
+   "B",
+   "Is it real? Only if you ask."
+  ],
+  [
+   45.164331065759626,
+   46.8,
+   "B",
+   "One extra line, \"use the skills\","
+  ],
+  [
+   46.8,
+   49.25,
+   "B",
+   "and it loaded four, needed one fix round\u2026"
+  ],
+  [
+   49.25,
+   53.464489795918354,
+   "B",
+   "and its tester won with two lives to spare."
+  ],
+  [
+   53.51448979591836,
+   55.53195011337868,
+   "G",
+   "So skills make me a pro?"
+  ],
+  [
+   55.53195011337868,
+   57.99,
+   "B",
+   "Skills make Claude a pro."
+  ],
+  [
+   57.99,
+   59.23274376417233,
+   "B",
+   "You just have to tell it."
+  ]
+ ],
+ "cues": {
+  "list1": 7.552086167800454,
+  "list2": 8.962086167800454,
+  "list3": 10.32,
+  "p1": 12.251723356009071,
+  "pack": 13.62172335600907,
+  "pro": 15.07,
+  "next1": 19.838390022675732,
+  "p2": 21.239115646258497,
+  "run1": 25.419115646258497,
+  "run2": 28.4791156462585,
+  "g3": 31.425056689342398,
+  "g3e": 34.09467120181405,
+  "none": 36.58,
+  "quote": 37.5,
+  "next2": 41.634331065759625,
+  "p3": 42.234331065759626,
+  "ask": 43.73,
+  "line": 45.16,
+  "four": 46.8,
+  "lives": 49.25,
+  "fix": 48.02
+ },
+ "end": 59.43274376417233
+}
