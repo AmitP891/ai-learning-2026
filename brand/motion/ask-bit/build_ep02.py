@@ -112,7 +112,7 @@ def make_hud(L, END):
         im = Image.new("RGBA", (1080, 1920), (0, 0, 0, 0)); d = ImageDraw.Draw(im)
         k = lambda s0, dur=0.3: ease((t - s0) / dur)
         if t < L[1]["s"] - 0.1:                                           # hook tag
-            a = k(0.15); chip(im, "DO AI SKILLS WORK?", 150 - int((1 - a) * 40), PINK, a, 64)
+            a = k(0.15); chip(im, "DO AI SKILLS WORK?", 320 - int((1 - a) * 40), PINK, a, 64)   # below the ASK BIT sign
         elif t < T["p1"] - 0.1:                                           # 3 parts
             a = k(L[1]["s"]); chip(im, "3 SIMPLE PARTS", 130, CYAN, a); off = panel(im, a, 250, 650)
             for i, (s0, label, col) in enumerate([(T["list1"], "WHAT PEOPLE SAY", WHITE), (T["list2"], "WHAT WE TRIED", WHITE), (T["list3"], "IS IT REAL?", GOLD)]):
@@ -215,7 +215,8 @@ def main(bit, gl, out, w=1080, h=1920):
             if a <= t < b: s["caption"] = {"who": "BIT" if who == "B" else "GLITCH", "text": text, "o": 1}
         states.append(s)
     sj = os.path.join(tmp, "s.json"); json.dump(states, open(sj, "w")); raw = os.path.join(tmp, "studio.mp4")
-    subprocess.run(["node", os.path.join(HERE, "studio/render.js"), sj, raw, str(w), str(h)], check=True)
+    if os.environ.get("STUDIO"): raw = os.environ["STUDIO"]               # re-use an earlier 3D pass (HUD-only changes)
+    else: subprocess.run(["node", os.path.join(HERE, "studio/render.js"), sj, raw, str(w), str(h)], check=True)
     dec = subprocess.Popen(["ffmpeg", "-v", "error", "-i", raw, "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], stdout=subprocess.PIPE)
     vid = os.path.join(tmp, "hud.mp4")
     enc = subprocess.Popen(["ffmpeg", "-v", "error", "-y", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{w}x{h}", "-r", str(FPS), "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "18", "-preset", "medium", vid], stdin=subprocess.PIPE)
