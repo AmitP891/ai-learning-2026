@@ -183,7 +183,7 @@ def scores_png(path):
 
 def endcard_png(path):
     fr = f"{TMP}/end_bg.png"
-    subprocess.run(["ffmpeg", "-v", "error", "-y", "-sseof", "-0.3", "-i", os.path.join(CLIPS, "08.mp4"), "-frames:v", "1", fr], check=True)
+    subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", "1.5", "-i", os.path.join(CLIPS, "08.mp4"), "-frames:v", "1", fr], check=True)
     bg = Image.open(fr).convert("RGB"); bg = bg.crop((BORDER, BORDER, bg.width - BORDER, bg.height - BORDER)).resize((W, H))
     bg = Image.blend(bg.filter(ImageFilter.GaussianBlur(7)), Image.new("RGB", (W, H), (5, 8, 20)), 0.72).convert("RGBA")
     d = ImageDraw.Draw(bg)
