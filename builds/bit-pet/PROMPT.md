@@ -83,3 +83,13 @@ No console errors. Rates per awake hour: Battery -10, Fun -7, Sleep -5, Clean -4
 
 From full bars Bit hangs on for 24 hours with Clean at 4 and only hits low power at about 25 hours. A new pet starts at 80, not 100.
 Screens: catchup-test.png
+
+## Claude's own "what I'd still improve" (end of the session, 25 Nov)
+- Sound never heard: tests only proved audio throws no errors in headless Chrome; needs a listen on a real phone.
+- Only Chrome tested; Safari on iPhone is the main risk (audio unlock, canvas grey-out filter in low power).
+- Sleep is slow: a full nap takes ~50 real minutes; speed up or let FEED/PLAY wake Bit.
+- Glitch bugs can sit on Bit's eyes; keep them off the face screen.
+- Moon cut-out looks a bit dark next to its glow.
+- No screen-reader text for the canvas; add a text status per mood.
+- Untested edge cases: clock set backwards (treated as no time), gaps over 30 days (capped), two tabs open.
+- Remove the read-only window.__bitpet test hook before shipping.
