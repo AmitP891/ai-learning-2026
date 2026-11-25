@@ -20,6 +20,7 @@ Reviewed every Sunday. YouTube Analytics lags ~2 days, so YT per-video figures c
 - Comic teaser on TikTok: 147 views, 4 comments vs 17 views on YT. Comic is TikTok-first.
 - 79 Skills long-form (II-9d9HuPn0) live 22 Nov: 7 views by 14:30. Thumbnail v1 (game screen grab) scored 19; v2 painted built for an A/B test.
 - 79 Skills: 97 views on 24 Nov → 254 by 25 Nov 21:30 after Amit swapped in his own thumbnail (vidIQ score 83). Check impressions CTR before vs after the swap in Studio.
+- 79 Skills retention (25 Nov): average view 1:44 of 4:20 (40%), 63% still watching at 0:30. Drops: 0:30 (the setup), 1:20 (the cheat explainer). Spike at 2:56 "What the skills changed" (viewers skip to it). Lesson for Bit Pet: show the result first, keep setup under 15 s, put the verdict inside the payoff.
 - Focus for 23–29 Nov: Ep 1 on 28 Nov is the real test (watch % watched, comments per 100 views, follows). Every caption ends with a reason to follow the series.
 
 ## Comic go/no-go (review Sun 13 Dec 2026, after Ep 3 on 12 Dec)
