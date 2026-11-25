@@ -63,10 +63,23 @@ Write the real numbers here; nothing in the video is made up.
 ## Results
 | | Value |
 |---|---|
-| Date | |
-| Time (send to finished) | |
-| Fix rounds | |
-| Lines / size | |
+| Date | 25 Nov 2026 (Opus 5.5, fresh session in ~/pac-bit/bit-pet) |
+| Time (send to finished) | recording 15:38–15:51; index.html saved 15:46 (about 8 min after start) |
+| Fix rounds | (from the session: TBC) |
+| Lines / size | 999 lines, 47 KB |
 | Bugs the tester found | |
 | 1 h / 8 h / 24 h bars | |
 | What broke in real life (if anything) | |
+
+## Catch-up check (Claude, headless Chrome, 25 Nov): faked gaps from full bars
+No console errors. Rates per awake hour: Battery -10, Fun -7, Sleep -5, Clean -4 (asleep: Sleep +120).
+
+| Away | Battery | Fun | Sleep | Clean | Mood / line |
+|---|---|---|---|---|---|
+| 1 h | 90 | 93 | 95 | 96 | happy, "Beep boop! Life is good." |
+| 8 h | 20 | 44 | 60 | 68 | hungry, "Battery low... snack please?" |
+| 24 h | 0 | 0 | 0 | 4 | sad + glitch bugs, "I need a lot of help..." |
+| 26 h | 0 | 0 | 0 | 0 | low power mode (grey), "...feed... me..." |
+
+From full bars Bit hangs on for 24 hours with Clean at 4 and only hits low power at about 25 hours. A new pet starts at 80, not 100.
+Screens: catchup-test.png

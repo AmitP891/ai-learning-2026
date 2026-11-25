@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#1a1430">
+<title>Bit Pet</title>
+<style>
+  :root {
+    --bg: #1a1430; --panel: #251d42; --panel2: #2f2554; --pink: #ff8fc0; --pink-dk: #d9669c;
+    --cyan: #5ff4ff; --text: #f3ecff; --dim: #a79cd0; --purple: #a45cff; --red: #ff5c7a;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; min-height: 100%; background: var(--bg); color: var(--text);
+    font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+  body { display: flex; justify-content: center; user-select: none; -webkit-user-select: none; }
+  #app { width: 100%; max-width: 440px; display: flex; flex-direction: column; gap: 10px;
+    padding: 12px 16px calc(16px + env(safe-area-inset-bottom)); }
+  header { display: flex; align-items: center; justify-content: space-between; }
+  h1 { font-size: 20px; margin: 0; letter-spacing: 3px; color: var(--pink); }
+  h1 span { color: var(--cyan); }
+  #mute { background: var(--panel); color: var(--dim); border: 2px solid var(--panel2); border-radius: 10px;
+    font: inherit; font-size: 13px; padding: 6px 10px; cursor: pointer; }
+  #stage { position: relative; width: 100%; aspect-ratio: 1 / 1; border-radius: 18px; overflow: hidden;
+    background: #120d26; border: 3px solid var(--panel2); box-shadow: 0 0 0 3px #0f0b1f, 0 10px 30px rgba(0,0,0,.4); }
+  #c { width: 100%; height: 100%; display: block; touch-action: manipulation; cursor: pointer; }
+  #speech { position: absolute; left: 50%; top: 10px; transform: translate(-50%, -6px); max-width: 86%;
+    background: #fff; color: #1a1430; font-size: 14px; font-weight: 700; padding: 8px 12px; border-radius: 12px;
+    text-align: center; opacity: 0; transition: opacity .2s, transform .2s; pointer-events: none; }
+  #speech.show { opacity: 1; transform: translate(-50%, 0); }
+  #banner { position: absolute; left: 10px; right: 10px; bottom: 10px; background: rgba(20,14,40,.94);
+    border: 2px solid var(--cyan); border-radius: 12px; padding: 10px 12px; display: flex; gap: 10px; align-items: center; }
+  #banner[hidden] { display: none; }
+  #banner div { flex: 1; font-size: 13px; line-height: 1.35; }
+  #banner b { display: block; color: var(--cyan); font-size: 15px; }
+  #banner button { background: var(--cyan); color: #1a1430; border: 0; border-radius: 8px; font: inherit; font-weight: 700;
+    padding: 8px 12px; cursor: pointer; }
+  #bars { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 14px; }
+  .lbl { display: flex; justify-content: space-between; font-size: 12px; color: var(--dim); margin-bottom: 3px; letter-spacing: 1px; }
+  .lbl .val { color: var(--text); }
+  .track { height: 12px; background: #110c22; border-radius: 6px; overflow: hidden; border: 1px solid #3a2f66; }
+  .fill { height: 100%; width: 50%; border-radius: 6px; transition: width .4s ease; }
+  .bar.low .fill { animation: pulse 1s infinite; }
+  .bar.low .val { color: var(--red); }
+  @keyframes pulse { 50% { opacity: .45; } }
+  #snacks { display: none; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  #snacks.open { display: grid; }
+  .snack { display: flex; flex-direction: column; align-items: center; gap: 2px; background: var(--panel2);
+    border: 2px solid #4b3c86; border-radius: 12px; color: var(--text); font: inherit; font-size: 12px; padding: 6px 4px; cursor: pointer; }
+  .snack canvas { width: 40px; height: 40px; }
+  .snack small { color: var(--cyan); font-size: 11px; }
+  #actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .act { min-height: 58px; border-radius: 14px; border: 0; font: inherit; font-weight: 800; font-size: 14px; letter-spacing: 1px;
+    color: #1a1430; cursor: pointer; box-shadow: 0 4px 0 rgba(0,0,0,.35); transition: transform .06s, filter .2s; }
+  .act:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 1px 0 rgba(0,0,0,.35); }
+  .act:disabled { filter: grayscale(1) brightness(.55); cursor: not-allowed; }
+  #bFeed { background: #ffd35c; } #bPlay { background: #7dff9a; } #bSleep { background: #9fa8ff; } #bDebug { background: #d29bff; }
+  #hint { text-align: center; font-size: 11px; color: var(--dim); min-height: 14px; }
+  button:focus-visible { outline: 3px solid var(--cyan); outline-offset: 2px; }
+</style>
+</head>
+<body>
+<div id="app">
+  <header>
+    <h1>BIT <span>PET</span></h1>
+    <button id="mute" type="button" aria-label="Toggle sound">♪ ON</button>
+  </header>
+
+  <div id="stage">
+    <canvas id="c" aria-label="Bit the robot pet"></canvas>
+    <div id="speech" role="status" aria-live="polite"></div>
+    <div id="banner" hidden>
+      <div><b id="bannerTitle"></b><span id="bannerText"></span></div>
+      <button id="bannerOk" type="button">OK</button>
+    </div>
+  </div>
+
+  <div id="bars">
+    <div class="bar" id="bar-battery"><div class="lbl"><span>BATTERY</span><span class="val">0</span></div><div class="track"><div class="fill" style="background:#ffd35c"></div></div></div>
+    <div class="bar" id="bar-fun"><div class="lbl"><span>FUN</span><span class="val">0</span></div><div class="track"><div class="fill" style="background:#7dff9a"></div></div></div>
+    <div class="bar" id="bar-sleep"><div class="lbl"><span>SLEEP</span><span class="val">0</span></div><div class="track"><div class="fill" style="background:#9fa8ff"></div></div></div>
+    <div class="bar" id="bar-clean"><div class="lbl"><span>CLEAN</span><span class="val">0</span></div><div class="track"><div class="fill" style="background:#d29bff"></div></div></div>
+  </div>
+
+  <div id="snacks">
+    <button class="snack" type="button" data-snack="byte"><canvas width="80" height="80"></canvas><span>Data Byte</span><small>+15 BAT</small></button>
+    <button class="snack" type="button" data-snack="cookie"><canvas width="80" height="80"></canvas><span>Cookie</span><small>+25 BAT +FUN</small></button>
+    <button class="snack" type="button" data-snack="usb"><canvas width="80" height="80"></canvas><span>USB Stick</span><small>+45 BAT</small></button>
+  </div>
+
+  <div id="actions">
+    <button class="act" id="bFeed" type="button">FEED</button>
+    <button class="act" id="bPlay" type="button">PLAY</button>
+    <button class="act" id="bSleep" type="button">SLEEP</button>
+    <button class="act" id="bDebug" type="button">DEBUG</button>
+  </div>
+  <div id="hint"></div>
+</div>
+
+<script>
+(() => {
+  'use strict';
+
+  // ---------- constants ----------
+  const SAVE_KEY = 'bitpet.save.v1';
+  const MUTE_KEY = 'bitpet.mute';
+  const NEEDS = ['battery', 'fun', 'sleep', 'clean'];
+  // change per real-time hour. Battery drops fastest.
+  const RATES = {
+    awake:  { battery: -10, fun: -7, sleep: -5,  clean: -4 },
+    asleep: { battery: -4,  fun: -2, sleep: 120, clean: -2 }
+  };
+  const LOW = 30;                // a need under this is "low"
+  const BUG_CLEAN = 40;          // glitch bugs appear when Clean is under this
+  const MAX_CATCHUP = 30 * 24 * 3600e3;
+  const W = 300, H = 300;
+  const CYAN = '#5ff4ff', PINK = '#ff8fc0', PINK_DK = '#d9669c', SCREEN = '#15102a';
+
+  const SNACKS = {
+    byte:   { name: 'Data Byte', battery: 15, fun: 5,  clean: 0,  line: 'Crunchy bits! 01101!' },
+    cookie: { name: 'Cookie',    battery: 25, fun: 12, clean: -8, line: 'Yum! ...crumbs in my vents.' },
+    usb:    { name: 'USB Stick', battery: 45, fun: 0,  clean: 0,  line: 'Mmm, 64 gigs of flavor!' }
+  };
+
+  const LINES = {
+    happy:    ['All systems go!', 'Beep boop! Life is good.', 'I <3 my user.', 'Running at 100% joy.'],
+    hungry:   ['Battery low... snack please?', 'Feed me bytes!', 'My tummy is buffering...'],
+    bored:    ['Sooo bored. Play with me?', 'Running idle loop... again.', 'Wanna catch some bugs?'],
+    sleepy:   ['*yawn* Need to defrag...', 'Can I go to sleep mode?', 'My eyes are lagging...'],
+    buggy:    ['Something is crawling on me!', 'ERR: bugs detected!', 'Itchy circuits! DEBUG me!'],
+    sad:      ['Everything is low... :(', 'Please don\'t forget me...', 'I need a lot of help...'],
+    asleep:   ['Zzz...', 'Zzz... 0101... zzz', 'Zzz... *beep*... zzz'],
+    lowpower: ['...l-low... power...', '...feed... me...', '...zz... sys... halt...']
+  };
+
+  const CHEST = { happy: '</>', hungry: '0%', bored: '...', sleepy: 'zZ', buggy: '#!?',
+                  sad: ':(', asleep: 'zzz', lowpower: '_', eating: 'nom', playing: ':D', debug: 'DBG' };
+
+  const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+  const rand = (a, b) => a + Math.random() * (b - a);
+  const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+
+  // ---------- storage (never throws) ----------
+  const store = {
+    get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } },
+    set(k, v) { try { localStorage.setItem(k, v); return true; } catch (e) { return false; } }
+  };
+
+  // ---------- sound (Web Audio, all synthesized) ----------
+  const sfx = (() => {
+    let ac = null, master = null, noiseBuf = null;
+    let muted = store.get(MUTE_KEY) === '1';
+    function ensure() {
+      if (!ac) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        ac = new AC();
+        master = ac.createGain();
+        master.gain.value = muted ? 0 : 0.45;
+        master.connect(ac.destination);
+        noiseBuf = ac.createBuffer(1, ac.sampleRate, ac.sampleRate);
+        const d = noiseBuf.getChannelData(0);
+        for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+      }
+      if (ac.state === 'suspended') ac.resume().catch(() => {});
+      return ac;
+    }
+    const ready = () => ac && ac.state === 'running' && !muted;
+    function tone(f, dur, o = {}) {
+      if (!ready()) return;
+      const t0 = ac.currentTime + (o.delay || 0);
+      const osc = ac.createOscillator(), g = ac.createGain();
+      osc.type = o.type || 'square';
+      osc.frequency.setValueAtTime(f, t0);
+      if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+      const v = o.vol || 0.18;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(v, t0 + 0.012);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      osc.connect(g); g.connect(master);
+      osc.start(t0); osc.stop(t0 + dur + 0.03);
+    }
+    function noise(dur, o = {}) {
+      if (!ready()) return;
+      const t0 = ac.currentTime + (o.delay || 0);
+      const src = ac.createBufferSource(); src.buffer = noiseBuf; src.loop = true;
+      const f = ac.createBiquadFilter(); f.type = o.filter || 'bandpass';
+      f.frequency.setValueAtTime(o.freq || 1000, t0);
+      if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t0 + dur);
+      f.Q.value = o.q || 1;
+      const g = ac.createGain(); const v = o.vol || 0.2;
+      const atk = o.attack || 0.01;
+      g.gain.setValueAtTime(0.0001, t0);
+      g.gain.exponentialRampToValueAtTime(v, t0 + atk);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      src.connect(f); f.connect(g); g.connect(master);
+      src.start(t0); src.stop(t0 + dur + 0.03);
+    }
+    const arp = (notes, step, o) => notes.forEach((n, i) => tone(n, step * 1.6, Object.assign({}, o, { delay: i * step })));
+    return {
+      ensure,
+      isMuted: () => muted,
+      setMuted(m) { muted = m; store.set(MUTE_KEY, m ? '1' : '0'); if (master) master.gain.value = m ? 0 : 0.45; },
+      click()   { tone(880, 0.05, { vol: 0.08 }); },
+      chomp(n = 2) { for (let i = 0; i < n; i++) { noise(0.09, { freq: 700, q: 0.8, vol: 0.35, delay: i * 0.16 }); tone(140, 0.07, { type: 'triangle', vol: 0.15, delay: i * 0.16 }); } },
+      plug()    { tone(300, 0.18, { to: 900, type: 'triangle', vol: 0.15 }); tone(1320, 0.08, { delay: 0.2, vol: 0.1 }); },
+      zap()     { tone(1800, 0.16, { to: 180, type: 'sawtooth', vol: 0.12 }); noise(0.12, { filter: 'highpass', freq: 3000, vol: 0.15 }); },
+      snore()   { noise(1.1, { filter: 'lowpass', freq: 220, to: 480, vol: 0.22, attack: 0.5 }); tone(80, 1.0, { to: 65, type: 'triangle', vol: 0.06 }); },
+      catchBug(){ tone(1000, 0.07, { to: 1600, vol: 0.12 }); },
+      gameStart(){ arp([523, 659, 784], 0.09, { vol: 0.12 }); },
+      gameEnd() { arp([784, 659, 523, 1046], 0.11, { vol: 0.12, type: 'triangle' }); },
+      chirp()   { tone(900, 0.08, { to: 1400, type: 'sine', vol: 0.15 }); tone(1100, 0.08, { to: 1700, type: 'sine', vol: 0.15, delay: 0.1 }); },
+      powerDown(){ tone(600, 0.7, { to: 90, type: 'sine', vol: 0.2 }); },
+      boot()    { arp([262, 330, 392, 523, 784], 0.08, { type: 'triangle', vol: 0.14 }); },
+      sparkle() { arp([1046, 1318, 1568, 2093], 0.06, { type: 'sine', vol: 0.1 }); },
+      lightsOff(){ tone(500, 0.25, { to: 250, type: 'sine', vol: 0.12 }); },
+      wake()    { tone(400, 0.15, { to: 800, type: 'sine', vol: 0.12 }); tone(800, 0.15, { to: 1200, type: 'sine', vol: 0.12, delay: 0.16 }); },
+      nope()    { tone(220, 0.12, { vol: 0.1 }); tone(180, 0.14, { vol: 0.1, delay: 0.12 }); }
+    };
+  })();
+
+  // ---------- state & save ----------
+  function freshState() {
+    const now = Date.now();
+    return { battery: 80, fun: 80, sleep: 80, clean: 80, asleep: false, lowPower: false, t: now, born: now };
+  }
+
+  function parseSave(raw) {
+    if (!raw) return null;
+    let s;
+    try { s = JSON.parse(raw); } catch (e) { return null; }
+    if (!s || typeof s !== 'object') return null;
+    const st = freshState();
+    for (const k of NEEDS) { const v = Number(s[k]); st[k] = Number.isFinite(v) ? clamp(v, 0, 100) : 80; }
+    st.asleep = !!s.asleep;
+    st.lowPower = !!s.lowPower;
+    if (Number.isFinite(Number(s.born))) st.born = Number(s.born);
+    const t = Number(s.t);
+    st.t = Number.isFinite(t) ? t : Date.now();
+    return st;
+  }
+
+  // Advance needs by `ms` of real time, in 1-minute steps so sleep/wake and low power happen at the right moment.
+  function simulate(st, ms) {
+    const ev = { wokeUp: false, lowPower: false };
+    ms = clamp(ms, 0, MAX_CATCHUP);
+    while (ms > 0) {
+      const step = Math.min(ms, 60000); ms -= step;
+      if (st.lowPower) continue;
+      const h = step / 3600e3;
+      const r = st.asleep ? RATES.asleep : RATES.awake;
+      for (const k of NEEDS) st[k] = clamp(st[k] + r[k] * h, 0, 100);
+      if (st.asleep && st.sleep >= 100) { st.asleep = false; ev.wokeUp = true; }
+      if (!st.asleep && NEEDS.every(k => st[k] <= 0)) { st.lowPower = true; ev.lowPower = true; }
+    }
+    return ev;
+  }
+
+  let S = freshState();
+  let lastWritten = null;
+
+  function serialize() {
+    return JSON.stringify({ v: 1, battery: +S.battery.toFixed(3), fun: +S.fun.toFixed(3), sleep: +S.sleep.toFixed(3),
+      clean: +S.clean.toFixed(3), asleep: S.asleep, lowPower: S.lowPower, t: S.t, born: S.born });
+  }
+
+  function save(leaving) {
+    const raw = store.get(SAVE_KEY);
+    // If the save was changed outside this page (another tab, or devtools), adopt it instead of overwriting it.
+    if (lastWritten !== null && raw !== null && raw !== lastWritten) {
+      // Page is closing/reloading: leave the outside change untouched so the next load catches it up.
+      if (leaving) return;
+      const ext = parseSave(raw);
+      if (ext) { adopt(ext); return; }
+    }
+    const out = serialize();
+    if (store.set(SAVE_KEY, out)) lastWritten = out;
+  }
+
+  // Take a loaded state, catch up the time that passed since its timestamp, and greet the player.
+  function adopt(st, isNew) {
+    const now = Date.now();
+    const away = Math.max(0, now - st.t);
+    const ev = simulate(st, away);
+    st.t = now;
+    S = st;
+    mode = 'idle'; eating = null; targets = []; closeSnacks();
+    bugs = []; syncBugs(0, true);
+    lastMood = currentMood();
+    const out = serialize();
+    if (store.set(SAVE_KEY, out)) lastWritten = out;
+    if (isNew) {
+      showBanner('Meet Bit!', 'Keep his Battery, Fun, Sleep and Clean bars up. He keeps living while you are away.');
+    } else if (away >= 60000) {
+      let msg;
+      if (S.lowPower) msg = 'Bit ran out of power and went into low power mode. FEED him to wake him up!';
+      else if (ev.wokeUp) msg = 'Bit had a long nap and woke up on his own.';
+      else if (currentMood() === 'happy') msg = 'Bit kept things running. He missed you!';
+      else msg = 'Bit needs some care. Check his bars!';
+      showBanner('You were gone ' + fmtDuration(away) + '…', msg);
+    }
+    updateUI();
+  }
+
+  function fmtDuration(ms) {
+    const mins = Math.floor(ms / 60000);
+    const d = Math.floor(mins / 1440), h = Math.floor((mins % 1440) / 60), m = mins % 60;
+    const u = (n, w) => n + ' ' + w + (n === 1 ? '' : 's');
+    if (d > 0) return u(d, 'day') + (h ? ' ' + u(h, 'hour') : '');
+    if (h > 0) return u(h, 'hour') + (m ? ' ' + u(m, 'minute') : '');
+    return u(Math.max(1, m), 'minute');
+  }
+
+  // ---------- DOM ----------
+  const $ = id => document.getElementById(id);
+  const cv = $('c'), ctx = cv.getContext('2d');
+  const speechEl = $('speech'), banner = $('banner'), hintEl = $('hint');
+  const bFeed = $('bFeed'), bPlay = $('bPlay'), bSleep = $('bSleep'), bDebug = $('bDebug'), muteBtn = $('mute');
+  const snacksEl = $('snacks');
+  const barEls = {};
+  for (const k of NEEDS) { const el = $('bar-' + k); barEls[k] = { el, fill: el.querySelector('.fill'), val: el.querySelector('.val') }; }
+
+  let speechTimer = 0;
+  function say(text, ms = 3200) {
+    speechEl.textContent = text;
+    speechEl.classList.add('show');
+    clearTimeout(speechTimer);
+    speechTimer = setTimeout(() => speechEl.classList.remove('show'), ms);
+    nextChatter = performance.now() / 1000 + rand(10, 16);
+  }
+
+  let bannerTimer = 0;
+  function showBanner(title, text) {
+    $('bannerTitle').textContent = title;
+    $('bannerText').textContent = text;
+    banner.hidden = false;
+    clearTimeout(bannerTimer);
+    bannerTimer = setTimeout(() => { banner.hidden = true; }, 12000);
+  }
+  $('bannerOk').addEventListener('click', () => { banner.hidden = true; });
+
+  function openSnacks() { snacksEl.classList.add('open'); }
+  function closeSnacks() { snacksEl.classList.remove('open'); }
+
+  function updateUI() {
+    for (const k of NEEDS) {
+      const v = S[k], b = barEls[k];
+      b.fill.style.width = v.toFixed(1) + '%';
+      b.val.textContent = Math.ceil(v - 0.001 < 0 ? 0 : v - 0.001);
+      b.el.classList.toggle('low', v < LOW);
+    }
+    const busy = mode !== 'idle' || !!eating;
+    bFeed.disabled  = S.asleep || busy;
+    bPlay.disabled  = S.lowPower || S.asleep || busy;
+    bSleep.disabled = S.lowPower || busy;
+    bDebug.disabled = S.lowPower || S.asleep || mode === 'play' || !!eating;
+    bSleep.textContent = S.asleep ? 'WAKE' : 'SLEEP';
+    bDebug.textContent = mode === 'debug' ? 'STOP' : 'DEBUG';
+    let hint = '';
+    if (S.lowPower) hint = 'Low power mode: FEED Bit to wake him up.';
+    else if (S.asleep) hint = 'Lights off. Tap WAKE to wake Bit early.';
+    else if (mode === 'play') hint = 'Tap the green bugs!';
+    else if (mode === 'debug') hint = 'Tap the purple glitch bugs to zap them!';
+    else if (bugs.some(b => !b.dead)) hint = 'Glitch bugs! Press DEBUG to zap them.';
+    else hint = 'Tip: tap Bit to give him a pat.';
+    hintEl.textContent = hint;
+    muteBtn.textContent = sfx.isMuted() ? '♪ OFF' : '♪ ON';
+  }
+
+  // ---------- game runtime state ----------
+  let mode = 'idle';          // idle | play | debug
+  let eating = null;          // { id, t }
+  let bugs = [];              // glitch bugs, in Bit-space coords
+  let targets = [];           // play-mode bugs, screen coords
+  let particles = [];
+  let playT = 0, score = 0, playSpawn = 0;
+  let bugSpawnT = 0, snoreT = 1.5, petCool = 0;
+  let lastMood = 'happy', nextChatter = 0;
+  let bob = 0, time = 0;
+
+  function currentMood() {
+    if (S.lowPower) return 'lowpower';
+    if (S.asleep) return 'asleep';
+    if (NEEDS.every(k => S[k] < LOW)) return 'sad';
+    let worst = null, wv = LOW;
+    for (const k of NEEDS) if (S[k] < wv) { wv = S[k]; worst = k; }
+    return { battery: 'hungry', fun: 'bored', sleep: 'sleepy', clean: 'buggy' }[worst] || 'happy';
+  }
+
+  // ---------- glitch bugs ----------
+  function bugTarget() {
+    if (S.clean >= BUG_CLEAN || S.lowPower) return 0;
+    return Math.min(5, 1 + Math.floor((BUG_CLEAN - S.clean) / 8));
+  }
+  function randomBitPoint() {
+    if (Math.random() < 0.55) return { x: rand(102, 198), y: rand(56, 144) };   // head
+    return { x: rand(110, 190), y: rand(162, 226) };                           // body
+  }
+  function spawnBug() {
+    const p = randomBitPoint(), q = randomBitPoint();
+    bugs.push({ x: p.x, y: p.y, tx: q.x, ty: q.y, ph: Math.random() * 6, dead: false, fade: 0, zapped: false });
+  }
+  function syncBugs(dt, instant) {
+    if (mode === 'debug') return;
+    const alive = bugs.filter(b => !b.dead);
+    const target = bugTarget();
+    if (instant) { while (bugs.length < target) spawnBug(); return; }
+    if (alive.length < target) {
+      bugSpawnT -= dt;
+      if (bugSpawnT <= 0) { spawnBug(); bugSpawnT = 3; }
+    } else if (alive.length > target) {
+      alive[0].dead = true; // wander off quietly
+    }
+  }
+
+  // ---------- actions ----------
+  function feed(id) {
+    const sn = SNACKS[id];
+    if (!sn || eating || S.asleep || mode !== 'idle') return;
+    closeSnacks();
+    if (!S.lowPower && S.battery >= 97) { say('I\'m full! No more, please.'); sfx.nope(); return; }
+    eating = { id, t: 0, applied: false };
+    updateUI();
+  }
+  function applySnack(id) {
+    const sn = SNACKS[id];
+    const wasLow = S.lowPower;
+    S.battery = clamp(S.battery + sn.battery, 0, 100);
+    S.fun = clamp(S.fun + sn.fun, 0, 100);
+    S.clean = clamp(S.clean + sn.clean, 0, 100);
+    if (id === 'usb') sfx.plug(); else sfx.chomp(id === 'cookie' ? 3 : 2);
+    if (wasLow) {
+      S.lowPower = false;
+      setTimeout(() => sfx.boot(), 350);
+      say('Rebooting... I\'m back! Thank you!');
+    } else say(sn.line);
+    lastMood = currentMood();
+    for (let i = 0; i < 6; i++) particles.push({ type: id === 'cookie' ? 'crumb' : 'spark', x: 150 + rand(-8, 8), y: 120 + bob, vx: rand(-40, 40), vy: rand(-60, 0), life: 0.8 });
+    particles.push({ type: 'txt', text: '+' + sn.battery, x: 186, y: 112 + bob, vx: 0, vy: -24, life: 1.2, color: '#ffd35c' });
+    save(); updateUI();
+  }
+
+  function startPlay() {
+    if (mode !== 'idle' || S.asleep || S.lowPower || eating) return;
+    if (S.battery < 8) { say('Too tired to play... I need power!'); sfx.nope(); return; }
+    closeSnacks();
+    mode = 'play'; playT = 10; score = 0; targets = []; playSpawn = 0;
+    spawnTarget();
+    sfx.gameStart();
+    say('Catch the bugs! 10 seconds!', 1800);
+    updateUI();
+  }
+  function spawnTarget() {
+    targets.push({ x: rand(36, 264), y: rand(70, 230), vx: rand(-50, 50), vy: rand(-40, 40), life: rand(1.2, 1.8), ph: Math.random() * 6, pop: 0 });
+  }
+  function endPlay() {
+    mode = 'idle'; targets = [];
+    const gain = Math.min(70, 15 + score * 6);
+    S.fun = clamp(S.fun + gain, 0, 100);
+    S.battery = clamp(S.battery - 5, 0, 100);
+    S.sleep = clamp(S.sleep - 3, 0, 100);
+    sfx.gameEnd();
+    say((score >= 10 ? 'WOW! ' : score >= 5 ? 'Nice! ' : '') + 'You caught ' + score + ' bug' + (score === 1 ? '' : 's') + '! Fun +' + gain);
+    particles.push({ type: 'txt', text: 'FUN +' + gain, x: 150, y: 40, vx: 0, vy: -16, life: 1.6, color: '#7dff9a' });
+    lastMood = currentMood();
+    save(); updateUI();
+  }
+
+  function toggleSleep() {
+    if (S.lowPower || mode !== 'idle' || eating) return;
+    closeSnacks();
+    if (S.asleep) {
+      S.asleep = false; sfx.wake(); say('*stretch* Morning already?');
+    } else {
+      if (S.sleep >= 90) { say('I\'m not sleepy yet!'); sfx.nope(); return; }
+      S.asleep = true; snoreT = 1.2; sfx.lightsOff(); say('Night night...', 1800);
+    }
+    lastMood = currentMood();
+    save(); updateUI();
+  }
+
+  function toggleDebug() {
+    if (mode === 'debug') { mode = 'idle'; say('Debug paused. Bugs still here!'); updateUI(); return; }
+    if (mode !== 'idle' || S.asleep || S.lowPower || eating) return;
+    closeSnacks();
+    let alive = bugs.filter(b => !b.dead).length;
+    mode = 'debug';
+    if (alive === 0) { spawnBug(); spawnBug(); alive = 2; say('Scanning... found 2 stray bits. Zap them!'); }
+    else say('Found ' + alive + ' glitch bug' + (alive === 1 ? '' : 's') + '! Tap to zap!');
+    sfx.click();
+    updateUI();
+  }
+  function zap(b) {
+    const alive = bugs.filter(x => !x.dead).length;
+    S.clean = clamp(S.clean + (100 - S.clean) / alive, 0, 100);
+    b.dead = true; b.zapped = true;
+    sfx.zap();
+    for (let i = 0; i < 8; i++) particles.push({ type: 'spark', x: b.x, y: b.y + bob, vx: rand(-90, 90), vy: rand(-90, 90), life: 0.4 });
+    if (alive - 1 <= 0) {
+      S.clean = 100; mode = 'idle';
+      setTimeout(() => sfx.sparkle(), 150);
+      say('Bug-free! I feel squeaky clean!');
+      lastMood = currentMood();
+    }
+    save(); updateUI();
+  }
+
+  function pet() {
+    if (petCool > 0) return;
+    petCool = 0.8;
+    S.fun = clamp(S.fun + 2, 0, 100);
+    sfx.chirp();
+    particles.push({ type: 'heart', x: 150 + rand(-30, 30), y: 60 + bob, vx: rand(-10, 10), vy: -40, life: 1.1 });
+    if (Math.random() < 0.4) say(pick(['Hehe, that tickles!', 'Beep! <3', 'Pat pat pat!']), 1600);
+    updateUI();
+  }
+
+  // ---------- input ----------
+  function toStage(e) {
+    const r = cv.getBoundingClientRect();
+    return { x: (e.clientX - r.left) * W / r.width, y: (e.clientY - r.top) * H / r.height };
+  }
+  function hitList(list, x, y, rad, yOff) {
+    let best = null, bd = rad * rad;
+    for (const o of list) {
+      if (o.dead) continue;
+      const dx = o.x - x, dy = o.y + yOff - y, d = dx * dx + dy * dy;
+      if (d <= bd) { bd = d; best = o; }
+    }
+    return best;
+  }
+  cv.addEventListener('pointerdown', e => {
+    sfx.ensure();
+    const { x, y } = toStage(e);
+    if (mode === 'play') {
+      const t = hitList(targets, x, y, 28, 0);
+      if (t) {
+        score++; sfx.catchBug();
+        for (let i = 0; i < 6; i++) particles.push({ type: 'spark', x: t.x, y: t.y, vx: rand(-80, 80), vy: rand(-80, 80), life: 0.35, color: '#7dff9a' });
+        targets.splice(targets.indexOf(t), 1);
+        spawnTarget();
+      }
+      return;
+    }
+    if (mode === 'debug') {
+      const b = hitList(bugs, x, y, 24, bob);
+      if (b) zap(b);
+      return;
+    }
+    if (S.lowPower) { say(pick(LINES.lowpower)); return; }
+    if (S.asleep) { say('Zzz... (shh, Bit is sleeping)', 1600); return; }
+    if (eating) return;
+    if (hitList(bugs, x, y, 24, bob)) { say('Press DEBUG to zap the bugs!'); return; }
+    if (x > 88 && x < 212 && y > 25 + bob && y < 250) pet();
+  });
+
+  document.addEventListener('pointerdown', () => sfx.ensure(), { capture: true });
+  bFeed.addEventListener('click', () => {
+    sfx.click();
+    snacksEl.classList.contains('open') ? closeSnacks() : openSnacks();
+  });
+  snacksEl.addEventListener('click', e => {
+    const btn = e.target.closest('.snack');
+    if (btn) feed(btn.dataset.snack);
+  });
+  bPlay.addEventListener('click', startPlay);
+  bSleep.addEventListener('click', toggleSleep);
+  bDebug.addEventListener('click', toggleDebug);
+  muteBtn.addEventListener('click', () => { sfx.ensure(); sfx.setMuted(!sfx.isMuted()); updateUI(); });
+
+  // ---------- drawing helpers ----------
+  function rr(c, x, y, w, h, r) {
+    c.beginPath();
+    c.moveTo(x + r, y);
+    c.arcTo(x + w, y, x + w, y + h, r);
+    c.arcTo(x + w, y + h, x, y + h, r);
+    c.arcTo(x, y + h, x, y, r);
+    c.arcTo(x, y, x + w, y, r);
+    c.closePath();
+  }
+
+  function drawSnack(c, id, x, y, s) {
+    c.save();
+    if (id === 'byte') {
+      rr(c, x - 11 * s, y - 11 * s, 22 * s, 22 * s, 5 * s);
+      c.fillStyle = CYAN; c.fill();
+      c.fillStyle = 'rgba(255,255,255,.5)'; c.fillRect(x - 8 * s, y - 8 * s, 6 * s, 3 * s);
+      c.fillStyle = SCREEN; c.font = 'bold ' + (10 * s) + 'px monospace'; c.textAlign = 'center'; c.textBaseline = 'middle';
+      c.fillText('01', x, y + 1 * s);
+    } else if (id === 'cookie') {
+      c.beginPath(); c.arc(x, y, 12 * s, 0, Math.PI * 2);
+      c.fillStyle = '#d89a55'; c.fill();
+      c.lineWidth = 2 * s; c.strokeStyle = '#a96a2e'; c.stroke();
+      c.fillStyle = '#4a2a14';
+      for (const [dx, dy] of [[-5, -4], [4, -6], [6, 3], [-3, 5], [0, 0]]) { c.fillRect(x + dx * s - 1.5 * s, y + dy * s - 1.5 * s, 3 * s, 3 * s); }
+    } else if (id === 'usb') {
+      rr(c, x - 5 * s, y - 14 * s, 10 * s, 9 * s, 1.5 * s); c.fillStyle = '#cfd6e6'; c.fill();
+      c.fillStyle = '#5a6278'; c.fillRect(x - 3 * s, y - 11 * s, 2 * s, 2 * s); c.fillRect(x + 1 * s, y - 11 * s, 2 * s, 2 * s);
+      rr(c, x - 7 * s, y - 6 * s, 14 * s, 19 * s, 3 * s); c.fillStyle = '#4a6cff'; c.fill();
+      c.fillStyle = '#8fa4ff'; c.fillRect(x - 4 * s, y - 3 * s, 3 * s, 12 * s);
+    }
+    c.restore();
+  }
+
+  function drawRoom() {
+    const g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, '#30245c'); g.addColorStop(1, '#1d1639');
+    ctx.fillStyle = g; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    for (let y = 12, row = 0; y < 230; y += 22, row++) for (let x = 10 + (row % 2) * 11; x < W; x += 22) ctx.fillRect(x, y, 2, 2);
+    // wall monitor with scrolling code
+    rr(ctx, 226, 26, 58, 44, 6); ctx.fillStyle = '#120d26'; ctx.fill(); ctx.strokeStyle = '#4b3c86'; ctx.lineWidth = 2; ctx.stroke();
+    const cols = ['#5ff4ff', '#ff8fc0', '#7dff9a', '#ffd35c'];
+    for (let i = 0; i < 5; i++) {
+      const w = 8 + ((i * 37 + Math.floor(time * 1.5)) % 5) * 7;
+      ctx.fillStyle = cols[(i + Math.floor(time * 1.5)) % 4]; ctx.globalAlpha = 0.7;
+      ctx.fillRect(233 + (i % 2) * 5, 33 + i * 7, Math.min(w, 40), 3);
+    }
+    ctx.globalAlpha = 1;
+    // charging pad on the left
+    rr(ctx, 16, 214, 52, 10, 4); ctx.fillStyle = '#2f2554'; ctx.fill();
+    ctx.fillStyle = (Math.floor(time * 2) % 2) ? CYAN : '#2b6f78'; ctx.fillRect(38, 217, 8, 3);
+    // floor
+    ctx.fillStyle = '#221943'; ctx.fillRect(0, 236, W, 64);
+    ctx.strokeStyle = 'rgba(95,244,255,0.16)'; ctx.lineWidth = 1; ctx.beginPath();
+    for (let i = 0; i < 6; i++) { const y = 236 + i * i * 2.2 + i * 3; ctx.moveTo(0, y); ctx.lineTo(W, y); }
+    for (let i = -7; i <= 7; i++) { ctx.moveTo(150 + i * 16, 236); ctx.lineTo(150 + i * 70, 300); }
+    ctx.stroke();
+  }
+
+  function drawBit(m) {
+    const b = bob;
+    const bb = b * 0.6;
+    const lp = m === 'lowpower';
+    ctx.save();
+    if (lp) ctx.filter = 'grayscale(1) brightness(0.75)';
+    // shadow
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.beginPath(); ctx.ellipse(150, 250, 58 - b, 8, 0, 0, Math.PI * 2); ctx.fill();
+    // feet
+    ctx.fillStyle = PINK_DK;
+    rr(ctx, 114, 233, 30, 14, 6); ctx.fill();
+    rr(ctx, 156, 233, 30, 14, 6); ctx.fill();
+    // arms
+    const swing = (m === 'happy' || m === 'playing') ? Math.sin(time * 6) * 6 : Math.sin(time * 1.5) * 2;
+    ctx.fillStyle = PINK; ctx.strokeStyle = PINK_DK; ctx.lineWidth = 3;
+    ctx.save(); ctx.translate(100, 172 + bb); ctx.rotate((10 + swing) * Math.PI / 180);
+    rr(ctx, -9, 0, 16, 44, 8); ctx.fill(); ctx.stroke(); ctx.restore();
+    ctx.save(); ctx.translate(200, 172 + bb); ctx.rotate((-10 - swing) * Math.PI / 180);
+    rr(ctx, -7, 0, 16, 44, 8); ctx.fill(); ctx.stroke(); ctx.restore();
+    // body
+    rr(ctx, 104, 156 + bb, 92, 80, 18); ctx.fillStyle = PINK; ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.18)'; rr(ctx, 110, 161 + bb, 16, 50, 8); ctx.fill();
+    // chest screen
+    rr(ctx, 121, 172 + bb, 58, 36, 8); ctx.fillStyle = SCREEN; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = '#b14f81'; ctx.stroke();
+    let chest = CHEST[m] || '</>';
+    if (lp && Math.floor(time * 1.2) % 2) chest = '';
+    ctx.save();
+    ctx.fillStyle = m === 'buggy' && Math.random() < 0.15 ? '#ff5cf0' : CYAN;
+    ctx.shadowColor = CYAN; ctx.shadowBlur = lp ? 0 : 8;
+    ctx.font = 'bold 17px ui-monospace, Menlo, Consolas, monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(chest, 150 + (m === 'buggy' ? rand(-1.5, 1.5) : 0), 191 + bb);
+    ctx.restore();
+    // neck
+    ctx.fillStyle = PINK_DK; ctx.fillRect(138, 148 + b, 24, 10);
+    // antenna
+    const sway = Math.sin(time * 2.2) * 4;
+    ctx.strokeStyle = '#8a8fa8'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(150, 52 + b); ctx.quadraticCurveTo(150, 38 + b, 150 + sway, 28 + b); ctx.stroke();
+    ctx.save();
+    ctx.fillStyle = CYAN; ctx.shadowColor = CYAN;
+    ctx.shadowBlur = lp ? 0 : (m === 'asleep' ? 4 : 14 + Math.sin(time * 4) * 4);
+    ctx.globalAlpha = m === 'asleep' ? 0.5 : 1;
+    ctx.beginPath(); ctx.arc(150 + sway, 25 + b, 7, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+    // head
+    ctx.fillStyle = PINK; ctx.strokeStyle = PINK_DK; ctx.lineWidth = 3;
+    rr(ctx, 94, 50 + b, 112, 102, 22); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,0.2)'; rr(ctx, 102, 56 + b, 40, 8, 4); ctx.fill();
+    // side bolts
+    ctx.fillStyle = '#ffc2dc';
+    ctx.beginPath(); ctx.arc(92, 102 + b, 7, 0, Math.PI * 2); ctx.arc(208, 102 + b, 7, 0, Math.PI * 2); ctx.fill();
+    // face screen
+    rr(ctx, 108, 64 + b, 84, 72, 14); ctx.fillStyle = SCREEN; ctx.fill();
+    ctx.lineWidth = 2; ctx.strokeStyle = '#b14f81'; ctx.stroke();
+    ctx.save();
+    rr(ctx, 108, 64 + b, 84, 72, 14); ctx.clip();
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    for (let y = 64; y < 136; y += 4) ctx.fillRect(108, y + b, 84, 1);
+    if (m === 'happy' || m === 'eating') {
+      ctx.fillStyle = 'rgba(255,120,180,0.35)';
+      ctx.beginPath(); ctx.ellipse(120, 114 + b, 7, 4, 0, 0, Math.PI * 2); ctx.ellipse(180, 114 + b, 7, 4, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    drawFace(m, b);
+    if (m === 'buggy' && Math.random() < 0.12) {
+      ctx.fillStyle = 'rgba(255,92,240,0.5)'; ctx.fillRect(108, rand(70, 130) + b, 84, rand(2, 6));
+    }
+    ctx.restore();
+    ctx.restore();
+  }
+
+  function drawFace(m, b) {
+    const y = 96 + b, xs = [132, 168];
+    ctx.save();
+    ctx.strokeStyle = ctx.fillStyle = CYAN;
+    ctx.shadowColor = CYAN; ctx.shadowBlur = 10;
+    ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const blink = (time % 4.3) < 0.13;
+    const my = 121 + b;
+    switch (m) {
+      case 'happy':
+      case 'eating':
+        for (const x of xs) { ctx.beginPath(); ctx.arc(x, y + 5, 9, Math.PI * 1.15, Math.PI * 1.85); ctx.stroke(); }
+        if (m === 'happy') { ctx.beginPath(); ctx.arc(150, my - 6, 10, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+        else { const o = Math.abs(Math.sin(time * 14)) * 8 + 1; ctx.beginPath(); ctx.ellipse(150, my, 8, o, 0, 0, Math.PI * 2); ctx.fill(); }
+        break;
+      case 'hungry':
+        for (const x of xs) { ctx.beginPath(); if (blink) { ctx.moveTo(x - 8, y); ctx.lineTo(x + 8, y); ctx.stroke(); } else { ctx.arc(x, y, 9, 0, Math.PI * 2); ctx.fill(); } }
+        ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(150, my, 5 + Math.sin(time * 3), 0, Math.PI * 2); ctx.stroke();
+        break;
+      case 'bored': {
+        const look = Math.sin(time * 0.6) * 5;
+        for (const x of xs) { rr(ctx, x - 9 + look, y - 1, 18, 7, 3); ctx.fill(); }
+        ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(141, my); ctx.lineTo(159, my); ctx.stroke();
+        break;
+      }
+      case 'sleepy': {
+        for (const x of xs) { ctx.beginPath(); ctx.ellipse(x, y, 9, 5, 0, 0, Math.PI); ctx.fill(); }
+        const yawn = (time % 6) < 1.4;
+        ctx.lineWidth = 4; ctx.beginPath();
+        if (yawn) ctx.ellipse(150, my, 6, 8, 0, 0, Math.PI * 2); else { ctx.moveTo(144, my); ctx.lineTo(156, my); }
+        ctx.stroke();
+        break;
+      }
+      case 'buggy': {
+        const x = xs[0];
+        ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(x - 7, y - 7); ctx.lineTo(x + 7, y + 7); ctx.moveTo(x + 7, y - 7); ctx.lineTo(x - 7, y + 7); ctx.stroke();
+        const j = Math.random() < 0.2 ? rand(-3, 3) : 0;
+        rr(ctx, xs[1] - 6 + j, y - 9, 12, 18, 6); ctx.fill();
+        ctx.beginPath(); ctx.moveTo(138, my); ctx.lineTo(144, my - 4); ctx.lineTo(150, my); ctx.lineTo(156, my - 4); ctx.lineTo(162, my); ctx.stroke();
+        break;
+      }
+      case 'sad': {
+        ctx.beginPath();
+        ctx.moveTo(xs[0] - 8, y - 3); ctx.lineTo(xs[0] + 8, y - 9); ctx.lineTo(xs[0] + 8, y + 8); ctx.lineTo(xs[0] - 8, y + 8); ctx.closePath();
+        ctx.moveTo(xs[1] + 8, y - 3); ctx.lineTo(xs[1] - 8, y - 9); ctx.lineTo(xs[1] - 8, y + 8); ctx.lineTo(xs[1] + 8, y + 8); ctx.closePath();
+        ctx.fill();
+        ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(150, my + 9, 9, Math.PI * 1.2, Math.PI * 1.8); ctx.stroke();
+        const tear = (time % 3) / 3;
+        ctx.globalAlpha = 1 - tear; ctx.beginPath(); ctx.arc(xs[0] - 4, y + 12 + tear * 16, 2.5, 0, Math.PI * 2); ctx.fill();
+        break;
+      }
+      case 'asleep':
+        ctx.lineWidth = 4;
+        for (const x of xs) { ctx.beginPath(); ctx.arc(x, y - 2, 8, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke(); }
+        ctx.beginPath(); ctx.arc(150, my, 3 + Math.sin(time * 2) * 1, 0, Math.PI * 2); ctx.stroke();
+        break;
+      case 'lowpower': {
+        const on = (time % 3) < 0.5;
+        ctx.shadowBlur = 0; ctx.globalAlpha = on ? 0.7 : 0.12;
+        for (const x of xs) { ctx.beginPath(); ctx.arc(x, y, 3, 0, Math.PI * 2); ctx.fill(); }
+        break;
+      }
+      default: // playing / debug: alert eyes
+        for (const x of xs) { if (blink) { ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x + 6, y); ctx.stroke(); } else { rr(ctx, x - 6, y - 9, 12, 18, 6); ctx.fill(); } }
+        ctx.beginPath(); ctx.arc(150, my - 6, 8, Math.PI * 0.15, Math.PI * 0.85); ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawBug(x, y, ph, color, size, alpha) {
+    ctx.save();
+    ctx.globalAlpha = alpha;
+    ctx.translate(x, y);
+    const leg = Math.sin(ph * 12) * 2;
+    ctx.strokeStyle = '#1b1030'; ctx.lineWidth = 1.6;
+    ctx.beginPath();
+    for (let i = -1; i <= 1; i++) {
+      const lx = i * 4 * size;
+      ctx.moveTo(lx, 0); ctx.lineTo(lx - 2 * size + (i ? leg : -leg), -8 * size);
+      ctx.moveTo(lx, 0); ctx.lineTo(lx - 2 * size + (i ? -leg : leg), 8 * size);
+    }
+    ctx.stroke();
+    if (color === 'glitch' && Math.random() < 0.25) {
+      ctx.fillStyle = 'rgba(95,244,255,0.6)'; ctx.beginPath(); ctx.ellipse(2, 0, 7 * size, 5 * size, 0, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = color === 'glitch' ? '#a45cff' : color;
+    ctx.beginPath(); ctx.ellipse(0, 0, 7 * size, 5 * size, 0, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#2a1650'; ctx.beginPath(); ctx.arc(7 * size, 0, 3 * size, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#fff'; ctx.fillRect(-2 * size, -2 * size, 2 * size, 2 * size); ctx.fillRect(2 * size, 1 * size, 2 * size, 2 * size);
+    ctx.restore();
+  }
+
+  function drawHeart(x, y, s) {
+    ctx.beginPath();
+    ctx.moveTo(x, y + 4 * s);
+    ctx.bezierCurveTo(x - 8 * s, y - 2 * s, x - 4 * s, y - 8 * s, x, y - 3 * s);
+    ctx.bezierCurveTo(x + 4 * s, y - 8 * s, x + 8 * s, y - 2 * s, x, y + 4 * s);
+    ctx.fill();
+  }
+
+  function drawParticles(onlyZ) {
+    for (const p of particles) {
+      if ((p.type === 'z') !== onlyZ) continue;
+      const a = clamp(p.life / (p.max || 1), 0, 1);
+      ctx.save(); ctx.globalAlpha = Math.min(1, a * 1.5);
+      if (p.type === 'heart') { ctx.fillStyle = '#ff5c9a'; drawHeart(p.x, p.y, 1.4); }
+      else if (p.type === 'spark') { ctx.fillStyle = p.color || CYAN; ctx.fillRect(p.x - 2, p.y - 2, 4, 4); }
+      else if (p.type === 'crumb') { ctx.fillStyle = '#c08040'; ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3); }
+      else if (p.type === 'z') { ctx.fillStyle = '#e8f6ff'; ctx.font = 'bold ' + Math.round(12 + (1 - a) * 12) + 'px monospace'; ctx.fillText('Z', p.x, p.y); }
+      else if (p.type === 'txt') { ctx.fillStyle = p.color; ctx.font = 'bold 14px monospace'; ctx.textAlign = 'center'; ctx.fillText(p.text, p.x, p.y); }
+      ctx.restore();
+    }
+  }
+
+  function render() {
+    const m = mode === 'play' ? 'playing' : (eating ? 'eating' : (mode === 'debug' ? 'debug' : currentMood()));
+    ctx.setTransform(cv.width / W, 0, 0, cv.height / H, 0, 0);
+    drawRoom();
+    drawBit(m);
+    // glitch bugs crawling on Bit
+    for (const b of bugs) {
+      const a = b.dead ? clamp(1 - b.fade / 0.35, 0, 1) : 1;
+      if (b.zapped) {
+        ctx.save(); ctx.strokeStyle = CYAN; ctx.lineWidth = 2; ctx.globalAlpha = a;
+        ctx.beginPath(); ctx.arc(b.x, b.y + bob, 6 + b.fade * 60, 0, Math.PI * 2); ctx.stroke(); ctx.restore();
+      }
+      drawBug(b.x, b.y + bob, b.ph, 'glitch', 1, a);
+    }
+    // snack flying in
+    if (eating && eating.t < 0.5) {
+      const k = eating.t / 0.5;
+      drawSnack(ctx, eating.id, 250 + (150 - 250) * k, 280 + (121 + bob - 280) * k - Math.sin(k * Math.PI) * 60, 1.2 - k * 0.4);
+    }
+    drawParticles(false);
+    // lights off
+    if (S.asleep) {
+      ctx.fillStyle = 'rgba(6,4,18,0.78)'; ctx.fillRect(0, 0, W, H);
+      ctx.save(); // crescent moon: clip out the "bite" instead of painting it black
+      ctx.beginPath(); ctx.rect(0, 0, W, H); ctx.arc(47, 35, 13, 0, Math.PI * 2); ctx.clip('evenodd');
+      ctx.fillStyle = '#fff6c8'; ctx.shadowColor = '#fff6c8'; ctx.shadowBlur = 10;
+      ctx.beginPath(); ctx.arc(40, 40, 14, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+      ctx.fillStyle = '#fff';
+      for (let i = 0; i < 7; i++) { ctx.globalAlpha = 0.3 + 0.7 * Math.abs(Math.sin(time + i * 1.7)); ctx.fillRect((i * 83) % 280 + 10, (i * 47) % 110 + 15, 2, 2); }
+      ctx.globalAlpha = 1;
+    }
+    drawParticles(true);
+    // low power overlay
+    if (S.lowPower) {
+      ctx.fillStyle = 'rgba(0,0,0,0.25)'; ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#ff5c7a'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';
+      if (Math.floor(time) % 2) ctx.fillText('[ LOW POWER MODE ]', 150, 285);
+      ctx.textAlign = 'left';
+    }
+    // mini-game layer
+    if (mode === 'play') {
+      ctx.fillStyle = 'rgba(10,30,20,0.35)'; ctx.fillRect(0, 0, W, H);
+      for (const t of targets) drawBug(t.x, t.y, t.ph, '#7dff9a', 1.6 * Math.min(1, t.pop * 6), 1);
+      ctx.fillStyle = '#0f0b1f'; ctx.fillRect(10, 10, 280, 10);
+      ctx.fillStyle = playT < 3 ? '#ff5c7a' : '#7dff9a'; ctx.fillRect(10, 10, 280 * clamp(playT / 10, 0, 1), 10);
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 16px monospace'; ctx.textAlign = 'left';
+      ctx.fillText('BUGS: ' + score, 12, 40);
+      ctx.textAlign = 'right'; ctx.fillText(Math.ceil(playT) + 's', 288, 40); ctx.textAlign = 'left';
+    }
+    if (mode === 'debug') {
+      ctx.strokeStyle = 'rgba(210,155,255,0.6)'; ctx.lineWidth = 4; ctx.strokeRect(2, 2, W - 4, H - 4);
+      ctx.fillStyle = '#d29bff'; ctx.font = 'bold 13px monospace'; ctx.textAlign = 'center';
+      ctx.fillText('DEBUG MODE: ' + bugs.filter(b => !b.dead).length + ' left', 150, 285); ctx.textAlign = 'left';
+    }
+  }
+
+  // ---------- update loop ----------
+  function update(dt) {
+    time += dt;
+    const m = currentMood();
+    const speed = m === 'lowpower' ? 0.4 : m === 'asleep' ? 0.8 : 2;
+    bob = Math.sin(time * speed) * (m === 'lowpower' ? 1 : 3);
+    petCool = Math.max(0, petCool - dt);
+
+    if (eating) {
+      eating.t += dt;
+      if (!eating.applied && eating.t >= 0.5) { eating.applied = true; applySnack(eating.id); }
+      if (eating.t >= 1.3) { eating = null; updateUI(); }
+    }
+
+    for (const b of bugs) {
+      b.ph += dt;
+      if (b.dead) { b.fade += dt; continue; }
+      const dx = b.tx - b.x, dy = b.ty - b.y, d = Math.hypot(dx, dy);
+      const sp = mode === 'debug' ? 34 : 16;
+      if (d < 2) { const q = randomBitPoint(); b.tx = q.x; b.ty = q.y; }
+      else { b.x += dx / d * sp * dt; b.y += dy / d * sp * dt; }
+    }
+    bugs = bugs.filter(b => !(b.dead && b.fade > 0.35));
+    syncBugs(dt, false);
+
+    if (mode === 'play') {
+      playT -= dt;
+      playSpawn += dt;
+      const maxT = playT < 4 ? 3 : playT < 7 ? 2 : 1;
+      for (const t of targets) {
+        t.ph += dt; t.pop += dt; t.life -= dt;
+        t.x += t.vx * dt; t.y += t.vy * dt;
+        if (t.x < 24 || t.x > 276) t.vx *= -1;
+        if (t.y < 56 || t.y > 240) t.vy *= -1;
+      }
+      targets = targets.filter(t => t.life > 0);
+      while (targets.length < maxT) spawnTarget();
+      if (playT <= 0) endPlay();
+    }
+
+    if (S.asleep) {
+      snoreT -= dt;
+      if (snoreT <= 0) {
+        snoreT = 2.6; sfx.snore();
+        particles.push({ type: 'z', x: 186, y: 92 + bob, vx: 12, vy: -16, life: 2.4, max: 2.4 });
+      }
+    }
+
+    for (const p of particles) {
+      p.life -= dt; p.x += p.vx * dt; p.y += p.vy * dt;
+      if (p.type === 'crumb') p.vy += 220 * dt;
+      if (!p.max) p.max = p.life + dt;
+    }
+    particles = particles.filter(p => p.life > 0);
+
+    // mood chatter
+    const now = performance.now() / 1000;
+    if (mode === 'idle' && !eating) {
+      if (m !== lastMood) {
+        const prev = lastMood;
+        lastMood = m;
+        if (m === 'lowpower') { sfx.powerDown(); say(pick(LINES.lowpower)); }
+        else if (prev !== 'asleep' || m !== 'happy') say(pick(LINES[m]));
+        updateUI();
+      } else if (now > nextChatter) {
+        say(pick(LINES[m]));
+      }
+    }
+  }
+
+  function tick() {
+    const now = Date.now();
+    const wasLow = S.lowPower;
+    const ev = simulate(S, now - S.t);
+    S.t = now;
+    if (ev.wokeUp) { sfx.wake(); say('Good morning! Fully rested!'); }
+    if (S.lowPower && !wasLow) { mode = 'idle'; targets = []; eating = null; closeSnacks(); }
+    save();
+    updateUI();
+  }
+
+  let lastFrame = performance.now();
+  function frame(ts) {
+    const dt = Math.min(0.05, Math.max(0, (ts - lastFrame) / 1000));
+    lastFrame = ts;
+    update(dt);
+    render();
+    requestAnimationFrame(frame);
+  }
+
+  function resize() {
+    const r = cv.getBoundingClientRect();
+    const dpr = Math.min(window.devicePixelRatio || 1, 3);
+    cv.width = Math.max(1, Math.round(r.width * dpr));
+    cv.height = Math.max(1, Math.round(r.height * dpr));
+  }
+
+  // ---------- boot ----------
+  document.querySelectorAll('.snack canvas').forEach(c => {
+    const g = c.getContext('2d');
+    drawSnack(g, c.parentElement.dataset.snack, 40, 42, 2.4);
+  });
+  window.addEventListener('resize', resize);
+  resize();
+
+  const loaded = parseSave(store.get(SAVE_KEY));
+  adopt(loaded || freshState(), !loaded);
+
+  setInterval(tick, 1000);
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(true); else tick(); });
+  window.addEventListener('pagehide', () => save(true));
+  requestAnimationFrame(frame);
+
+  // Read-only hook used by automated tests (does not change the game).
+  window.__bitpet = Object.freeze({
+    state: () => Object.assign({}, S), mode: () => mode, mood: currentMood,
+    bugs: () => bugs.filter(b => !b.dead).map(b => ({ x: b.x, y: b.y + bob })),
+    targets: () => targets.map(t => ({ x: t.x, y: t.y })),
+    toClient(x, y) { const r = cv.getBoundingClientRect(); return { x: r.left + x * r.width / W, y: r.top + y * r.height / H }; },
+    speech: () => speechEl.textContent, eating: () => !!eating
+  });
+})();
+</script>
+</body>
+</html>
