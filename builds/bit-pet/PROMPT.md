@@ -93,3 +93,13 @@ Screens: catchup-test.png
 - No screen-reader text for the canvas; add a text status per mood.
 - Untested edge cases: clock set backwards (treated as no time), gaps over 30 days (capped), two tabs open.
 - Remove the read-only window.__bitpet test hook before shipping.
+
+## The real 24-hour test (Amit's Mac, Chrome)
+Play session recorded 16:03 on 25 Nov (28 s). Bars when the tab was closed: **Battery 100, Fun 100, Sleep 74, Clean 64**.
+Forecast from the game's own rates (awake, per hour: Battery -10, Fun -7, Sleep -5, Clean -4):
+glitch bugs from ~22:00 (Clean < 40); Battery empty ~02:00; Fun ~06:20; Sleep ~06:50; Clean ~08:05 Thu = low power mode.
+So at the 24-hour check-in (Thu ~16:05) Bit should be in low power mode, and only FEED wakes him. Real check-in screenshots below.
+
+| Check-in | Time | Battery | Fun | Sleep | Clean | Mood / line |
+|---|---|---|---|---|---|---|
+| 0 h | Wed 16:03 | 100 | 100 | 74 | 64 | happy |
