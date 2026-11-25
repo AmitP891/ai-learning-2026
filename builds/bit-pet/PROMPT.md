@@ -67,7 +67,7 @@ Write the real numbers here; nothing in the video is made up.
 | Time (send to finished) | recording 15:38–15:51; index.html saved 15:46 (about 8 min after start) |
 | Fix rounds | (from the session: TBC) |
 | Lines / size | 999 lines, 47 KB |
-| Bugs the tester found | |
+| Tester | wrote its own 39-check automated test (headless Chrome: every action, all moods, 1/7/24 h catch-up, save/corrupt save, mobile layout and touch, console errors). Re-run by Claude on 25 Nov: **39/39 pass**. Script + screenshots in tester/ |
 | 1 h / 8 h / 24 h bars | |
 | What broke in real life (if anything) | |
 
