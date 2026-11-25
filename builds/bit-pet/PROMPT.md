@@ -103,3 +103,4 @@ So at the 24-hour check-in (Thu ~16:05) Bit should be in low power mode, and onl
 | Check-in | Time | Battery | Fun | Sleep | Clean | Mood / line |
 |---|---|---|---|---|---|---|
 | 0 h | Wed 16:03 | 100 | 100 | 74 | 64 | happy |
+| 1 h | Wed 17:05 | 90 | 93 | 69 | 60 | happy (drain matches the code exactly: -10/-7/-5/-4 per hour) |
