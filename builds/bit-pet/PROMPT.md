@@ -65,11 +65,11 @@ Write the real numbers here; nothing in the video is made up.
 |---|---|
 | Date | 25 Nov 2026 (Opus 5.5, fresh session in ~/pac-bit/bit-pet) |
 | Time (send to finished) | recording 15:38–15:51; index.html saved 15:46 (about 8 min after start) |
-| Fix rounds | (from the session: TBC) |
+| Fix rounds | 1 (Claude's own tests found 3 bugs; Amit asked for no changes) |
 | Lines / size | 999 lines, 47 KB |
 | Tester | wrote its own 39-check automated test (headless Chrome: every action, all moods, 1/7/24 h catch-up, save/corrupt save, mobile layout and touch, console errors). Re-run by Claude on 25 Nov: **39/39 pass**. Script + screenshots in tester/ |
-| 1 h / 8 h / 24 h bars | |
-| What broke in real life (if anything) | |
+| 1 h / 24 h bars | 90/93/69/60 at 1 h (exact match to the code); 0/0/0/0 low power at 24 h |
+| What broke in real life (if anything) | no "You were gone" message when the tab is left open (tests always reloaded the page); bugs sit on his face |
 
 ## Catch-up check (Claude, headless Chrome, 25 Nov): faked gaps from full bars
 No console errors. Rates per awake hour: Battery -10, Fun -7, Sleep -5, Clean -4 (asleep: Sleep +120).
