@@ -1,6 +1,6 @@
 # Bit Pet long-form: voiceover script
 
-Go-live: **Sun 29 Nov 2026, 09:00**. Narrator: **BIT** (ElevenLabs V4). Record Fri 27 Nov.
+Go-live: **Sun 29 Nov 2026, 09:00**. Narrator: **AMIT** (first person; Bit is "he"). Recorded Thu 26 Nov in ElevenLabs V4: 2:48, -20.4 LUFS (normalise to -14 in the edit). The table below is the original Bit-narrated draft; the recorded wording swaps "me" for "him/Bit" and "Amit" for "I".
 Target length: about 3:40. Every number is from builds/bit-pet/PROMPT.md. Nothing invented.
 Structure follows the 79 Skills retention lesson: **result first, setup under 15 s, verdict inside the payoff.**
 
