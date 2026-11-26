@@ -105,3 +105,11 @@ So at the 24-hour check-in (Thu ~16:05) Bit should be in low power mode, and onl
 | 0 h | Wed 16:03 | 100 | 100 | 74 | 64 | happy |
 | 1 h | Wed 17:05 | 90 | 93 | 69 | 60 | happy (drain matches the code exactly: -10/-7/-5/-4 per hour) |
 | 24 h | Thu 16:16 | 0 | 0 | 0 | 0 | grey, LOW POWER MODE, "...zz... sys... halt...". No "You were gone" summary seen. FEED → "Rebooting... I'm back! Thank you!" (sad face). Fed + bug-catch game → Battery 100, Fun 100. Sleep and Clean left at 0-1 (DEBUG never pressed), bugs sat on his face throughout. Put to sleep with bugs still on. Best lines: "Yum! ...crumbs in my vents", "Crunchy bits! 01101!", "Mmm, 64 gigs of flavor!" |
+
+## Build recap (from Claude, 26 Nov)
+- Build time: 13 min (screen recording 15:38 to 15:51; final index.html saved 15:46)
+- Fix rounds: 1 (Claude's own tests; Amit asked for no changes). Fixed: "You were gone" lost when closing page overwrote a faked save; moon cut-out black; sleep Zs floated off too fast. Retest 39/39.
+- Hype Bot titles: "Bit Pet: Runtime Love", "Bit Pet: Don't Let Him Low-Power", "Bit Pet: Byte-Sized Buddy"
+
+## Real-test finding: no "You were gone" banner
+The banner only fires on page load (adopt()). Returning to a tab that was left open (visibilitychange → tick()) catches up silently, so no banner. Claude's tests always reloaded the page, so they never covered a tab left open. Fix for the hosted version: show the banner on visibilitychange too when away >= 60 s.
