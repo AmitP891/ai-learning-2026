@@ -112,4 +112,4 @@ So at the 24-hour check-in (Thu ~16:05) Bit should be in low power mode, and onl
 - Hype Bot titles: "Bit Pet: Runtime Love", "Bit Pet: Don't Let Him Low-Power", "Bit Pet: Byte-Sized Buddy"
 
 ## Real-test finding: no "You were gone" banner
-The banner only fires on page load (adopt()). Returning to a tab that was left open (visibilitychange → tick()) catches up silently, so no banner. Claude's tests always reloaded the page, so they never covered a tab left open. Fix for the hosted version: show the banner on visibilitychange too when away >= 60 s.
+The banner only fires on page load (adopt()). Returning to a tab that was left open (visibilitychange → tick()) catches up silently, so no banner. Claude's tests always reloaded the page, so they never covered a tab left open. Confirmed 26 Nov: tab was left open overnight; on login the open tab became active, tick() caught up 24 h and saved, then Amit closed and reopened it, so the save was fresh and no banner showed. Catch-up maths still correct (all bars 0, low power). Fix for the hosted version: show the banner on visibilitychange too when away >= 60 s.
