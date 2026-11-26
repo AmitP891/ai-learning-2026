@@ -53,7 +53,7 @@ Tone tags are in [square brackets] and go straight into ElevenLabs. Record line 
 - Remove the `window.__bitpet` test hook before hosting.
 
 ## Title options
-1. **I Asked Claude to Turn My Robot Into a Pet. Then I Abandoned Him.** (recommended: story + tension; the thumbnail carries the "24 hours")
+1. **I Asked Claude to Turn My Robot Into a Pet. Then I Abandoned Him.** CHOSEN 26 Nov
 2. Claude Built a Virtual Pet in 13 Minutes. I Ignored It for 24 Hours.
 3. I Left My AI-Built Pet Alone for 24 Hours. Here's What Happened.
 4. 39/39 Tests Passed. Real Life Found the Bug.
