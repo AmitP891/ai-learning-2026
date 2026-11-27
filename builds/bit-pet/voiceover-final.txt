@@ -1,0 +1,27 @@
+This is Bit. After I left him alone for twenty-four hours.
+Let's rewind.
+One prompt. Seven AI bots. Thirteen minutes. Claude turned my robot into a pet you can actually feed.
+And then I walked away. To see if he'd survive.
+The prompt gave Claude a team: a producer, a designer, an artist, a coder, a sound designer, a tester and a hype bot. Each one hands its work to the next.
+Four needs: Battery, Fun, Sleep and Clean. They keep draining in real time, even when the page is closed.
+No game engine. No images. No sound files. Every pixel of Bit and every beep is drawn in code. One file. Nine hundred and ninety-nine lines.
+Then the tester bot wrote thirty-nine checks against its own game. It found three bugs, the coder fixed them, and the retest passed thirty-nine out of thirty-nine. One fix round. I didn't type a single correction.
+So what do you actually get? You can feed him a data byte, a cookie or a USB stick.
+Play is a ten-second bug-catching game. Sleep turns the lights off. And Debug zaps the glitch bugs that crawl on him when Clean gets low.
+They do crawl on his face. That's a bug about bugs. We'll come back to that.
+Here's the test. I played with him at four o'clock, filled his Battery and Fun to a hundred, and stopped touching him.
+The game drains him at a fixed rate every hour. Battery ten, Fun seven, Sleep five, Clean four. So I could predict his whole night.
+Glitch bugs from about ten p.m. Battery empty at two in the morning. And by eight a.m. low power mode.
+One hour in, I checked. Ninety. Ninety-three. Sixty-nine. Sixty. Exactly what the maths said. To the point.
+Then... nothing. All night.
+Twenty-four hours later.
+Every bar at zero. Greyed out. But he doesn't die. The prompt said he never dies. You just have to feed him.
+He rebooted. He's back. Still a little sad about it, though.
+But one thing was missing. The prompt asked for a welcome-back message: "You were gone twenty-four hours." It never showed up.
+So I checked the code. The message only appears when the page loads fresh. I'd left the tab open all night. When I came back, Bit caught up on twenty-four hours silently and saved, and the message never got its turn.
+Claude's tests always reloaded the page. Thirty-nine out of thirty-nine. Real life found the one case it never tried.
+It's a one-line fix. Same with the bugs on his face. And everything else worked: the maths, low power, the reboot, every snack line.
+Thirteen minutes, one prompt, and he lived through a whole day without anyone watching. That's the real test of an AI build: not "does it run", but "does it still work when you're not looking".
+You can adopt Bit yourself. The link's in the description, and the full prompt is free.
+Comment how long you think you could keep him alive. Be honest.
+Build it, test it, ship it. And feed it.
