@@ -205,7 +205,7 @@ def callouts(t):
             x = wt(3, w_)
             if u > x: pill(d, 90, 160 + i * 130, s_, c, k(x), 64)
         x = wt(3, "claude")
-        if u > x: T(d, (90, 620), "Claude turned Bit into a", BD(54), WHITE, k(x)); title(d, (90, 720), "PET YOU CAN FEED", 120, PINK, k(x + 0.6), "lm")
+        if u > x: T(d, (90, 620), "Claude turned Bit into a", BD(54), WHITE, k(x)); title(d, (90, 780), "PET YOU CAN FEED", 120, PINK, k(x + 0.6), "lm")
     elif kind == "L4":
         T(d, (590, 430), "...and then I walked away.", BI(64), WHITE, k(0.2), "mm", 6)
         if u > wt(4, "to"): T(d, (590, 540), "Would he survive?", BD(56), GOLD, k(wt(4, "to")), "mm", 5)
