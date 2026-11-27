@@ -292,14 +292,19 @@
     if (isNew) {
       showBanner('Meet Bit!', 'Keep his Battery, Fun, Sleep and Clean bars up. He keeps living while you are away.');
     } else if (away >= 60000) {
-      let msg;
-      if (S.lowPower) msg = 'Bit ran out of power and went into low power mode. FEED him to wake him up!';
-      else if (ev.wokeUp) msg = 'Bit had a long nap and woke up on his own.';
-      else if (currentMood() === 'happy') msg = 'Bit kept things running. He missed you!';
-      else msg = 'Bit needs some care. Check his bars!';
-      showBanner('You were gone ' + fmtDuration(away) + '…', msg);
+      welcomeBack(away, ev);
     }
     updateUI();
+  }
+
+  // "You were gone…" banner: used on page load and when an open tab wakes up after a long gap.
+  function welcomeBack(away, ev) {
+    let msg;
+    if (S.lowPower) msg = 'Bit ran out of power and went into low power mode. FEED him to wake him up!';
+    else if (ev && ev.wokeUp) msg = 'Bit had a long nap and woke up on his own.';
+    else if (currentMood() === 'happy') msg = 'Bit kept things running. He missed you!';
+    else msg = 'Bit needs some care. Check his bars!';
+    showBanner('You were gone ' + fmtDuration(away) + '…', msg);
   }
 
   function fmtDuration(ms) {
@@ -392,9 +397,13 @@
     if (S.clean >= BUG_CLEAN || S.lowPower) return 0;
     return Math.min(5, 1 + Math.floor((BUG_CLEAN - S.clean) / 8));
   }
+  // Bugs crawl on Bit's edges, never across his face or chest screens.
   function randomBitPoint() {
-    if (Math.random() < 0.55) return { x: rand(102, 198), y: rand(56, 144) };   // head
-    return { x: rand(110, 190), y: rand(162, 226) };                           // body
+    const r = Math.random();
+    if (r < 0.25) return { x: rand(104, 196), y: rand(50, 58) };                                    // top of head
+    if (r < 0.55) return { x: Math.random() < 0.5 ? rand(98, 108) : rand(192, 202), y: rand(62, 140) }; // head sides
+    if (r < 0.85) return { x: Math.random() < 0.5 ? rand(106, 117) : rand(183, 194), y: rand(162, 226) }; // body sides
+    return { x: rand(118, 182), y: rand(214, 228) };                                                // bottom of body
   }
   function spawnBug() {
     const p = randomBitPoint(), q = randomBitPoint();
@@ -945,8 +954,11 @@
   function tick() {
     const now = Date.now();
     const wasLow = S.lowPower;
-    const ev = simulate(S, now - S.t);
+    const gap = now - S.t;
+    const ev = simulate(S, gap);
     S.t = now;
+    // Computer slept or the tab was frozen while visible: greet the player like a fresh load.
+    if (gap >= 60000 && document.visibilityState === 'visible') welcomeBack(gap, ev);
     if (ev.wokeUp) { sfx.wake(); say('Good morning! Fully rested!'); }
     if (S.lowPower && !wasLow) { mode = 'idle'; targets = []; eating = null; closeSnacks(); }
     save();
@@ -981,18 +993,17 @@
   adopt(loaded || freshState(), !loaded);
 
   setInterval(tick, 1000);
-  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') save(true); else tick(); });
+  let hiddenSince = null;
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { hiddenSince = Date.now(); save(true); return; }
+    const away = hiddenSince ? Date.now() - hiddenSince : 0;
+    hiddenSince = null;
+    tick();
+    if (away >= 60000) welcomeBack(away);
+  });
   window.addEventListener('pagehide', () => save(true));
   requestAnimationFrame(frame);
 
-  // Read-only hook used by automated tests (does not change the game).
-  window.__bitpet = Object.freeze({
-    state: () => Object.assign({}, S), mode: () => mode, mood: currentMood,
-    bugs: () => bugs.filter(b => !b.dead).map(b => ({ x: b.x, y: b.y + bob })),
-    targets: () => targets.map(t => ({ x: t.x, y: t.y })),
-    toClient(x, y) { const r = cv.getBoundingClientRect(); return { x: r.left + x * r.width / W, y: r.top + y * r.height / H }; },
-    speech: () => speechEl.textContent, eating: () => !!eating
-  });
 })();
 </script>
 </body>
