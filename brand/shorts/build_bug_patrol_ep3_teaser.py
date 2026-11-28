@@ -20,7 +20,7 @@ def card(path):
         st(d, (W / 2 + dx, 1030), "CHEATING", B(220), col, 12 if dx == 0 else 0)
     st(d, (W / 2, 1230), "EPISODE 3", B(96), (255, 255, 255), 7)
     d.rounded_rectangle([200, 1330, 880, 1460], 65, fill=(255, 225, 77), outline=(0, 0, 0), width=7)
-    d.text((W / 2, 1395), "SAT 12 DEC · 9AM", font=B(80), fill=(17, 17, 17), anchor="mm"); bg.save(path)
+    d.text((W / 2, 1395), "SAT 12 DEC · 6PM", font=B(80), fill=(17, 17, 17), anchor="mm"); bg.save(path)
 
 def cap(path, text):
     im = Image.new("RGBA", (W, H), (0, 0, 0, 0)); d = ImageDraw.Draw(im); f = B(74); y = 210
